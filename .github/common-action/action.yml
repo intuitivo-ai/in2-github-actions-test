@@ -2,10 +2,10 @@
 name: 'Common'
 description: 'Export parameters to outputs'
 inputs:
-  digest:
-    description: 'docker image digest'
+  image_tag:
+    description: 'docker image tag'
     required: true
-    default: 'DIGEST'
+    default: 'image_tag'
 outputs:
   COMMIT_ID:
     description: 'Commit id'
@@ -15,4 +15,4 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.digest }}
+    - ${{ inputs.image_tag }}
