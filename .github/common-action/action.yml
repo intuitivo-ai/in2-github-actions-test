@@ -1,13 +1,9 @@
 # action.yml
-name: 'Docker Build'
-description: 'Build docker images'
-inputs:
-  github_organization:  # id of input
-    description: 'Who to greet'
-    required: true
+name: 'Common'
+description: 'Export parameters to outputs'
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  COMMIT_ID:
+  REPOSITORY:
 runs:
   using: 'docker'
   image: 'Dockerfile'
