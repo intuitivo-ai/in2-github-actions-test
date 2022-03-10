@@ -19,6 +19,8 @@ jobs:
       - name: Build
         id: build
         uses: docker/build-push-action@v2
+        with:
+          tags: build
       - name: Common
         uses: ./.github/common-action
         id: common-action
