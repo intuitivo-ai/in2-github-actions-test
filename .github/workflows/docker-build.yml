@@ -12,7 +12,7 @@ on:
       image_id:
         value: ${{ jobs.docker-build.outputs.REPOSITORY }}:${{ jobs.docker-build.outputs.COMMIT_ID }}
       repository:
-        value: ${{ jobs.docker-build.outputs.IMAGE_ID }}
+        value: ${{ jobs.docker-build.outputs.REPOSITORY }}
 
 jobs:
   docker-build:

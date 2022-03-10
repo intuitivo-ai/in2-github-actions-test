@@ -17,7 +17,7 @@ on:
         type: string
 
 jobs:
-  docker-push:
+  docker-push-ecr:
     runs-on: ubuntu-latest
     steps:
       - name: Tag images
