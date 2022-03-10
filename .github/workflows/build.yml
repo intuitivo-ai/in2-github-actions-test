@@ -11,6 +11,15 @@ jobs:
       github_organization: ${GITHUB_REPOSITORY_OWNER}
 
   push:
+    uses: ./.github/workflows/docker-push-ecr.yml
+    needs: build
+    with:
+      branch: "branch"
+      commit_id: ${{ needs.build.outputs.commit_id }}
+      registry: "registry"
+      repository: ${{ needs.build.outputs.repository }}
+
+  test:
     runs-on: ubuntu-latest
     needs: build
     steps:
