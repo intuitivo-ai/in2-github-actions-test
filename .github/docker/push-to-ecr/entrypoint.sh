@@ -1,6 +1,7 @@
 #!/bin/sh -l
 set -euxo pipefail
 
+pwd
 source common.sh
 
 IMAGE_TAG="$1"
