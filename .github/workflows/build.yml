@@ -5,7 +5,7 @@ on:
   push:
 
 env:
-  REGISTRY: 'registry.com'
+  REGISTRY: ${{ secrets.ECR_REGISTRY }}
   DEFAULT_DOCKER_TAG: in2etvo
 
 jobs:
