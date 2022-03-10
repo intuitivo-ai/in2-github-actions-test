@@ -14,7 +14,6 @@ jobs:
           github_organization: ${GITHUB_REPOSITORY_OWNER}
       - name: push
         uses: ./.github/workflows/docker-push-ecr.yml
-        needs: build
         with:
           branch: "branch"
           commit_id: ${{ needs.build.outputs.commit_id }}
