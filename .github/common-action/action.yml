@@ -3,7 +3,9 @@ name: 'Common'
 description: 'Export parameters to outputs'
 outputs:
   COMMIT_ID:
+    description: 'Commit id'
   REPOSITORY:
+    description: 'Repository name'
 runs:
   using: 'docker'
   image: 'Dockerfile'
