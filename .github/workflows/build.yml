@@ -65,7 +65,7 @@ jobs:
         run: echo "The time was ${{ steps.hello.outputs.time }}"
   build1:
     if: ${{ contains( github.ref, 'master') }}
-    uses: ./.github/workflows/docker-build.yml
+    uses: ./.github/workflows/docker-build-and-push.yml
     with:
       AWS_REGION: us-east-2
       DEFAULT_DOCKER_TAG: in2etvo
