@@ -1,9 +1,9 @@
 on:
   workflow_call:
     outputs:
-      repository:
+      image:
         description: "The first output string"
-        value: ${{ jobs.docker-build.outputs.IMAGE }}
+        value: ${{ jobs.docker-build.outputs.TAG }}
 
 jobs:
   docker-build:
