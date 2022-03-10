@@ -22,6 +22,10 @@ jobs:
         id: build-action
         with:
           github_organization: $GITHUB_REPOSITORY_OWNER
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.build-action.outputs.REPOSITORY, steps.build-action.outputs.COMMIT_ID) }}
   hello_world_job:
     runs-on: ubuntu-latest
     name: A job to say hello
@@ -38,10 +42,6 @@ jobs:
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.hello.outputs.REPOSITORY, steps.hello.outputs.COMMIT_ID) }}
   build:
     if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
