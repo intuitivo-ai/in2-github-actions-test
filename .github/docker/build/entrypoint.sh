@@ -6,7 +6,7 @@ echo "Hello $1"
 time=$(date)
 echo "::set-output name=time::$time"
 
-ORG="$1"
+ORG="$GITHUB_REPOSITORY_OWNER"
 
 REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 IMAGE="${REPOSITORY}:${GITHUB_SHA}"
