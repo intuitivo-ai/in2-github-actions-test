@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 pwd
-source common.sh
+source /common.sh
 
 IMAGE_TAG="$1"
 
