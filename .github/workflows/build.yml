@@ -17,7 +17,7 @@ jobs:
           uses: ./.github/docker/build
           id: build-action
           with:
-            github_organization: ${GITHUB_REPOSITORY_OWNER}
+            github_organization: $GITHUB_REPOSITORY_OWNER
   hello_world_job:
       runs-on: ubuntu-latest
       name: A job to say hello
