@@ -16,13 +16,15 @@ jobs:
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Build
+        id: build
+        uses: docker/build-push-action@v2
       - name: Common
         uses: ./.github/common-action
         id: common-action
-      - name: Build
-        uses: docker/build-push-action@v2
         with:
-          tags: ${{ env.REGISTRY }}/${{ steps.common-action.outputs.REPOSITORY }}:${{ steps.common-action.outputs.COMMIT_ID }}
+          digest: ${{ steps.build.outputs.digest }}
+      - run: echo ${{ steps.common-action.outputs.IMAGE_ID }}
   hello_world_job:
     if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
@@ -58,6 +60,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build1
     steps:
       - run: echo ${{ needs.build.outputs.image_id }}
