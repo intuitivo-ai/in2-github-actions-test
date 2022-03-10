@@ -19,5 +19,5 @@ jobs:
         run:  docker build .
       - name: Output
         id:   output1
-        run:  echo "::set-output name=TAG::$GITHUB_SHA"
+        run:  echo "::set-output name=TAG::${GITHUB_SHA}"
 
