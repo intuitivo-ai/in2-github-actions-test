@@ -1,6 +1,11 @@
 # action.yml
 name: 'Common'
 description: 'Export parameters to outputs'
+inputs:
+  digest:
+    description: 'docker image digest'
+    required: true
+    default: 'DIGEST'
 outputs:
   COMMIT_ID:
     description: 'Commit id'
@@ -9,3 +14,5 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+    - ${{ inputs.digest }}
