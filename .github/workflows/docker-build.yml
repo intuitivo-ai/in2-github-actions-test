@@ -2,6 +2,10 @@ name: Docker-Build
 
 on:
   workflow_call:
+    inputs:
+      github_organization:
+        required: true
+        type: string
     outputs:
       image_id:
         value: ${{ jobs.docker-build.outputs.IMAGE_ID }}
@@ -20,8 +24,10 @@ jobs:
 #      - name: Lint
 #        run: docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
       - name: Build
-        id:   build
-        run:  |
+        id: build
+        run: |
+          REPOSITORY=$(echo ${GITHUB_REPOSITORY} | sed "s|${{ inputs.github_organization }}/||g")
+          echo ${REPOSITORY}
           docker build . -t ${GITHUB_REPOSITORY}:${GITHUB_SHA}
           echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
           echo "::set-output name=IMAGE_ID::${GITHUB_REPOSITORY}:${GITHUB_SHA}"
