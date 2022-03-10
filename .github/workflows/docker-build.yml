@@ -7,17 +7,19 @@ on:
         required: true
         type: string
     outputs:
-      image_id:
-        value: ${{ jobs.docker-build.outputs.IMAGE_ID }}
       commit_id:
         value: ${{ jobs.docker-build.outputs.COMMIT_ID }}
+      image_id:
+        value: ${{ jobs.docker-build.outputs.REPOSITORY }}:${{ jobs.docker-build.outputs.COMMIT_ID }}
+      repository:
+        value: ${{ jobs.docker-build.outputs.IMAGE_ID }}
 
 jobs:
   docker-build:
     runs-on: ubuntu-latest
     outputs:
       COMMIT_ID: ${{ steps.build.outputs.COMMIT_ID }}
-      IMAGE_ID: ${{ steps.build.outputs.IMAGE_ID }}
+      REPOSITORY: ${{ steps.build.outputs.REPOSITORY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,5 +32,5 @@ jobs:
           IMAGE="${REPOSITORY}:${GITHUB_SHA}"
           docker build . -t ${IMAGE}
           echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
-          echo "::set-output name=IMAGE_ID::${IMAGE}"
+          echo "::set-output name=REPOSITORY::${REPOSITORY}"
 
