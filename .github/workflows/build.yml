@@ -82,7 +82,7 @@ jobs:
       - run: echo ${{ needs.build.outputs.image_id }}
   build2:
 #    if: ${{ contains( github.ref, 'master') }}
-    uses: intuitivo-ai/in2-github-actions/.github/workflows/docker-build-and-push.yml
+    uses: intuitivo-ai/in2-github-actions/.github/workflows/docker-build-and-push.yml@main
     with:
       AWS_REGION: us-east-2
       DEFAULT_DOCKER_TAG: in2etvo
