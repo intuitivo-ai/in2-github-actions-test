@@ -8,7 +8,7 @@ env:
   REGISTRY: 'registry.com'
 
 jobs:
-  build-action:
+  common-action:
     runs-on: ubuntu-latest
     name: Build
     steps:
@@ -17,14 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build using actions
-        uses: ./.github/docker/build
-        id: build-action
+        uses: ./.github/common-action
+        id: common-action
         with:
           github_organization: $GITHUB_REPOSITORY_OWNER
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.build-action.outputs.REPOSITORY, steps.build-action.outputs.COMMIT_ID) }}
+          tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.common-action.outputs.REPOSITORY, steps.common-action.outputs.COMMIT_ID) }}
   hello_world_job:
     if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
