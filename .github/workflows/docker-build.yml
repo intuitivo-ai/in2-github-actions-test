@@ -9,7 +9,7 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     outputs:
-      IMAGE: ${{ steps.output1.outputs.TAG }}
+      IMAGE: ${{ steps.output1.outputs.COMMIT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,5 +19,5 @@ jobs:
         run:  docker build .
       - name: Output
         id:   output1
-        run:  echo "::set-output name=TAG::${GITHUB_SHA}"
+        run:  echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
 
