@@ -1,0 +1,19 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build:
+    uses: ./.github/workflows/docker-build-and-push.yml
+    with:
+      AWS_REGION: us-east-2
+      DEFAULT_DOCKER_TAG: in2etvo
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
