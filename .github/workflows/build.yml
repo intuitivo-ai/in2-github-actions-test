@@ -29,6 +29,9 @@ jobs:
 #        with:
 #          image_tag: ${{ env.DEFAULT_DOCKER_TAG }}
 #      - run: echo ${{ steps.common-action.outputs.IMAGE_ID }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
       - name: ECR
         uses: ./.github/docker/push-to-ecr
         with:
