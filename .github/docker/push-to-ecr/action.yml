@@ -1,0 +1,13 @@
+# action.yml
+name: 'ECR-push'
+description: 'Push docker images to AWS ECR'
+inputs:
+  image_tag:
+    description: 'docker image tag'
+    required: true
+    default: 'image_tag'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.image_tag }}

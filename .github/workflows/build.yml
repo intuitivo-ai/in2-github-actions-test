@@ -28,6 +28,10 @@ jobs:
         with:
           image_tag: ${{ env.DEFAULT_DOCKER_TAG }}
       - run: echo ${{ steps.common-action.outputs.IMAGE_ID }}
+      - name: ECR
+        uses: ./.github/docker/push-to-ecr
+        with:
+          image_tag: ${{ env.DEFAULT_DOCKER_TAG }}
   hello_world_job:
     if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
