@@ -4,7 +4,7 @@ echo "Hello $1"
 time=$(date)
 echo "::set-output name=time::$time"
 
-ORG="${{ inputs.github_organization }}"
+ORG="$1"
 
 REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 IMAGE="${REPOSITORY}:${GITHUB_SHA}"
