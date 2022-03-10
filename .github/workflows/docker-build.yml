@@ -1,14 +1,23 @@
 on:
   workflow_call:
+    outputs:
+      repository:
+        description: "The first output string"
+        value: ${{ jobs.docker-build.outputs.IMAGE }}
 
 jobs:
   docker-build:
     runs-on: ubuntu-latest
+    outputs:
+      IMAGE: ${{ steps.output1.outputs.TAG }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 #      - name: Lint
 #        run: docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
       - name: Build
-        run: docker build .
+        run:  docker build .
+      - name: Output
+        id:   output1
+        run:  echo "::set-output name=TAG::${{ GITHUB_SHA }}"
 
