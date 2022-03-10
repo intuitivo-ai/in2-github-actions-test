@@ -25,7 +25,7 @@ jobs:
         uses: ./.github/common-action
         id: common-action
         with:
-          digest: ${{ steps.build.outputs.digest }}
+          image_tag: ${{ steps.build.outputs.digest }}
       - run: echo ${{ steps.common-action.outputs.IMAGE_ID }}
   hello_world_job:
     if: ${{ contains( github.ref, 'master') }}
