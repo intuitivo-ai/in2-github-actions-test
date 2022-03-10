@@ -6,7 +6,7 @@ on:
 
 env:
   DEFAULT_DOCKER_TAG: in2etvo
-  REGION: us-east-2
+  AWS_REGION: us-east-2
   REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
 jobs:
