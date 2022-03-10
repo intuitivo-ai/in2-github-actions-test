@@ -3,7 +3,7 @@ on:
     outputs:
       image:
         description: "The first output string"
-        value: ${{ jobs.docker-build.outputs.TAG }}
+        value: ${{ jobs.docker-build.outputs.IMAGE }}
 
 jobs:
   docker-build:
