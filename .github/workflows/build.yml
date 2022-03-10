@@ -39,11 +39,11 @@ jobs:
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 
-          docker tag "${IMAGE_TAG}" "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
-          docker tag "${IMAGE_TAG}" "${REGISTRY}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
+          docker tag "${{ env.DEFAULT_DOCKER_TAG }}" "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
+          docker tag "${{ env.DEFAULT_DOCKER_TAG }}" "${REGISTRY}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
           docker images
-          docker push "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
-          docker push "${REGISTRY}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
+          docker push "${{ env.DEFAULT_DOCKER_TAG }}/${REPOSITORY}:${GITHUB_SHA}"
+          docker push "${{ env.DEFAULT_DOCKER_TAG }}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
 
   hello_world_job:
     if: ${{ contains( github.ref, 'master') }}
