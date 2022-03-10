@@ -14,6 +14,7 @@ env:
 
 jobs:
   build:
+    if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
     name: Build
     steps:
@@ -63,20 +64,10 @@ jobs:
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
   build1:
-    if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Build
+      - name: Build and Push
         uses: ./.github/workflows/docker-build.yml
-        with:
-          github_organization: ${GITHUB_REPOSITORY_OWNER}
-      - name: push
-        uses: ./.github/workflows/docker-push-ecr.yml
-        with:
-          branch: "branch"
-          commit_id: ${{ needs.build.outputs.commit_id }}
-          registry: "registry"
-          repository: ${{ needs.build.outputs.repository }}
 
   test:
     runs-on: ubuntu-latest
