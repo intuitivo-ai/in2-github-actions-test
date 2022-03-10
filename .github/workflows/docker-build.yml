@@ -1,36 +1,42 @@
 name: Docker-Build
 
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_REGION: us-east-2
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  DEFAULT_DOCKER_TAG: in2etvo
+  REGISTRY: ${{ secrets.ECR_REGISTRY }}
+
 on:
   workflow_call:
-    inputs:
-      github_organization:
-        required: true
-        type: string
-    outputs:
-      commit_id:
-        value: ${{ jobs.docker-build.outputs.COMMIT_ID }}
-      image_id:
-        value: ${{ jobs.docker-build.outputs.REPOSITORY }}:${{ jobs.docker-build.outputs.COMMIT_ID }}
-      repository:
-        value: ${{ jobs.docker-build.outputs.REPOSITORY }}
 
 jobs:
-  docker-build:
+  docker-build-and-push:
     runs-on: ubuntu-latest
-    outputs:
-      COMMIT_ID: ${{ steps.build.outputs.COMMIT_ID }}
-      REPOSITORY: ${{ steps.build.outputs.REPOSITORY }}
+    name: Build and Push
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-#      - name: Lint
-#        run: docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
       - name: Build
-        id: build
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{ env.DEFAULT_DOCKER_TAG }}
+      - name: Push to ECR
         run: |
-          REPOSITORY=$(echo ${GITHUB_REPOSITORY} | sed "s|${{ inputs.github_organization }}/||g")
-          IMAGE="${REPOSITORY}:${GITHUB_SHA}"
-          docker build . -t ${IMAGE}
-          echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
-          echo "::set-output name=REPOSITORY::${REPOSITORY}"
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 
+          docker tag "${DEFAULT_DOCKER_TAG}" "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
+          docker tag "${DEFAULT_DOCKER_TAG}" "${REGISTRY}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
+          docker images
+          docker push "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
+          docker push "${REGISTRY}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
