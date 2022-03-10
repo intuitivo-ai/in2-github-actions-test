@@ -20,7 +20,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v2
         with:
-          tags: build
+          tags: ${GITHUB_REPOSITORY}
       - name: Common
         uses: ./.github/common-action
         id: common-action
