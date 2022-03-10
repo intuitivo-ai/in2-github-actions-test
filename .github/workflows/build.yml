@@ -64,6 +64,7 @@ jobs:
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
   build1:
+    if: ${{ contains( github.ref, 'master') }}
     uses: ./.github/workflows/docker-build.yml
     with:
       AWS_REGION: us-east-2
