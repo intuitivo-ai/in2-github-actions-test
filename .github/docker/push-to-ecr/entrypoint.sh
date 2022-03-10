@@ -1,6 +1,8 @@
 #!/bin/sh -l
 set -euxo pipefail
 
+source common.sh
+
 IMAGE_TAG="$1"
 
 docker tag "${IMAGE_TAG}" "${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}"
