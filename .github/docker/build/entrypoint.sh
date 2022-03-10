@@ -1,4 +1,5 @@
 #!/bin/sh -l
+set -euxo pipefail
 
 echo "Hello $1"
 time=$(date)
