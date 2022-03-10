@@ -9,7 +9,6 @@ env:
 
 jobs:
   build-action:
-    if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
     name: Build
     steps:
@@ -27,6 +26,7 @@ jobs:
         with:
           tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.build-action.outputs.REPOSITORY, steps.build-action.outputs.COMMIT_ID) }}
   hello_world_job:
+    if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
