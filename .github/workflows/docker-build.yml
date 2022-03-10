@@ -9,15 +9,15 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     outputs:
-      IMAGE: ${{ steps.output1.outputs.COMMIT_ID }}
+      IMAGE: ${{ steps.build.outputs.COMMIT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 #      - name: Lint
 #        run: docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
       - name: Build
-        run:  docker build .
-      - name: Output
-        id:   output1
-        run:  echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
+        id:   build
+        run:  |
+          docker build .
+          echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
 
