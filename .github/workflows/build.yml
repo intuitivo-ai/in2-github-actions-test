@@ -35,7 +35,7 @@ jobs:
         - name: Get the output time
           run: echo "The time was ${{ steps.hello.outputs.time }}"
   build:
-    if: ${{ $GITHUB_REF == "master" }}
+    if: ${{ env.GITHUB_REF == 'master' }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
