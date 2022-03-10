@@ -9,6 +9,9 @@ on:
       DEFAULT_DOCKER_TAG:
         required: true
         type: string
+      PUSH:
+        required: false
+        type: boolean
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -36,7 +39,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           tags: ${{ inputs.DEFAULT_DOCKER_TAG }}
-      - name: Push to ECR
+      - if:  ${{ inputs.PUSH }}
+        name: Push to ECR
         run: |
           COMMIT_ID="${GITHUB_SHA}"
           ORG="${GITHUB_REPOSITORY_OWNER}"
