@@ -5,8 +5,9 @@ on:
   push:
 
 env:
-  REGISTRY: ${{ secrets.ECR_REGISTRY }}
   DEFAULT_DOCKER_TAG: in2etvo
+  REGION: us-east-2
+  REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
 jobs:
   build:
