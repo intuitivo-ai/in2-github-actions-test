@@ -27,8 +27,8 @@ jobs:
         id: build
         run: |
           REPOSITORY=$(echo ${GITHUB_REPOSITORY} | sed "s|${{ inputs.github_organization }}/||g")
-          echo ${REPOSITORY}
-          docker build . -t ${GITHUB_REPOSITORY}:${GITHUB_SHA}
+          IMAGE="${REPOSITORY}:${GITHUB_SHA}"
+          docker build . -t ${IMAGE}
           echo "::set-output name=COMMIT_ID::${GITHUB_SHA}"
-          echo "::set-output name=IMAGE_ID::${GITHUB_REPOSITORY}:${GITHUB_SHA}"
+          echo "::set-output name=IMAGE_ID::${IMAGE}"
 
