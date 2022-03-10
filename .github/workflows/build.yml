@@ -41,7 +41,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          tags: "${{ env.REGISTRY}}/${{ steps.hello.outputs.REPOSITORY }}:${{ steps.hello.outputs.COMMIT_ID }}"
+          tags: ${{ format('{0}/{1}:{2}', env.REGISTRY, steps.hello.outputs.REPOSITORY, steps.hello.outputs.COMMIT_ID) }}
   build:
     if: ${{ contains( github.ref, 'master') }}
     runs-on: ubuntu-latest
