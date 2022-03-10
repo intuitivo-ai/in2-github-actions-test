@@ -1,0 +1,9 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  docker-build:
+    uses: ./.github/workflows/docker-build.yml
