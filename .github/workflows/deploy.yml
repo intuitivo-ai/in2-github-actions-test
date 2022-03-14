@@ -18,7 +18,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy:
     if: ${{ contains( github.ref, 'main') || contains( github.ref, 'dev') }}
-    needs: plan
+    needs: check
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-2
