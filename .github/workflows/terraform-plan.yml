@@ -31,6 +31,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Init
+        if: ${{ ! inputs.ENVIRONMENT }}
         run: terraform init
       - name: Init with env
         if: ${{ inputs.ENVIRONMENT }}
