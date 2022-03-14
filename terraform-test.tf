@@ -18,5 +18,5 @@ terraform {
 
 # Create bucket temp
 resource "aws_s3_bucket" "bucket" {
-  bucket = "in2-terraform-in2-github-actions-test-TEMP"
+  bucket = "in2-terraform-in2-github-actions-test-temp"
 }
