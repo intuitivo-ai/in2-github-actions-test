@@ -8,20 +8,22 @@ on:
       - dev
 
 jobs:
-  check:
+  staging-check:
 #    if: ${{ contains( github.ref, 'master') }}
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: us-east-2
+      ENVIRONMENT: staging
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  deploy:
+  staging-deploy:
     if: ${{ contains( github.ref, 'main') || contains( github.ref, 'dev') }}
-    needs: check
+    needs: staging-check
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-2
+      ENVIRONMENT: staging
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
