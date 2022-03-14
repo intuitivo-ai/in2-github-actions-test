@@ -8,7 +8,7 @@ on:
       - dev
 
 jobs:
-  plan:
+  check:
 #    if: ${{ contains( github.ref, 'master') }}
     uses: ./.github/workflows/terraform-plan.yml
     with:
