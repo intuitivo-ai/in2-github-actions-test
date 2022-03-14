@@ -37,6 +37,4 @@ jobs:
       - name: Validate
         run: terraform validate -json
       - name: Plan
-        run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
+        run: terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
