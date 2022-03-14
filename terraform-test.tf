@@ -11,7 +11,6 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "in2-terraform-cross"
-    key    = "in2-terraform-in2-github-actions-test/test.tfstate"
     region = "us-east-2"
   }
 }
