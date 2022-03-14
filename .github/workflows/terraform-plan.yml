@@ -19,7 +19,7 @@ on:
         required: true
 
 env:
-  TF_VAR_commit_id: ${{GITHUB_SHA}}
+  TF_VAR_commit_id: ${{ inputs.COMMIT_ID }}
 
 jobs:
   terraform-plan:
