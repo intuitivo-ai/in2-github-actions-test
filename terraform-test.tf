@@ -18,5 +18,6 @@ terraform {
 
 # Create bucket temp
 resource "aws_s3_bucket" "bucket" {
-  bucket = "in2-terraform-in2-github-actions-test-temp"
+  bucket = "in2-terraform-in2-github-actions-test-temp1"
+  lifecycle {create_before_destroy = true}
 }
