@@ -18,5 +18,5 @@ terraform {
 
 # Create bucket temp
 resource "aws_s3_bucket" "bucket" {
-  bucket = "in2-terraform-in2-github-actions-test-${var.commit_id}"
+  bucket = substr("in2-test-${var.commit_id}", 0, 32)
 }
