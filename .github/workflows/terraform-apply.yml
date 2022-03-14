@@ -34,6 +34,5 @@ jobs:
         run: terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Plan
         run: terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
-
       - name: Apply
         run: terraform apply -auto-approve -var-file=${{ inputs.ENVIRONMENT }}.tfvars
