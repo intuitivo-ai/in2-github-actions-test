@@ -15,9 +15,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 
-env:
-  TF_VAR_commit_id: "${GITHUB_SHA}"
-
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
@@ -36,6 +33,10 @@ jobs:
       - name: Init
         run: terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Plan
-        run: terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
       - name: Apply
-        run: terraform apply -auto-approve -var-file=${{ inputs.ENVIRONMENT }}.tfvars
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          terraform apply -auto-approve -var-file=${{ inputs.ENVIRONMENT }}.tfvars
