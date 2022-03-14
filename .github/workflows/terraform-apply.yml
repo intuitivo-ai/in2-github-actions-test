@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       ENVIRONMENT:
-        required: false
+        required: true
         type: string
     secrets:
       AWS_ACCESS_KEY_ID:
@@ -31,10 +31,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Init
-        run: terraform init
-      - name: Refresh state
-        run: terraform apply -refresh-only -auto-approve
+        run: terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Plan
-        run: terraform plan -input=false
+        run: terraform plan -input=false -var-file=${{ inputs.ENVIRONMENT }}.tfvars
+
       - name: Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var-file=${{ inputs.ENVIRONMENT }}.tfvars
