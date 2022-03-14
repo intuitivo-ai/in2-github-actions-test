@@ -6,6 +6,9 @@ on:
       AWS_REGION:
         required: true
         type: string
+      ENVIRONMENT:
+        required: false
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -29,6 +32,9 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Init
         run: terraform init
+      - name: Init with env
+        if: ${{ inputs.ENVIRONMENT }}
+        run: terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Validate
         run: terraform validate -json
       - name: Plan
