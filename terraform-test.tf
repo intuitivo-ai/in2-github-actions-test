@@ -1,3 +1,4 @@
+variable "commit_id" {}
 variable "region" { default = "us-east-2" }
 variable "staging_role" { default = "arn:aws:iam::596234539184:role/Cross-Account-Access-github" }
 
@@ -17,6 +18,5 @@ terraform {
 
 # Create bucket temp
 resource "aws_s3_bucket" "bucket" {
-  bucket = "in2-terraform-in2-github-actions-test-temp1"
-  lifecycle {create_before_destroy = true}
+  bucket = "in2-terraform-in2-github-actions-test-${var.commit_id}"
 }
