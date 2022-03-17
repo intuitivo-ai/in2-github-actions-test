@@ -57,9 +57,13 @@ jobs:
           echo "::set-output name=packageJson::$content"
       - run: |
           echo ${{ fromJSON(steps.set_var.outputs.packageJson) }}
-      - run: |
+      - id: abc
+        run: |
           ABC=${{ fromJSON(steps.set_var.outputs.packageJson).imageScanFindings }}
-          echo ${{ toJSON($ABC) }}
+
+          echo "::set-output name=packageJson::$ABC"
+      - run: |
+          echo ${{ steps.abc.outputs.packageJson }}
       - run: |
           echo ${{ steps.set_var.outputs.packageJson }}
       - run: |
