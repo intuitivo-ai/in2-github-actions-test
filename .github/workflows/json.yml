@@ -56,7 +56,7 @@ jobs:
 
           echo "::set-output name=packageJson::$content"
       - run: |
-          echo "${{ fromJSON(steps.set_var.outputs.packageJson) }}"
+          echo ${{ fromJSON(steps.set_var.outputs.packageJson) }}
       - run: |
           echo ${{ steps.set_var.outputs.packageJson }}
       - run: |
