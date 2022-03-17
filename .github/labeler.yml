@@ -3,5 +3,6 @@ repo:
 - '*'
 
 terraform:
-- '**.tf'
-
+- any: [
+    '**/*.tf',
+]
