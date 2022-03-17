@@ -27,6 +27,7 @@ jobs:
           aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID --output json > .docker.json
       - id: set_var
         run: |
+          cat ./.docker.json
           content=$(cat ./.docker.json)
           # the following lines are only required for multi line json
           content="${content//'%'/'%25'}"
