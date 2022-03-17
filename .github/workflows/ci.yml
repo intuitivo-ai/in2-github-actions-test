@@ -5,12 +5,11 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - dev
+      - build
 #      - main
 
 jobs:
   build:
-    if: ${{ contains( github.ref, 'build') }} # TODO remove
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
       AWS_REGION: us-east-2
