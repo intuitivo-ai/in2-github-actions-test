@@ -1,6 +1,5 @@
 name: "Pull Request Labeler"
 on:
-  push:
   pull_request_target:
 
 env:
@@ -22,7 +21,7 @@ jobs:
       - run: aws sts get-caller-identity
       - name: describe-findings
         run: |
-          COMMIT_ID="${GITHUB_SHA}"
+          COMMIT_ID="47fbfa71a345d146e4fa74d43f734d50e1d08c21"
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID > .docker.json
