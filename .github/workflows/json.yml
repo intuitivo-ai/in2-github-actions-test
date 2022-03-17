@@ -50,7 +50,7 @@ jobs:
           cat ./.docker.json
       - id: catjq
         run: |
-          cat ./.docker.json | jq .
+          cat ./.docker.json | jq .imageScanFindings.findingSeverityCounts
       - id: set_var
         run: |
           content=$(cat ./.docker.json)
