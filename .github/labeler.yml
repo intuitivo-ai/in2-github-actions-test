@@ -2,3 +2,6 @@
 repo:
 - '*'
 
+terraform:
+- '*.tf'
+
