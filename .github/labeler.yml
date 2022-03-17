@@ -7,7 +7,11 @@ terraform:
     '**/*.tf',
 ]
 
-docker-critical:
-  - any: [
-      '**/*.critical',
-  ]
+docker-critical-vulnerability:
+  - any: [ '**/*.docker.critical', ]
+docker-high-vulnerability:
+  - any: [ '**/*.docker.high', ]
+docker-medium-vulnerability:
+  - any: [ '**/*.docker.medium', ]
+docker-low-vulnerability:
+  - any: [ '**/*.docker.low', ]
