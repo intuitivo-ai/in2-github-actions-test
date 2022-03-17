@@ -61,11 +61,11 @@ jobs:
 
           echo "::set-output name=packageJson::$content"
       - run: |
-          echo ${{ steps.catjq.outputs.finding }}
-          CRITICAL=`echo ${{ steps.catjq.outputs.finding }} | jq .CRITICAL`
-          HIGH=`echo     ${{ steps.catjq.outputs.finding }} | jq .HIGH`
-          MEDIUM=`echo   ${{ steps.catjq.outputs.finding }} | jq .MEDIUM`
-          LOW=`echo      ${{ steps.catjq.outputs.finding }} | jq .LOW`
+          echo ${{ toJSON( steps.catjq.outputs.finding ) }}
+          CRITICAL=`echo ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .CRITICAL`
+          HIGH=`echo     ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .HIGH`
+          MEDIUM=`echo   ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .MEDIUM`
+          LOW=`echo      ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .LOW`
           echo CRITICAL=$CRITICAL
           echo HIGH=$HIGH
           echo MEDIUM=$MEDIUM
