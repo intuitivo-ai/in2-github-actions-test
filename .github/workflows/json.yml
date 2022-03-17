@@ -61,9 +61,9 @@ jobs:
           echo "::set-output name=packageJson::$content"
       - run: |
           CRITICAL=`echo ${{ steps.catjq.outputs.finding }} | jq .CRITICAL`
-          HIGH=`echo     ${{ steps.catjq.outputs.finding }} | jq .HIGH }}`
-          MEDIUM=`echo   ${{ steps.catjq.outputs.finding }} | jq .MEDIUM }}`
-          LOW=`echo      ${{ steps.catjq.outputs.finding }} | jq .LOW }}`
+          HIGH=`echo     ${{ steps.catjq.outputs.finding }} | jq .HIGH`
+          MEDIUM=`echo   ${{ steps.catjq.outputs.finding }} | jq .MEDIUM`
+          LOW=`echo      ${{ steps.catjq.outputs.finding }} | jq .LOW`
           echo CRITICAL=$CRITICAL
           echo HIGH=$HIGH
           echo MEDIUM=$MEDIUM
