@@ -20,8 +20,10 @@ jobs:
     strategy:
       matrix: ${{fromJSON(needs.job1.outputs.matrix)}}
     steps:
-      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include }}
       - run: echo ${{ fromJSON(needs.job1.outputs.matrix) }}
+      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include }}
+      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[0] }}
+      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[1] }}
   triage:
     permissions:
       contents: read
