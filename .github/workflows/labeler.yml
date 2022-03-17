@@ -20,6 +20,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
       - run: aws sts get-caller-identity
+      - run: |
+        COMMIT_ID="${GITHUB_SHA}"
+        ORG="${GITHUB_REPOSITORY_OWNER}"
+        REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+        aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID > .docker.json
+      - id: set_var
+        run: |
+          content=`cat ./.docker.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=packageJson::$content"
+      - run: |
+          echo "${{fromJson(steps.set_var.outputs.packageJson).imageScanFindings}}"
+
       - uses: actions/labeler@v4
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
