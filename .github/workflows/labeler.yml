@@ -1,5 +1,7 @@
 name: "Pull Request Labeler"
 on:
+  push:
+  pull_request:
   pull_request_target:
 
 env:
