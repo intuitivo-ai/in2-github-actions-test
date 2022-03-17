@@ -15,3 +15,4 @@ docker-medium-vulnerability:
   - any: [ '**/.docker.medium', ]
 docker-low-vulnerability:
   - any: [ '**/.docker.low', ]
+
