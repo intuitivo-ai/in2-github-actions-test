@@ -58,6 +58,9 @@ jobs:
       - run: |
           echo ${{ fromJSON(steps.set_var.outputs.packageJson) }}
       - run: |
+          ABC=${{ fromJSON(steps.set_var.outputs.packageJson).imageScanFindings }}
+          echo ${{ toJSON($ABC) }}
+      - run: |
           echo ${{ steps.set_var.outputs.packageJson }}
       - run: |
           echo HOLA
