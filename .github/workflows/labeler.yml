@@ -19,6 +19,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "arn:aws:iam::596234539184:role/Cross-Account-Access-github"
       - run: aws sts get-caller-identity
       - run: |
           COMMIT_ID="${GITHUB_SHA}"
