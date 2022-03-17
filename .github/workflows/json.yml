@@ -42,4 +42,4 @@ jobs:
       - run: |
           echo ${{ toJSON( steps.set_var.outputs.packageJson ).imageScanFindings }}
       - run: |
-          echo ${{ fromJSON( toJSON(steps.set_var.outputs.packageJson).imageScanFindings ) }}
+          echo ${{ fromJSON( steps.set_var.outputs.packageJson).imageScanFindings }}
