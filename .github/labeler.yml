@@ -6,3 +6,8 @@ terraform:
 - any: [
     '**/*.tf',
 ]
+
+docker-critical:
+  - any: [
+      '**/*.critical',
+  ]
