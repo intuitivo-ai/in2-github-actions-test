@@ -60,6 +60,7 @@ jobs:
 
           echo "::set-output name=packageJson::$content"
       - run: |
+          echo ${{ steps.catjq.outputs.finding }}
           CRITICAL=`echo ${{ steps.catjq.outputs.finding }} | jq .CRITICAL`
           HIGH=`echo     ${{ steps.catjq.outputs.finding }} | jq .HIGH`
           MEDIUM=`echo   ${{ steps.catjq.outputs.finding }} | jq .MEDIUM`
