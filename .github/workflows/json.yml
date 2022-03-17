@@ -45,29 +45,27 @@ jobs:
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID --output json > .docker.json
-      - id: cat
-        run: |
-          cat ./.docker.json
       - id: catjq
         run: |
           finding=$(cat ./.docker.json | jq .imageScanFindings.findingSeverityCounts)
           finding=$(echo $finding)
           echo "::set-output name=finding::$finding"
-      - id: set_var
-        run: |
-          content=$(cat ./.docker.json)
-          content=$(echo $content)
-          echo $content
-
-          echo "::set-output name=packageJson::$content"
       - run: |
           echo ${{ toJSON( steps.catjq.outputs.finding ) }}
           CRITICAL=`echo ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .CRITICAL`
           HIGH=`echo     ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .HIGH`
           MEDIUM=`echo   ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .MEDIUM`
           LOW=`echo      ${{ toJSON( steps.catjq.outputs.finding ) }} | jq .LOW`
+
           echo CRITICAL=$CRITICAL
           echo HIGH=$HIGH
           echo MEDIUM=$MEDIUM
           echo LOW=$LOW
+
+          if [ "${CRITICAL}" != "null"  ] && [ ${CRITICAL} -gt 0 ]; then touch .docker.critical; fi
+          if [ "${HIGH}" != "null"  ]     && [ ${HIGH} -gt 0 ]; then     touch .docker.high; fi
+          if [ "${MEDIUM}" != "null" ]    && [ ${MEDIUM} -gt 0 ]; then   touch .docker.medium; fi
+          if [ "${LOW}" != "null"  ]      && [ ${LOW} -gt 0 ]; then      touch .docker.low; fi
+
+          ls -la
 
