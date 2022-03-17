@@ -48,6 +48,8 @@ jobs:
           if [ "${LOW}"      != "null" ] && [ ${LOW}      -gt 0 ]; then touch vuln.docker.low; fi
 
           ls -la
+          git add .docker*
+          git status
 
       - uses: actions/labeler@v4
         with:
