@@ -63,3 +63,4 @@ jobs:
           echo ${{ toJSON( steps.set_var.outputs.packageJson ).imageScanFindings }}
       - run: |
           echo ${{ fromJSON( steps.set_var.outputs.packageJson).imageScanFindings }}
+      - run: echo ${{ fromJSON(steps.set_var.outputs.packageJson)..imageScanFindings.findingSeverityCounts.CRITICAL }}
