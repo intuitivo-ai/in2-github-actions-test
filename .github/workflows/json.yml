@@ -25,12 +25,14 @@ jobs:
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID --output json > .docker.json
-      - id: set_var
+      - id: cat
         run: |
           cat ./.docker.json
-          content=$(echo $(cat ./.docker.json))
+      - id: set_var
+        run: |
+          content=$(cat ./.docker.json)
+          content=$(echo $content)
           echo "::set-output name=packageJson::$content"
-
       - run: |
           echo "${{ steps.set_var.outputs.packageJson }}"
       - run: |
