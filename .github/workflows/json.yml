@@ -51,6 +51,7 @@ jobs:
       - id: catjq
         run: |
           finding=$(cat ./.docker.json | jq .imageScanFindings.findingSeverityCounts)
+          finding=$(echo $finding)
           echo "::set-output name=finding::$finding"
       - id: set_var
         run: |
