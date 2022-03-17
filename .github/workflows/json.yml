@@ -52,6 +52,8 @@ jobs:
         run: |
           content=$(cat ./.docker.json)
           content=$(echo $content)
+          echo $content
+
           echo "::set-output name=packageJson::$content"
       - run: |
           echo "${{ fromJSON(steps.set_var.outputs.packageJson) }}"
