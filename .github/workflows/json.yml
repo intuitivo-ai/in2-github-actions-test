@@ -28,13 +28,15 @@ jobs:
       - id: set_var
         run: |
           cat ./.docker.json
-          content=$(cat ./.docker.json)
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
+          content=$(echo $(cat ./.docker.json))
+#           the following lines are only required for multi line json
+#          content="${content//'%'/'%25'}"
+#          content="${content//$'\n'/'%0A'}"
+#          content="${content//$'\r'/'%0D'}"
+#           end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
 
       - run: |
-          echo "${{ fromJSON(steps.set_var.outputs.packageJson).imageScanFindings.findingSeverityCounts }}"
+          echo "${{ steps.set_var.outputs.packageJson }}"
+      - run: |
+          echo "${{ fromJSON(steps.set_var.outputs.packageJson) }}"
