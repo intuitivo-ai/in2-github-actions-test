@@ -9,7 +9,7 @@ on:
 
 jobs:
   staging-check:
-#    if: ${{ contains( github.ref, 'master') }}
+    if: ${{ contains( github.ref, 'deploy') }} # TODO remove
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: us-east-2
