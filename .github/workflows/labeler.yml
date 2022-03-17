@@ -42,10 +42,10 @@ jobs:
           echo MEDIUM=$MEDIUM
           echo LOW=$LOW
 
-          if [ "${CRITICAL}" != "null" ] && [ ${CRITICAL} -gt 0 ]; then touch .docker.critical; fi
-          if [ "${HIGH}"     != "null" ] && [ ${HIGH}     -gt 0 ]; then touch .docker.high; fi
-          if [ "${MEDIUM}"   != "null" ] && [ ${MEDIUM}   -gt 0 ]; then touch .docker.medium; fi
-          if [ "${LOW}"      != "null" ] && [ ${LOW}      -gt 0 ]; then touch .docker.low; fi
+          if [ "${CRITICAL}" != "null" ] && [ ${CRITICAL} -gt 0 ]; then touch vuln.docker.critical; fi
+          if [ "${HIGH}"     != "null" ] && [ ${HIGH}     -gt 0 ]; then touch vuln.docker.high; fi
+          if [ "${MEDIUM}"   != "null" ] && [ ${MEDIUM}   -gt 0 ]; then touch vuln.docker.medium; fi
+          if [ "${LOW}"      != "null" ] && [ ${LOW}      -gt 0 ]; then touch vuln.docker.low; fi
 
           ls -la
 

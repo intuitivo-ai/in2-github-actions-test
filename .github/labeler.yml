@@ -13,7 +13,7 @@ docker-high-vulnerability:
   - any: [ '.docker.high', ]
 docker-medium-vulnerability:
   - any: [
-      '.docker.medium',
+      '**/*.docker.medium',
   ]
 docker-low-vulnerability:
   - any: [ '.docker.low', ]
