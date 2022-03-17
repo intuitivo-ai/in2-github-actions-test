@@ -23,7 +23,9 @@ jobs:
       - run: echo ${{ fromJSON(needs.job1.outputs.matrix) }}
       - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include }}
       - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[0] }}
+      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[0].project }}
       - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[1] }}
+      - run: echo ${{ fromJSON(needs.job1.outputs.matrix).include[1].project }}
   triage:
     permissions:
       contents: read
