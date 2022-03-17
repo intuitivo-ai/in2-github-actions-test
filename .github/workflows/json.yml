@@ -48,6 +48,9 @@ jobs:
       - id: cat
         run: |
           cat ./.docker.json
+      - id: catjq
+        run: |
+          cat ./.docker.json | jq .
       - id: set_var
         run: |
           content=$(cat ./.docker.json)
