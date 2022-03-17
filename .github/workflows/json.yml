@@ -1,6 +1,6 @@
 name: "Json"
 on:
-  push:
+  workflow_dispatch:
 
 env:
   AWS_REGION: us-east-2
