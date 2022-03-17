@@ -21,10 +21,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - run: aws sts get-caller-identity
       - run: |
-        COMMIT_ID="${GITHUB_SHA}"
-        ORG="${GITHUB_REPOSITORY_OWNER}"
-        REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-        aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID > .docker.json
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          aws ecr describe-image-scan-findings --repository-name $REPOSITORY --image-id imageTag=$COMMIT_ID > .docker.json
       - id: set_var
         run: |
           content=`cat ./.docker.json`
