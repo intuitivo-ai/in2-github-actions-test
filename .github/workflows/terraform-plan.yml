@@ -9,6 +9,10 @@ on:
       ENVIRONMENT:
         required: true
         type: string
+      TF_PATH:
+        required: false
+        type: string
+        default: './'
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
