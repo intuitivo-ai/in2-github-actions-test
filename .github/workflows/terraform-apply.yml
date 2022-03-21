@@ -41,13 +41,16 @@ jobs:
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Refresh state
         run: |
+          cd ${{ inputs.TF_PATH }}
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -refresh-only
       - name: Plan
         run: |
+          cd ${{ inputs.TF_PATH }}
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false
       - name: Apply
         run: |
+          cd ${{ inputs.TF_PATH }}
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
