@@ -23,6 +23,9 @@ jobs:
   terraform-plan:
     runs-on: ubuntu-latest
     name: Plan
+    defaults:
+      run:
+        working-directory: ${{ inputs.TF_PATH }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
