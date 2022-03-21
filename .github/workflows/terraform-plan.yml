@@ -40,19 +40,11 @@ jobs:
       - name: Init
         run: |
           echo $(echo $(pwd))
-          cd ${{ inputs.TF_PATH }}
-          echo $(pwd)
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Validate
         run: |
-          echo $(pwd)
-          cd ${{ inputs.TF_PATH }}
-          echo $(pwd)
           terraform validate -json
       - name: Plan
         run: |
-          echo $(pwd)
-          cd ${{ inputs.TF_PATH }}
-          echo $(pwd)
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false
