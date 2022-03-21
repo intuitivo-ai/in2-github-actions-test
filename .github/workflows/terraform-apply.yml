@@ -36,21 +36,28 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Init
         run: |
+          echo $(pwd)
           cd ${{ inputs.TF_PATH }}
-          pwd
+          echo $(pwd)
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Refresh state
         run: |
+          echo $(pwd)
           cd ${{ inputs.TF_PATH }}
+          echo $(pwd)
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -refresh-only
       - name: Plan
         run: |
+          echo $(pwd)
           cd ${{ inputs.TF_PATH }}
+          echo $(pwd)
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false
       - name: Apply
         run: |
+          echo $(pwd)
           cd ${{ inputs.TF_PATH }}
+          echo $(pwd)
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
