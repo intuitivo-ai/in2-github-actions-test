@@ -23,6 +23,6 @@ resource "aws_s3_bucket" "bucket" {
 
 resource "null_resource" "sleep" {
   provisioner "local-exec" {
-    command = "for i in {1..60}; do echo $i; sleep 1; done"
+    command = "sleep 60"
   }
 }
