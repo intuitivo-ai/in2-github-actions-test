@@ -21,3 +21,8 @@ resource "aws_s3_bucket" "bucket" {
   bucket = substr("in2-test-${var.commit_id}", 0, 32)
 }
 
+resource "null_resource" "sleep" {
+  provisioner "local-exec" {
+    command = "for i in {1..60}; do echo $i; sleep 1; done"
+  }
+}
