@@ -5,6 +5,8 @@ resource "aws_lambda_function" "lambda-test" {
   s3_bucket     = aws_s3_bucket.bucket.id
   s3_key        = aws_s3_bucket_object.lambda-test.key
 
+  source_code_hash = aws_s3_bucket_object.lambda-test.source_hash
+
   handler = "lambda_function.lambda_handler"
   runtime = "python3.9"
 
