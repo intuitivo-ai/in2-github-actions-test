@@ -32,5 +32,5 @@ resource "aws_s3_object" "lambda-test" {
   bucket = aws_s3_bucket.bucket.id
   key    = "lambda-test/${var.environment}/lambda-test.zip"
   source = "lambda.zip"
-  etag   = filemd5("lambda.zip")
+  etag   = base64sha256("lambda.zip")
 }
