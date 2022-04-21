@@ -44,7 +44,7 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Create lambda zip file
         if: ${{ inputs.LAMBDA }}
-        run: zip -rv lambda.zip .. -x '*terraform*' -x '*.terraform*' -x '*.git*'
+        run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
       - name: Init
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
