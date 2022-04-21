@@ -9,6 +9,10 @@ on:
       ENVIRONMENT:
         required: true
         type: string
+      LAMBDA:
+        required: false
+        type: boolean
+        default: false
       TF_PATH:
         required: false
         type: string
@@ -37,6 +41,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
+      - name: Create lambda zip file
+        if: ${{ inputs.LAMBDA }}
+        run: zip -rv lambda.zip .. -x '*terraform*' -x '*.terraform*' -x '*.git*'
       - name: Init
         run: |
           echo $(echo $(pwd))
