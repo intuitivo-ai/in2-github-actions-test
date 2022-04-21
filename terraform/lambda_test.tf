@@ -30,4 +30,6 @@ resource "aws_s3_bucket_object" "lambda-test" {
   bucket = aws_s3_bucket.bucket.id
   key    = "lambda-test/${var.environment}/lambda-test.zip"
   source = "lambda.zip"
+
+  source_hash = sha1("lambda.zip")
 }
