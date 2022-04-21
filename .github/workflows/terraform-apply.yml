@@ -22,7 +22,7 @@ on:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 2
     name: Apply
     defaults:
       run:
