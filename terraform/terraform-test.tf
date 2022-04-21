@@ -21,8 +21,8 @@ resource "aws_s3_bucket" "bucket" {
   bucket = substr("in2-test-${var.commit_id}", 0, 32)
 }
 
-resource "null_resource" "sleep60" {
-  provisioner "local-exec" {
-    command = "sleep 60"
-  }
-}
+#resource "null_resource" "sleep60" {
+#  provisioner "local-exec" {
+#    command = "sleep 60"
+#  }
+#}
