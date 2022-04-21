@@ -3,9 +3,9 @@ resource "aws_lambda_function" "lambda-test" {
   package_type  = "Zip"
   role          = aws_iam_role.lambda-test.arn
   s3_bucket     = aws_s3_bucket.bucket.id
-  s3_key        = aws_s3_bucket_object.lambda-test.key
+  s3_key        = aws_s3_object.lambda-test.key
 
-  source_code_hash = aws_s3_bucket_object.lambda-test.source_hash
+  source_code_hash = aws_s3_object.lambda-test.etag
 
   handler = "lambda_function.lambda_handler"
   runtime = "python3.9"
@@ -28,10 +28,9 @@ resource "aws_iam_role" "lambda-test" {
   managed_policy_arns = []
 }
 
-resource "aws_s3_bucket_object" "lambda-test" {
+resource "aws_s3_object" "lambda-test" {
   bucket = aws_s3_bucket.bucket.id
   key    = "lambda-test/${var.environment}/lambda-test.zip"
   source = "lambda.zip"
-
-  source_hash = sha1("lambda.zip")
+  etag   = filemd5("lambda.zip")
 }
