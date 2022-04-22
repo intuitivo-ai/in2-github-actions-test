@@ -1,3 +1,8 @@
+data "aws_lambda_layer_version" "layer" {
+  layer_name         = "slack_sdk_3_7"
+  compatible_runtime = "python3.7"
+}
+
 resource "aws_lambda_function" "lambda-test" {
   function_name = "${var.environment}-lambda-test"
   package_type  = "Zip"
@@ -11,7 +16,7 @@ resource "aws_lambda_function" "lambda-test" {
   runtime = "python3.9"
 
   layers = [
-    #    "arn:aws:lambda:us-east-1:706851696280:layer:opencv-python_3_7:1"
+    data.aws_lambda_layer_version.layer.arn,
   ]
 }
 
