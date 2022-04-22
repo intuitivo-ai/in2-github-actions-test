@@ -5,7 +5,7 @@ resource "aws_lambda_function" "lambda-test" {
   s3_bucket     = aws_s3_bucket.bucket.id
   s3_key        = aws_s3_object.lambda-test.key
 
-  source_code_hash = aws_s3_object.lambda-test.etag
+  source_code_hash = filebase64sha256("../lambda.zip")
 
   handler = "lambda_function.lambda_handler"
   runtime = "python3.9"
@@ -29,8 +29,8 @@ resource "aws_iam_role" "lambda-test" {
 }
 
 resource "aws_s3_object" "lambda-test" {
-  bucket = aws_s3_bucket.bucket.id
-  key    = "lambda-test/${var.environment}/lambda-test.zip"
-  source = "../lambda.zip"
-  etag   = sha1("../lambda.zip")
+  bucket      = aws_s3_bucket.bucket.id
+  key         = "lambda-test/${var.environment}/lambda-test.zip"
+  source      = "../lambda.zip"
+  source_hash = filebase64sha256("../lambda.zip")
 }
