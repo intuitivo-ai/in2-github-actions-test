@@ -9,6 +9,7 @@ on:
 
 jobs:
   staging-check:
+    runs-on: self-hosted
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: us-east-2
