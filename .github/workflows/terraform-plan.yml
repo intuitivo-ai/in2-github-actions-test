@@ -25,7 +25,7 @@ on:
 
 jobs:
   terraform-plan:
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux]
     name: Plan
     defaults:
       run:
