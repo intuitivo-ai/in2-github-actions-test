@@ -1,4 +1,4 @@
-name: Plan
+name: Terraform Plan
 
 on:
   workflow_call:
@@ -46,7 +46,6 @@ jobs:
         run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
       - name: Init
         run: |
-          echo $(echo $(pwd))
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Validate
         run: |
