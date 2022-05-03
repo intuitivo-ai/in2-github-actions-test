@@ -1,7 +1,3 @@
-variable "commit_id" {}
-variable "region" { default = "us-east-2" }
-variable "staging_role" { default = "arn:aws:iam::596234539184:role/Cross-Account-Access-github" }
-
 provider "aws" {
   region = var.region
   assume_role {
@@ -19,5 +15,11 @@ terraform {
 # Create bucket temp
 resource "aws_s3_bucket" "bucket" {
   bucket = substr("in2-test-${var.commit_id}", 0, 32)
+  lifecycle { ignore_changes = [bucket] }
 }
 
+#resource "null_resource" "sleep60" {
+#  provisioner "local-exec" {
+#    command = "sleep 60"
+#  }
+#}

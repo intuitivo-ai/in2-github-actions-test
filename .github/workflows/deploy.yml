@@ -1,10 +1,11 @@
-name: Deploy
+name: Continuous Delivery
 
 on:
   workflow_dispatch:
   push:
     branches:
       - deploy
+      - dev
 
 jobs:
   staging-check:
@@ -12,6 +13,8 @@ jobs:
     with:
       AWS_REGION: us-east-2
       ENVIRONMENT: staging
+      LAMBDA: true
+      TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -22,6 +25,8 @@ jobs:
     with:
       AWS_REGION: us-east-2
       ENVIRONMENT: staging
+      LAMBDA: true
+      TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -1,12 +1,31 @@
-name: CI/CD
+name: CiCd
 
 on:
   workflow_dispatch:
-  push:
+#  push:
 #    branches:
 #      - dev
 #      - main
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
+  build:
+    uses: ./.github/workflows/docker-build-and-push.yml
+    with:
+      AWS_REGION: us-east-2
+      DEFAULT_DOCKER_TAG: in2etvo
+      PUSH: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  deploy:
+    if: ${{ contains( github.ref, 'dev') || contains( github.ref, 'ft-docker') }}
+    needs: build
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: us-east-2
+      ENVIRONMENT: staging
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

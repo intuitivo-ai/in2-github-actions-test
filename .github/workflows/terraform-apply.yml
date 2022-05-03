@@ -1,4 +1,4 @@
-name: Apply
+name: Terraform Apply
 
 on:
   workflow_call:
@@ -9,6 +9,14 @@ on:
       ENVIRONMENT:
         required: true
         type: string
+      LAMBDA:
+        required: false
+        type: boolean
+        default: false
+      TF_PATH:
+        required: false
+        type: string
+        default: './'
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -17,8 +25,12 @@ on:
 
 jobs:
   terraform-apply:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 2
     name: Apply
+    defaults:
+      run:
+        working-directory: ${{ inputs.TF_PATH }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,8 +42,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
+      - name: Create lambda zip file
+        if: ${{ inputs.LAMBDA }}
+        run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
       - name: Init
-        run: terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
+        run: |
+          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Refresh state
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
