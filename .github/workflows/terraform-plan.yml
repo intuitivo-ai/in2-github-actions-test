@@ -49,6 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          git config url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com".insteadOf https://github.com;
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Validate
         run: |
