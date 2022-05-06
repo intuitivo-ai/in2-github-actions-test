@@ -45,6 +45,8 @@ jobs:
         if: ${{ inputs.LAMBDA }}
         run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
       - name: Init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
