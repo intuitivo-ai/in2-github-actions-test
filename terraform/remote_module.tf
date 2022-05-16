@@ -2,7 +2,7 @@
 #  source = "git@github.com:intuitivo-ai/in2-terraform-module-ecr"
 #  name   = "test123"
 #}
-
+/*
 module "database" {
   source      = "git@github.com:intuitivo-ai/in2-terraform-module-db-aurora"
   environment = var.environment
@@ -21,3 +21,4 @@ output "db_credentials" {
 output "db_endpoint" {
   value = module.database.endpoint
 }
+*/
