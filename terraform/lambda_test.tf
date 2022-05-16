@@ -1,3 +1,4 @@
+/*
 data "aws_lambda_layer_version" "layer" {
   layer_name         = "slack_sdk_3_7"
   compatible_runtime = "python3.7"
@@ -39,3 +40,4 @@ resource "aws_s3_object" "lambda-test" {
   source      = "../lambda.zip"
   source_hash = filebase64sha256("../lambda.zip")
 }
+*/
