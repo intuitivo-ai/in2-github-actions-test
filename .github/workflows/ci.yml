@@ -12,6 +12,7 @@ jobs:
     with:
       AWS_REGION: us-east-2
       DEFAULT_DOCKER_TAG: in2etvo
+      PUSH: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
