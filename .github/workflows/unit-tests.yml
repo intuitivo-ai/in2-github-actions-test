@@ -6,6 +6,10 @@ on:
       AWS_REGION:
         required: true
         type: string
+      DEFAULT_DOCKER_TAG:
+        required: true
+        type: string
+        default: in2etvo
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
