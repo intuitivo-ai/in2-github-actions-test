@@ -26,6 +26,7 @@ on:
 jobs:
   terraform-apply:
     runs-on: [self-hosted, linux]
+    timeout-minutes: 10
     name: Apply
     defaults:
       run:

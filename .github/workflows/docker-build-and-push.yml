@@ -22,7 +22,7 @@ on:
 
 jobs:
   docker-build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     name: Build and Push
     steps:
       - name: Checkout
