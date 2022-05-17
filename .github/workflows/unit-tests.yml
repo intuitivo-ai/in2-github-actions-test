@@ -15,9 +15,9 @@ on:
         required: true
 
 jobs:
-  docker-build-and-push:
+  run-unit-tests:
     runs-on: [self-hosted, linux]
-    name: Build and Test
+    name: Test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,4 +36,6 @@ jobs:
           docker tag "${{ inputs.DEFAULT_DOCKER_TAG }}" "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
           docker images
       - name: Test
-        run: docker run "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}" scripts/run_tests.sh
+        run: |
+          docker images
+          docker run ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
