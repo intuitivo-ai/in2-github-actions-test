@@ -35,6 +35,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Pull
         run: |
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+
           docker images
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker images
