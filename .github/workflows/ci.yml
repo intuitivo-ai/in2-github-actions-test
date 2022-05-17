@@ -1,12 +1,10 @@
 name: Continuous Integration
 
 on:
-  workflow_call:
   workflow_dispatch:
   push:
-    branches:
-      - build
-#      - main
+    branches-ignore:
+      - main
 
 jobs:
   build:
@@ -14,6 +12,14 @@ jobs:
     with:
       AWS_REGION: us-east-2
       DEFAULT_DOCKER_TAG: in2etvo
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  test:
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      AWS_REGION: us-east-2
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
