@@ -43,4 +43,9 @@ jobs:
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker images
       - name: Test
-        run: docker run  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+        run: |
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+
+          docker run ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
