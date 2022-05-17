@@ -21,7 +21,7 @@ on:
 jobs:
   run-unit-tests:
     runs-on: [self-hosted, linux]
-    name: Test
+    name: Run Unit-Tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
