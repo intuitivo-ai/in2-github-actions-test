@@ -41,12 +41,14 @@ jobs:
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_run.sh $REPOSITORY
       - name: Rollback migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_rollback.sh $REPOSITORY
       - name: Stop database
