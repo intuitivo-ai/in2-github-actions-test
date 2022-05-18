@@ -54,5 +54,6 @@ jobs:
       - name: Stop database
         if: always()
         run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/stop_db.sh $REPOSITORY
