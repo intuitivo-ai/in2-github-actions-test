@@ -38,10 +38,14 @@ jobs:
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Run migrations
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
         run: |
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_run.sh $REPOSITORY
       - name: Rollback migrations
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
         run: |
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_rollback.sh $REPOSITORY

@@ -22,7 +22,7 @@ function run_script() {
 
     docker run --entrypoint "" \
       ${APP_ENV_VARS} \
-      ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/migration_commands.sh $SCRIPT
+      ${REGISTRY}/${REPOSITORY}:${GITHUB_SHA} scripts/migration_commands.sh $SCRIPT
 }
 
 function run_migrations() {
