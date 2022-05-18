@@ -7,4 +7,4 @@ REPOSITORY=$1
 cd "${DIR}"
 source functions.sh
 
-rollback_migrations
+stop_db ${REPOSITORY}

@@ -45,3 +45,8 @@ jobs:
         run: |
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_rollback.sh $REPOSITORY
+      - name: Stop database
+        if: always()
+        run: |
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          ./scripts/stop_db.sh $REPOSITORY
