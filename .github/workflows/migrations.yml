@@ -1,4 +1,4 @@
-name: Unit-Tests
+name: Migration-Test
 
 on:
   workflow_call:
@@ -15,7 +15,7 @@ on:
         required: true
 
 jobs:
-  run-unit-tests:
+  run-migration-tests:
     runs-on: [self-hosted, linux]
     name: Run Migration tests
     steps:
