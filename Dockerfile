@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 WORKDIR /app
-COPY . .
+COPY scripts scripts
 RUN pwd
 RUN ls -la
 
