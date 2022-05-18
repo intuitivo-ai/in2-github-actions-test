@@ -35,24 +35,17 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: aws-cli
-        run: aws sts get-caller-identity
       - name: Create lambda zip file
         if: ${{ inputs.LAMBDA }}
         run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
       - name: Init
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Validate
         run: |

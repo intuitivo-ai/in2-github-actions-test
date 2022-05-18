@@ -7,7 +7,7 @@ jobs:
   deploy:
     uses: ./.github/workflows/terraform-apply.yml
     with:
-      AWS_REGION: us-east-2
+      AWS_REGION: us-east-1
       ENVIRONMENT: staging
       LAMBDA: true
       TF_PATH: terraform
