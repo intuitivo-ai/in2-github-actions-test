@@ -10,3 +10,4 @@ source functions.sh
 
 start_db ${REPOSITORY}
 run_migrations
+qqqqqq
