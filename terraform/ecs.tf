@@ -6,5 +6,6 @@ module "ecs" {
   env_vars    = var.environment_variables
   environment = var.environment
   region      = var.region
+  replicas    = 0
   vpc_id      = var.vpc_id
 }
