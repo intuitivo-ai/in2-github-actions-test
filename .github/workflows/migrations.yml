@@ -1,4 +1,4 @@
-name: Migration-Test
+name: Migrations
 
 on:
   workflow_call:
@@ -6,6 +6,10 @@ on:
       AWS_REGION:
         required: true
         type: string
+      TEST:
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -17,6 +21,7 @@ on:
 jobs:
   run-migration-tests:
     runs-on: [self-hosted, linux]
+    if: ${{ inputs.TEST }}
     name: Run Migration tests
     steps:
       - name: Checkout
