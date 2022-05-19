@@ -1,4 +1,4 @@
-name: Migration-Test
+name: Migrations
 
 on:
   workflow_call:
@@ -6,6 +6,10 @@ on:
       AWS_REGION:
         required: true
         type: string
+      TEST:
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -17,6 +21,7 @@ on:
 jobs:
   run-migration-tests:
     runs-on: [self-hosted, linux]
+    if: ${{ inputs.TEST }}
     name: Run Migration tests
     steps:
       - name: Checkout
@@ -45,6 +50,52 @@ jobs:
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_run.sh $REPOSITORY
       - name: Rollback migrations
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+        run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          ./scripts/migrations_rollback.sh $REPOSITORY
+      - name: Stop database
+        if: always()
+        run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          ./scripts/stop_db.sh $REPOSITORY
+  run-migrations:
+    runs-on: [self-hosted, linux]
+    if: ${{ ! inputs.TEST }}
+    name: Run Migrations
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Pull image
+        run: |
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+
+          docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+          docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+      - name: Run migrations
+        id: migrations
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+        run: |
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          ./scripts/migrations_run.sh $REPOSITORY
+          echo ::set-output name=exit_code::$?
+      - name: Rollback migrations
+        if: steps.migrations.outputs.exit_code == 0
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
