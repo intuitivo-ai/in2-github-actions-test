@@ -86,16 +86,13 @@ jobs:
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Run migrations
-        id: migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_run.sh $REPOSITORY
-          echo ::set-output name=exit_code::$?
       - name: Rollback migrations
-        if: steps.migrations.outputs.exit_code == 0
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
