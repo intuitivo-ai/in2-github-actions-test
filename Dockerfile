@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM nginx
 
 WORKDIR /app
 COPY scripts scripts
