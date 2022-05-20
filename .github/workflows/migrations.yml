@@ -6,6 +6,9 @@ on:
       AWS_REGION:
         required: true
         type: string
+      ENVIRONMENT:
+        required: false
+        type: string
       TEST:
         required: false
         type: boolean
@@ -69,6 +72,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -85,6 +90,18 @@ jobs:
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+      - name: Run migrations
+      - name: Init
+        run: |
+          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
+      - name: Plan
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -target module.ecs.aws_ecs_task_definition.task
+      - name: Apply
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -target module.ecs.aws_ecs_task_definition.task
       - name: Run migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
