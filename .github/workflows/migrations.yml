@@ -90,20 +90,6 @@ jobs:
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
-      - name: Init
-        run: |
-          cd terraform
-          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
-      - name: Plan
-        run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          cd terraform
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations
-      - name: Apply
-        run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          cd terraform
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations
       - name: Run migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -126,3 +112,17 @@ jobs:
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/stop_db.sh $REPOSITORY
+      - name: Init
+        run: |
+          cd terraform
+          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
+      - name: Plan
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          cd terraform
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations
+      - name: Apply
+        run: |
+          export TF_VAR_commit_id="${GITHUB_SHA}"
+          cd terraform
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations
