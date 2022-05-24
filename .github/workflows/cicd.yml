@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  RUN_MIGRATIONS: false
+
 jobs:
   build:
     uses: ./.github/workflows/docker-build-and-push.yml
@@ -27,6 +30,7 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
     needs: build
+    if: ${{ env.RUN_MIGRATIONS }}
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
