@@ -5,9 +5,6 @@ on:
     branches-ignore:
       - main
 
-env:
-  RUN_MIGRATIONS: false
-
 jobs:
   build:
     uses: ./.github/workflows/docker-build-and-push.yml
@@ -34,6 +31,7 @@ jobs:
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
+      RUN_MIGRATIONS: true
       TEST: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

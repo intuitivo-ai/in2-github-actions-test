@@ -28,7 +28,7 @@ on:
 jobs:
   run-migration-tests:
     runs-on: [self-hosted, linux]
-    if: ${{ inputs.TEST }}
+    if: ${{ ! inputs.TEST && inputs.RUN_MIGRATIONS }}
     name: Run Migration tests
     steps:
       - name: Checkout
