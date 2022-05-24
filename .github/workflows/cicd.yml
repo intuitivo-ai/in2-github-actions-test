@@ -30,7 +30,7 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
     needs: build
-    if: ${{ environment.RUN_MIGRATIONS }}
+    if: false
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
