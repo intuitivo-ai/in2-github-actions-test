@@ -21,6 +21,9 @@ on:
       REGISTRY:
         required: true
 
+env:
+  RUN_MIGRATIONS: false
+
 jobs:
   run-migration-tests:
     runs-on: [self-hosted, linux]
