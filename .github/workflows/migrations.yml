@@ -70,7 +70,7 @@ jobs:
           ./scripts/stop_db.sh $REPOSITORY
   run-migrations:
     runs-on: [self-hosted, linux]
-    if: ${{ ! inputs.TEST && env.RUN_MIGRATIONS }}
+    if: ${{ (! inputs.TEST) && (env.RUN_MIGRATIONS) }}
     name: Run Migrations
     steps:
       - name: Checkout
