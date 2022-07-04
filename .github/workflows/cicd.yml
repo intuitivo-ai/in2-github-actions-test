@@ -49,6 +49,7 @@ jobs:
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
+      TEST: true
       RUN_MIGRATIONS: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
