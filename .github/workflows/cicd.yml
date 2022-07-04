@@ -4,9 +4,25 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: ""
+        required: false
+        default: staging
+        type: string
 
 jobs:
+  config:
+    name: Config
+    uses: ./.github/workflows/pre.yml
+    with:
+      DEFAULT_ENVIRONMENT: staging
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   build:
+    if: ${{ github.event_name == 'push' }}
+    needs: config
+    name: Build
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
       AWS_REGION: us-east-1
@@ -17,7 +33,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   test:
+    if: ${{ github.event_name == 'push' }}
     needs: build
+    name: Tests
     uses: ./.github/workflows/unit-tests.yml
     with:
       AWS_REGION: us-east-1
@@ -27,25 +45,53 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
     needs: build
+    name: Migrations
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
       RUN_MIGRATIONS: true
-      ENVIRONMENT: staging
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
-  deploy:
-    if: ${{ contains( github.ref, 'main') }}
+  staging_plan:
+    if: ${{ github.event_name == 'push' || needs.config.outputs.environment != 'production' }}
+    name: Staging
     needs:
-      - build
-      - test
-      - migrations
-    uses: ./.github/workflows/terraform-apply.yml
+     - config
+    uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: us-east-1
       ENVIRONMENT: staging
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  staging-deploy:
+    if: ${{ github.event_name == 'push' && github.ref_name == 'main' && needs.config.outputs.environment != 'production' }}
+    name: Staging
+    needs:
+     - build
+     - test
+     - migrations
+     - config
+     - staging_plan
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: ${{ needs.config.outputs.environment }}
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  production_plan:
+    name: Production
+    needs:
+     - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: production
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
