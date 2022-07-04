@@ -86,7 +86,7 @@ jobs:
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-1
-      ENVIRONMENT: ${{ needs.config.outputs.environment }}
+      ENVIRONMENT: ${{ jobs.config.outputs.environment }}
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
