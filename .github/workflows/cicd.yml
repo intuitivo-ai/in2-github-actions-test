@@ -80,7 +80,6 @@ jobs:
     if: ${{ inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' }}
     name: Staging
     needs:
-      - config
       - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
