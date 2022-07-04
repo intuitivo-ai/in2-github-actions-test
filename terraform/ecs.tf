@@ -1,3 +1,4 @@
+/*
 module "ecs" {
   source      = "git@github.com:intuitivo-ai/in2-terraform-module-ecs"
   name        = "in2-github-actions-test"
@@ -9,3 +10,4 @@ module "ecs" {
   replicas    = 0
   vpc_id      = var.vpc_id
 }
+*/
