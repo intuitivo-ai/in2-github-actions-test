@@ -1,3 +1,4 @@
+/*
 resource "null_resource" "migrations" {
 
   triggers = {
@@ -15,3 +16,4 @@ aws ecs run-task \
 EOF
   }
 }
+*/
