@@ -13,20 +13,30 @@ on:
       CHECKOUT_IN2_REPOSITORY_NAMES:
         required: false
         type: string
-      DEFAULT_DOCKER_TAG:
-        required: true
+      BUILD:
+        required: false
         type: string
-      PUSH:
+        default: docker
+      PUBLISH:
         required: false
         type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
-        required: true
+        required: false
       AWS_SECRET_ACCESS_KEY:
-        required: true
+        required: false
       REGISTRY:
-        required: true
+        required: false
+      TOKEN:
+        required: false
 
+env:
+  VERSION: "1.5.${{ github.run_number }}"
+  NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
+  REGISTRY: ${{ secrets.REGISTRY }}
+  DEFAULT_DOCKER_TAG: 'in2etvo'
+    
 jobs:
   docker-build-and-push:
     runs-on: [self-hosted, linux]
@@ -41,25 +51,29 @@ jobs:
 
           ./scripts/checkout_repositories.sh ${ORG} ${{ inputs.CHECKOUT_IN2_REPOSITORY_NAMES }}
       - name: Configure AWS credentials
+        if:  ${{ inputs.BUILD == 'docker' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Login to Amazon ECR
+        if:  ${{ inputs.BUILD == 'docker' }}
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Setup Node
+        if:  ${{ inputs.BUILD == 'npm' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@intuitivo-ai'
       - name: Build
         run: |
-          docker build . -t ${{ inputs.DEFAULT_DOCKER_TAG }}
-      - if:  ${{ inputs.PUSH }}
-        name: Push to ECR
+          ./scripts/build.sh ${{ inputs.BUILD }}
+      - name: Publish
+        if: ${{ inputs.PUBLISH }}
         run: |
-          COMMIT_ID="${GITHUB_SHA}"
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          ./scripts/publish.sh ${{ inputs.BUILD }}
 
-          docker tag "${{ inputs.DEFAULT_DOCKER_TAG }}" "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}"
-          docker tag "${{ inputs.DEFAULT_DOCKER_TAG }}" "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
-          docker images
-          docker push "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}"
-          docker push "${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_REF_NAME}_${GITHUB_SHA}"
+
+          

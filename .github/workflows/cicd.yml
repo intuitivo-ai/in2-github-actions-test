@@ -36,12 +36,12 @@ jobs:
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
       AWS_REGION: us-east-1
-      DEFAULT_DOCKER_TAG: in2etvo
-      PUSH: true
+      PUBLISH: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     if: ${{ github.event_name == 'push' }}
     needs: build
