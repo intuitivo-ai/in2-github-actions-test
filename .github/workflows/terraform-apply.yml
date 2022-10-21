@@ -63,20 +63,19 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          payload: |
-            {
-              "channel": devops-sandbox-test-alarms
-              "text": "Pruebinia",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Pruebinia"
-                  }
+        payload: |
+          {
+            "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                 }
-              ]
-            }
+              }
+            ]
+          }
         env:
           SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
