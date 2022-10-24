@@ -59,6 +59,11 @@ jobs:
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
-      - name: Notification
+      - name: Notify slack success
+        if: success()
         run: |
-          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions", "text":"Repository: ${{ github.event.repository.name }}\nEnvironment: ${{ inputs.ENVIRONMENT }}\nStatus: "}' response.json
+          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions", "text":"Repository: ${{ github.event.repository.name }}\nEnvironment: ${{ inputs.ENVIRONMENT }}\nStatus: Succeeded"}' response.json
+      - name: Notify slack fail
+        if: failure()
+        run: |
+          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions", "text":"Repository: ${{ github.event.repository.name }}\nEnvironment: ${{ inputs.ENVIRONMENT }}\nStatus: Failed"}' response.json
