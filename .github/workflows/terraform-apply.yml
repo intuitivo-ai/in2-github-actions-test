@@ -61,4 +61,4 @@ jobs:
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
       - name: Notification
         run: |
-          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions", "text":"Github Actions apply ${{ github.event.repository.name }} to ${{ inputs.ENVIRONMENT }}"}' response.json
+          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions", "text":"Repository: ${{ github.event.repository.name }}\nEnvironment: ${{ inputs.ENVIRONMENT }}\nStatus: "}' response.json
