@@ -61,4 +61,4 @@ jobs:
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
       - name: Notification
         run: |
-          aws lambda invoke --function-name panchin-slashbot --invocation-type Event --cli-binary-format raw-in-base64-out --payload '{"source":"gh-actions", "text":"Github action apply, to ${{inputs.ENVIRONMENT}}"}' output.txt
+          aws lambda invoke --function-name panchin-slashbot --payload '{"source":"gh-actions", "text":"Github action apply, to ${{inputs.ENVIRONMENT}}"}'
