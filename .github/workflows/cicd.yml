@@ -20,6 +20,7 @@ on:
         default: staging
         type: choice
         options:
+          - development
           - staging
 
 jobs:
@@ -55,18 +56,60 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
     needs: build
-    name: Migrations
+    name: Tests
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
-      TEST: true
       RUN_MIGRATIONS: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  development_plan:
+    if: ${{ (github.event_name == 'push' || needs.config.outputs.environment == 'development') }}
+    name: Development
+    needs:
+      - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: development
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  development-manualdeploy:
+    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development') }}
+    name: Development
+    needs:
+      - development_plan
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: development
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  development-autodeploy:
+    if: ${{ (github.event_name == 'push' && github.ref_name == 'dev') }}
+    name: Development
+    needs:
+      - config
+      - build
+      - test
+      - migrations
+      - development_plan
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: development
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging_plan:
-    if: ${{ github.event_name == 'push' || needs.config.outputs.environment == 'staging' }}
+    if: ${{ (github.event_name == 'push' || needs.config.outputs.environment == 'staging') }}
     name: Staging
     needs:
       - config
@@ -79,7 +122,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging-manualdeploy:
-    if: ${{ inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' }}
+    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging') }}
     name: Staging
     needs:
       - staging_plan
@@ -92,18 +135,18 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging-autodeploy:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'main') || (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging') }}
+    if: ${{ (github.event_name == 'push' && github.ref_name == 'main') }}
     name: Staging
     needs:
+      - config
       - build
       - test
       - migrations
-      - config
       - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-1
-      ENVIRONMENT: ${{ needs.config.outputs.environment }}
+      ENVIRONMENT: staging
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -117,6 +160,19 @@ jobs:
     with:
       AWS_REGION: us-east-1
       ENVIRONMENT: production
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  showroom_plan:
+    if: ${{ github.event_name == 'push' }}
+    name: Showroom
+    needs:
+      - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: showroom
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

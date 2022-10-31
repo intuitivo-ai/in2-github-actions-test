@@ -25,7 +25,7 @@ on:
 
 jobs:
   terraform-plan:
-    runs-on: [self-hosted, linux]
+    runs-on: [ self-hosted, linux ]
     name: Plan
     defaults:
       run:
@@ -41,9 +41,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Create lambda zip file
+      - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
-        run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
+        run: cd .. ; ./scripts/create_zip_files.sh ; cd -
       - name: Init
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
