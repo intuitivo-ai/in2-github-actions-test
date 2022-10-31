@@ -1,4 +1,4 @@
-name: Migrations
+name: Migration Tests
 
 on:
   workflow_call:
@@ -6,14 +6,7 @@ on:
       AWS_REGION:
         required: true
         type: string
-      ENVIRONMENT:
-        required: false
-        type: string
       RUN_MIGRATIONS:
-        required: false
-        type: boolean
-        default: false
-      TEST:
         required: false
         type: boolean
         default: false
@@ -27,9 +20,9 @@ on:
 
 jobs:
   run-migration-tests:
-    runs-on: [self-hosted, linux]
-    if: ${{ inputs.TEST && inputs.RUN_MIGRATIONS }}
-    name: Run Migration tests
+    runs-on: [ self-hosted, linux ]
+    if: ${{ inputs.RUN_MIGRATIONS }}
+    name: Migrations
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -69,64 +62,3 @@ jobs:
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/stop_db.sh $REPOSITORY
-  run-migrations:
-    runs-on: [self-hosted, linux]
-    if: ${{ ! inputs.TEST && inputs.RUN_MIGRATIONS }}
-    name: Run Migrations
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.AWS_REGION }}
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Pull image
-        run: |
-          COMMIT_ID="${GITHUB_SHA}"
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-
-          docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
-          docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
-      - name: Run migrations
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-        run: |
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-          ./scripts/migrations_run.sh $REPOSITORY
-      - name: Rollback migrations
-        if: ${{ failure() }}
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-        run: |
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-          ./scripts/migrations_rollback.sh $REPOSITORY
-          docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
-      - name: Stop database
-        if: always()
-        run: |
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-          ./scripts/stop_db.sh $REPOSITORY
-      - name: Init
-        run: |
-          cd terraform
-          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
-      - name: Plan
-        run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          cd terraform
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations
-      - name: Apply
-        run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          cd terraform
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -target module.ecs.aws_ecs_task_definition.task -target null_resource.migrations

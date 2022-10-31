@@ -25,7 +25,7 @@ on:
 
 jobs:
   terraform-apply:
-    runs-on: [self-hosted, linux]
+    runs-on: [ self-hosted, linux ]
     name: Apply
     defaults:
       run:
@@ -41,16 +41,16 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Create lambda zip file
+      - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
-        run: cd .. ; zip -rv lambda.zip . -x '*terraform*' -x '*.terraform*' -x '*.git*' ; cd -
+        run: cd .. ; ./scripts/create_zip_files.sh ; cd -
       - name: Init
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
       - name: Refresh state
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve -refresh-only
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -refresh-only
       - name: Plan
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
@@ -59,7 +59,7 @@ jobs:
         id: apply
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -auto-approve
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve
       - name: Notification
         if: always()
         run: |
