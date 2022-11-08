@@ -26,6 +26,9 @@ on:
 jobs:
   terraform-apply:
     runs-on: [ self-hosted, linux ]
+    environment: ${{ inputs.ENVIRONMENT }}
+    concurrency:
+      group: terraform-apply-${{ inputs.ENVIRONMENT }}
     name: Apply
     defaults:
       run:

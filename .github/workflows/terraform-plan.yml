@@ -26,6 +26,8 @@ on:
 jobs:
   terraform-plan:
     runs-on: [ self-hosted, linux ]
+    concurrency:
+      group: terraform-plan-${{ inputs.ENVIRONMENT }}-${{ github.ref_name }}
     name: Plan
     defaults:
       run:
