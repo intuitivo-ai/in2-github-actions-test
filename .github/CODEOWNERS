@@ -1,2 +1,4 @@
-*        @intuitivo-ai/mlops
-/.github @intuitivo-ai/mlops
+/.github               @intuitivo-ai/mlops
+/scripts/build.sh      @intuitivo-ai/mlops
+/scripts/functions.sh  @intuitivo-ai/mlops
+/scripts/publish.sh    @intuitivo-ai/mlops
