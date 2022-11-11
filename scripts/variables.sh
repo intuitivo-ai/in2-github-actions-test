@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export $(echo ${ADDITIONAL_VARIABLES} | sed 's/,/ /g')
+
 DATABASE_TYPE="postgres"
 NAME="name"
 
