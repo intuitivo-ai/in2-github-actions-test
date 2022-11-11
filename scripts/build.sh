@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 set -e
+DIR=$(dirname $0)
+source $DIR/variables.sh
+source $DIR/functions.sh
 
 x=$1
 
 case $x in
 "docker")
-  echo "Building Docker"
-  docker build . -t $DEFAULT_DOCKER_TAG
+  docker_build
+  ;;
+"layer")
+  $0 docker
+  docker run --rm \
+    -v $(pwd):/data \
+    $DEFAULT_DOCKER_TAG cp /packages/${PACKAGE}-python${PYTHON_VERSION}.zip /data
   ;;
 "npm")
   echo "Building NPM"

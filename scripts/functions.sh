@@ -1,8 +1,30 @@
 #!/usr/bin/env bash
 set -e
+DIR=$(dirname $0)
+source $DIR/variables.sh
 
-source variables.sh
-IMAGE=in2-github-actions-test
+function get_docker_build_params() {
+  _DOCKER_BUILD_ARGS=""
+  _DOCKER_BUILD_TARGET=""
+
+  for x in $(echo $DOCKER_BUILD_ARGS | sed 's/,/ /g'); do
+    _DOCKER_BUILD_ARGS="${_DOCKER_BUILD_ARGS} --build-arg $x"
+  done
+
+  if [ "$DOCKER_TARGET" != "" ]; then
+    _DOCKER_BUILD_TARGET="--target $DOCKER_TARGET"
+  fi
+  echo "${_DOCKER_BUILD_ARGS} ${_DOCKER_BUILD_TARGET}"
+}
+
+function docker_build() {
+  echo "Building Docker"
+  _DOCKER_BUILD_PARAMS=$(get_docker_build_params)
+  docker build \
+    ${_DOCKER_BUILD_PARAMS} \
+    -t $DEFAULT_DOCKER_TAG \
+    .
+}
 
 function start_db() {
   NAME=$1
@@ -31,4 +53,16 @@ function run_migrations() {
 }
 function rollback_migrations() {
   run_script rollback
+}
+
+function s3_cp() {
+  aws s3 cp "$1" "$2" --region "${AWS_REGION}"
+
+}
+
+function sts_assume_role() {
+  aws sts assume-role --role-arn "$1" --role-session-name "$2" --region "${AWS_REGION}" >sts.json
+  export AWS_ACCESS_KEY_ID=$(jq .Credentials.AccessKeyId sts.json | sed 's/"//g')
+  export AWS_SECRET_ACCESS_KEY=$(jq .Credentials.SecretAccessKey sts.json | sed 's/"//g')
+  export AWS_SESSION_TOKEN=$(jq .Credentials.SessionToken sts.json | sed 's/"//g')
 }
