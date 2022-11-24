@@ -42,9 +42,9 @@ jobs:
           echo "github.run_number=${{ github.run_number }}"
           echo "github.sha=${{ github.sha }}"
 
-          echo "::set-output name=event_name::${{ github.event_name }}"
+          echo "event_name=${{ github.event_name }}" >> $GITHUB_OUTPUT
       - id: set_env
         name: Set environment
         run: |
           export ENV=${{ inputs.ENVIRONMENT || inputs.DEFAULT_ENVIRONMENT }}
-          echo "::set-output name=env::$ENV"
+          echo "env=$ENV" >> $GITHUB_OUTPUT
