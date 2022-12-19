@@ -85,10 +85,20 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@intuitivo-ai'
+      - id: check_image
+        name: Check image already exists
+        run: |
+          ORG="$GITHUB_REPOSITORY_OWNER"
+          REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
+          
+          export IMAGE=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GITHUB_SHA)
+          echo "exist=$(if [ -z "$IMAGE" ]; then echo 'false'; fi)"  >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG $image_tag=$(jq '.imageDetails[0].imageTags' <<< "$IMAGE")"
       - name: Build
+        if: ${{ steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/build.sh ${{ inputs.BUILD }}
       - name: Publish
-        if: ${{ inputs.PUBLISH }}
+        if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/publish.sh ${{ inputs.BUILD }}
