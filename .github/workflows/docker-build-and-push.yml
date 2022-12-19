@@ -95,10 +95,10 @@ jobs:
           echo "exist=$(if [ -z "$IMAGE" ]; then echo 'false'; fi)"  >> $GITHUB_OUTPUT
           echo "IMAGE_TAG $image_tag=$(jq '.imageDetails[0].imageTags' <<< "$IMAGE")"
       - name: Build
-        if: ${{ steps.check_image.outputs.exist == '' }}
+        if: ${{ steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/build.sh ${{ inputs.BUILD }}
       - name: Publish
-        if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == '' }}
+        if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/publish.sh ${{ inputs.BUILD }}
