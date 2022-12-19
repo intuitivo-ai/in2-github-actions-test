@@ -91,8 +91,9 @@ jobs:
           ORG="$GITHUB_REPOSITORY_OWNER"
           REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
           
-          export EXIST=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GITHUB_SHA)
-          echo "exist=$EXIST" >> $GITHUB_OUTPUT
+          export IMAGE=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GITHUB_SHA)
+          echo "exist=$(if [ -z "$IMAGE" ]; then echo 'false'; fi)"  >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG $image_tag=$(jq '.imageDetails[0].imageTags' <<< "$IMAGE")"
       - name: Build
         if: ${{ steps.check_image.outputs.exist == '' }}
         run: |
