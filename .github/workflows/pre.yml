@@ -28,7 +28,7 @@ jobs:
       - id: event_info
         name: Show context
         run: |
-          echo "github=${{ github }}"
+          echo "github=${{ toJson(github) }}"
           echo "github.actor=${{ github.actor }}"
           echo "github.base_ref=${{ github.base_ref }}"
           echo "github.event=${{ github.event }}"
