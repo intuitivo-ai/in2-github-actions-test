@@ -2,8 +2,11 @@
 set -e
 
 DIR=$(dirname $0)
-REPOSITORY=$1
+source $DIR/variables.sh
 source $DIR/functions.sh
+REPOSITORY=$1
+
+cd "${DIR}"
 
 start_db ${REPOSITORY}
 run_migrations
