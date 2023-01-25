@@ -20,7 +20,7 @@ on:
 jobs:
   pre:
     name: Initial job configuration
-    runs-on: [ self-hosted, linux ]
+    runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.set_env.outputs.env }}
       event_name: ${{ steps.event_info.outputs.event_name }}
