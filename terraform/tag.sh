@@ -9,7 +9,7 @@ git_refs_url=$(jq .repository.git_refs_url "$GITHUB_EVENT_PATH" | tr -d '"' | se
 echo "${git_refs_url}"
 git_refs_response=$(
   curl -s -X POST "${git_refs_url}" \
-    -H "Authorization: token $GITHUB_TOKEN" \
+    -H "Authorization: Bearer $GITHUB_TOKEN" \
     -d @- <<EOF
 {
   "ref": "refs/tags/$new",
