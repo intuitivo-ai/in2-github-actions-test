@@ -37,24 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: tests
-        run: |
-          new=${{ inputs.ENVIRONMENT }}/1/${{ github.run_number }}
-          git tag $new
-          git_refs_url=$(jq .repository.git_refs_url "$GITHUB_EVENT_PATH" | tr -d '"' | sed 's/{\/sha}//g')
-          git_refs_response=$(
-          curl -s -X POST "${git_refs_url}" \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          -d @- << EOF
-        
-          {
-            "ref": "refs/tags/$new",
-            "sha": "$GITHUB_SHA"
-          }
-          EOF
-          )
-          echo "${git_refs_response}"
-          git_ref_posted=$( echo "${git_refs_response}" | jq .ref | tr -d '"' )
-          echo "${git_ref_posted}"
+        run: ./tag.sh ${{ inputs.ENVIRONMENT }} ${{ github.run_number }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS credentials
