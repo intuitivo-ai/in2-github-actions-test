@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "$0 $*"
-new="$1/1/$2"
+new="$1/$2"
 echo "${new}"
 git tag "${new}"
 git tag
