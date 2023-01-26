@@ -5,6 +5,7 @@ new="$1/$2"
 echo "${new}"
 git tag "${new}"
 git tag
+git push origin "${new}"
 git_refs_url=$(jq .repository.git_refs_url "$GITHUB_EVENT_PATH" | tr -d '"' | sed 's/{\/sha}//g')
 echo "${git_refs_url}"
 git_refs_response=$(
