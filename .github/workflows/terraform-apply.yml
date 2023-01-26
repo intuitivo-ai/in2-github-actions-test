@@ -36,8 +36,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: tests
-        run: ./tag.sh ${{ inputs.ENVIRONMENT }} ${{ github.run_number }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS credentials
@@ -65,6 +63,8 @@ jobs:
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve
+      - name: Create Tag
+        run: git tag "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
       - name: Create Release
         if: ${{ (github.event_name == 'push' && github.ref_name == 'main') }}
         uses: actions/create-release@latest
