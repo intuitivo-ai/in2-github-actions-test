@@ -65,13 +65,14 @@ jobs:
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve
-      - name: Create Tag
+      - name: Create Release
+        if: ${{ (github.event_name == 'push' && github.ref_name == 'main') }}
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ inputs.ENVIRONMENT }}/${{ github.run_number }}
-          release_name: ${{ inputs.ENVIRONMENT }}/${{ github.run_number }}
+          tag_name: release/${{ github.run_number }}
+          release_name: v${{ github.run_number }}
       - name: Notification
         if: always()
         run: |
