@@ -20,7 +20,7 @@ on:
 jobs:
   pre:
     name: Initial job configuration
-    runs-on: [ self-hosted, linux ]
+    runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.set_env.outputs.env }}
       event_name: ${{ steps.event_info.outputs.event_name }}
@@ -28,9 +28,10 @@ jobs:
       - id: event_info
         name: Show context
         run: |
-          echo "github=${{ github }}"
+          echo "github=${{ toJson(github) }}"
           echo "github.actor=${{ github.actor }}"
           echo "github.base_ref=${{ github.base_ref }}"
+          echo "github.event=${{ github.event }}"
           echo "github.event_name=${{ github.event_name }}"
           echo "github.head_ref=${{ github.head_ref }}"
           echo "github.job=${{ github.job }}"
