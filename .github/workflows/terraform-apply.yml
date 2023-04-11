@@ -28,7 +28,7 @@ jobs:
     runs-on: [ self-hosted, linux ]
     environment: ${{ inputs.ENVIRONMENT }}
     concurrency:
-      group: terraform-apply-${{ inputs.ENVIRONMENT }}
+      group: terraform-apply-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
     name: Apply
     defaults:
       run:
@@ -53,18 +53,21 @@ jobs:
       - name: Refresh state
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -refresh-only
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
       - name: Plan
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -lock-timeout=5m
       - name: Apply
         id: apply
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -lock-timeout=5m
+      - name: Unlock
+        if: ${{ cancelled() }}
+        run: ../scripts/terraform_unlock.sh
       - name: Create Tag
-        run: git tag "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push -f origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
+        run: git tag -f "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push -f origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
       - name: Create Release
         if: ${{ (github.event_name == 'push' && github.ref_name == 'main') && inputs.ENVIRONMENT == 'staging' }}
         uses: actions/create-release@latest
@@ -72,7 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: release/${{ github.run_number }}
-          release_name: v${{ github.run_number }}
+          release_name: v${{ github.run_number }}.${{ github.run_attempt }}
       - name: Notification
         if: always()
         run: |

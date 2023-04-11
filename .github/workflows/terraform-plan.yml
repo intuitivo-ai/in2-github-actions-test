@@ -55,4 +55,4 @@ jobs:
       - name: Plan
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -lock=false
