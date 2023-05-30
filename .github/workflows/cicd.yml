@@ -86,28 +86,14 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  development-manualdeploy:
-    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development') }}
+  development-deploy:
+    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development') || (github.event_name == 'push' && github.ref_name == 'dev') }}
     name: Development
     needs:
       - development_plan
-    uses: ./.github/workflows/terraform-apply.yml
-    with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: development
-      TF_PATH: terraform
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  development-autodeploy:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'dev') }}
-    name: Development
-    needs:
-      - config
       - build
       - test
       - migrations
-      - development_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-1
@@ -129,28 +115,14 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  staging-manualdeploy:
-    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging') }}
+  staging-deploy:
+    if: ${{ (inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging') || (github.event_name == 'push' && github.ref_name == 'main') }}
     name: Staging
     needs:
       - staging_plan
-    uses: ./.github/workflows/terraform-apply.yml
-    with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: staging
-      TF_PATH: terraform
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  staging-autodeploy:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'main') }}
-    name: Staging
-    needs:
-      - config
       - build
       - test
       - migrations
-      - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: us-east-1
