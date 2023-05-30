@@ -3,6 +3,6 @@ resource "null_resource" "sleep" {
     always_run = tostring(timestamp())
   }
   provisioner "local-exec" {
-    command = "sleep 300"
+    command = "sleep 10"
   }
 }

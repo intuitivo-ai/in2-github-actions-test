@@ -6,6 +6,9 @@ on:
       AWS_REGION:
         required: true
         type: string
+      RUN:
+        required: false
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -30,6 +33,7 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
       - name: Run tests
+        if: ${{ inputs.RUN == 'true' || inputs.RUN == '' }}
         run: |
           COMMIT_ID="${GITHUB_SHA}"
           ORG="${GITHUB_REPOSITORY_OWNER}"
