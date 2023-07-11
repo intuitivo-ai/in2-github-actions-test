@@ -47,7 +47,7 @@ on:
 env:
   ADDITIONAL_VARIABLES: ${{ inputs.ADDITIONAL_VARIABLES }}
   AWS_REGION: ${{ inputs.AWS_REGION }}
-  DEFAULT_DOCKER_TAG: 'in2etvo'
+  DEFAULT_DOCKER_TAG: ${{ github.repository }}
   DOCKER_BUILD_ARGS: ${{ inputs.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
