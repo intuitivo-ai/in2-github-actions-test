@@ -29,7 +29,7 @@ function docker_build() {
 function git_checkout() {
   _ORG=$1
   _REPO=$2
-  _PATH=$2
+  _PATH=$3
   echo "Cloning repository ${_REPO}"
   git clone git@github.com:${_ORG}/${_REPO}.git ${_PATH}
 }
