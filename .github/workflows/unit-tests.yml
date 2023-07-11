@@ -47,4 +47,5 @@ jobs:
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Clear images
         if: ${{ inputs.RUN != 'false' && inputs.CLEAR_CACHE }}
-        run: docker rmi ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+        run: |
+          docker rmi ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}

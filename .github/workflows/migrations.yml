@@ -68,4 +68,5 @@ jobs:
           ./scripts/stop_db.sh $REPOSITORY
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
-        run: docker rmi $DEFAULT_DOCKER_TAG ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+        run: |
+          docker rmi $DEFAULT_DOCKER_TAG ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
