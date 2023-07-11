@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: './'
+      UPDATE_AWS_CLI:
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -47,6 +51,13 @@ jobs:
       - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
         run: cd .. ; ./scripts/create_zip_files.sh ; cd -
+      - name: Update aws-cli
+        if: ${{ inputs.UPDATE_AWS_CLI }}
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+          /usr/local/bin/aws --version
       - name: Init
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
