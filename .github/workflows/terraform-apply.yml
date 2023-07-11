@@ -28,7 +28,7 @@ jobs:
     runs-on: [ self-hosted, linux ]
     environment: ${{ inputs.ENVIRONMENT }}
     concurrency:
-      group: terraform-apply-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
+      group: terraform-apply-${{ inputs.ENVIRONMENT }}
     name: Apply
     defaults:
       run:
@@ -49,20 +49,20 @@ jobs:
         run: cd .. ; ./scripts/create_zip_files.sh ; cd -
       - name: Init
         run: |
-          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
+          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
       - name: Refresh state
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
       - name: Plan
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -lock-timeout=5m
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -lock-timeout=5m
       - name: Apply
         id: apply
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -lock-timeout=5m
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -lock-timeout=5m
       - name: Unlock
         if: ${{ cancelled() }}
         run: ../scripts/terraform_unlock.sh
