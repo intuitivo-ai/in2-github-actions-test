@@ -50,7 +50,7 @@ jobs:
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
-          docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+          docker run --rm --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Run migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -75,5 +75,4 @@ jobs:
         if: ${{ inputs.CLEAR_CACHE }}
         run: |
           IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
-          echo "IMAGE_ID=$IMAGE_ID"
-          docker rmi $IMAGE_ID
+          docker rmi -f $IMAGE_ID
