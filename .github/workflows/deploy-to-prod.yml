@@ -30,12 +30,17 @@ jobs:
   production_plan:
     if: ${{ needs.config.outputs.environment == 'production' }}
     name: Production
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [ production ]
+        region: [ us-east-1,sa-east-1 ]
     needs:
       - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: production
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -43,13 +48,18 @@ jobs:
   production_deploy:
     if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'production' }}
     name: Production
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [ production ]
+        region: [ us-east-1,sa-east-1 ]
     needs:
       - config
       - production_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: production
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -57,12 +67,17 @@ jobs:
   showroom_plan:
     if: ${{ needs.config.outputs.environment == 'showroom' }}
     name: Showroom
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [ showroom ]
+        region: [ us-east-1,sa-east-1 ]
     needs:
       - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: showroom
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -70,13 +85,18 @@ jobs:
   showroom_deploy:
     if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'showroom' }}
     name: Showroom
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [ showroom ]
+        region: [ us-east-1,sa-east-1 ]
     needs:
       - config
       - showroom_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
-      AWS_REGION: us-east-1
-      ENVIRONMENT: showroom
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
