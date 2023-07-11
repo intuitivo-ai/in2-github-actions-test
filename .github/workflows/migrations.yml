@@ -22,6 +22,9 @@ on:
       REGISTRY:
         required: true
 
+env:
+  REGISTRY: ${{ secrets.REGISTRY }}
+
 jobs:
   run-migration-tests:
     runs-on: [ self-hosted, linux ]
@@ -70,4 +73,4 @@ jobs:
         if: ${{ inputs.CLEAR_CACHE }}
         run: |
           docker images
-          docker rmi $DEFAULT_DOCKER_TAG ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+          docker rmi $DEFAULT_DOCKER_TAG ${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}
