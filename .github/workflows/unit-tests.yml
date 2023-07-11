@@ -49,4 +49,5 @@ jobs:
         if: ${{ inputs.RUN != 'false' && inputs.CLEAR_CACHE }}
         run: |
           docker images
+          docker images -q ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker rmi ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
