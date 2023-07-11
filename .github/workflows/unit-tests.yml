@@ -6,6 +6,10 @@ on:
       AWS_REGION:
         required: true
         type: string
+      CLEAR_CACHE:
+        required: false
+        type: boolean
+        default: false
       RUN:
         required: false
         type: string
@@ -19,7 +23,7 @@ on:
 
 jobs:
   run-unit-tests:
-    runs-on: [self-hosted, linux]
+    runs-on: [ self-hosted, linux ]
     name: Unit-Tests
     steps:
       - name: Checkout
@@ -41,3 +45,6 @@ jobs:
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+      - name: Clear images
+        if: ${{ inputs.RUN != 'false' && inputs.CLEAR_CACHE }}
+        run: docker rmi ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}

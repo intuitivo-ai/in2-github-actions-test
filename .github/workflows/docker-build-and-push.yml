@@ -10,6 +10,10 @@ on:
         required: false
         type: string
         default: us-east-1
+      CLEAR_CACHE:
+        required: false
+        type: boolean
+        default: false
       CHECKOUT_IN2_REPOSITORIES:
         required: false
         type: boolean
@@ -107,3 +111,6 @@ jobs:
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/publish.sh ${{ inputs.BUILD }}
+      - name: Clear images
+        if: ${{ inputs.CLEAR_CACHE }}
+        run: docker rmi $DEFAULT_DOCKER_TAG
