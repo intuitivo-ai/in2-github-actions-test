@@ -54,5 +54,5 @@ jobs:
           terraform validate -json
       - name: Plan
         run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
+          export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
           terraform plan -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -lock=false
