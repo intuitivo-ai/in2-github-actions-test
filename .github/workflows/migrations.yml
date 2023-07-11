@@ -69,4 +69,5 @@ jobs:
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
         run: |
+          docker images
           docker rmi $DEFAULT_DOCKER_TAG ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
