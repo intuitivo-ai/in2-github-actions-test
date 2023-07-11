@@ -23,6 +23,7 @@ on:
         required: true
 
 env:
+  DEFAULT_DOCKER_TAG: ${{ github.repository }}
   REGISTRY: ${{ secrets.REGISTRY }}
 
 jobs:
@@ -48,6 +49,7 @@ jobs:
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+          docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
           docker run --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Run migrations
         env:
@@ -72,5 +74,6 @@ jobs:
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
         run: |
-          docker images
-          docker rmi $DEFAULT_DOCKER_TAG ${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}
+          IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
+          echo "IMAGE_ID=$IMAGE_ID"
+          docker rmi $IMAGE_ID
