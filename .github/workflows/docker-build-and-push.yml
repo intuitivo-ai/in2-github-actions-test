@@ -49,12 +49,15 @@ on:
         required: false
 
 env:
+  ACCOUNT_IDS: "068339706808"
   ADDITIONAL_VARIABLES: ${{ inputs.ADDITIONAL_VARIABLES }}
   AWS_REGION: ${{ inputs.AWS_REGION }}
   DEFAULT_DOCKER_TAG: ${{ github.repository }}
   DOCKER_BUILD_ARGS: ${{ inputs.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  LOCAL_FILENAME: "in2_firmware.fw"
+  LOCAL_PATH: "/firmware-nerves/_build/rpi4_dev/nerves/images"
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
   VERSION: "1.5.${{ github.run_number }}"
