@@ -78,6 +78,11 @@ jobs:
       - name: Login to Amazon ECR
         if: ${{ inputs.BUILD == 'docker' && inputs.PUBLISH }}
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to AWS registry
+        if: ${{ inputs.BUILD == 'docker' }}
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "763104351884" # AWS registry
       - name: Setup Node
         if: ${{ inputs.BUILD == 'npm' }}
         uses: actions/setup-node@v3
