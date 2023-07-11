@@ -9,7 +9,7 @@ on:
       RUN_MIGRATIONS:
         required: false
         type: boolean
-        default: false
+        default: true
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
