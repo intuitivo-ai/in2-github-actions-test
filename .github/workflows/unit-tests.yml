@@ -33,7 +33,7 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
       - name: Run tests
-        if: ${{ inputs.RUN == 'true' || inputs.RUN == '' }}
+        if: ${{ inputs.RUN != 'false' }}
         run: |
           COMMIT_ID="${GITHUB_SHA}"
           ORG="${GITHUB_REPOSITORY_OWNER}"
