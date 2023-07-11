@@ -57,7 +57,6 @@ function rollback_migrations() {
 
 function s3_cp() {
   aws s3 cp "$1" "$2" --region "${AWS_REGION}"
-
 }
 
 function sts_assume_role() {
