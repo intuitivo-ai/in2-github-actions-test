@@ -26,6 +26,14 @@ function docker_build() {
     .
 }
 
+function git_checkout() {
+  _ORG=$1
+  _REPO=$2
+  _PATH=$2
+  echo "Cloning repository ${_REPO}"
+  git clone git@github.com:${_ORG}/${_REPO}.git ${_PATH}
+}
+
 function start_db() {
   NAME=$1
   docker run --rm \
