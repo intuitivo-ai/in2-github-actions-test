@@ -1,0 +1,86 @@
+name: Create lambda layer
+
+on:
+  workflow_dispatch:
+    inputs:
+      ACTION:
+        description: ""
+        required: false
+        default: create_layer
+        type: choice
+        options:
+          - build_base_image
+          - create_layer
+      ENVIRONMENT:
+        description: ""
+        required: false
+        default: development
+        type: choice
+        options:
+          - ai-development
+          - ai-staging
+          - ai-showroom
+          - ai-production
+          - devops-sandbox
+          - main-account
+          - system-staging
+          - system-showroom
+          - system-production
+      PACKAGE:
+        description: ""
+        required: true
+        type: string
+      PYTHON_VERSION:
+        description: ""
+        required: true
+        default: 3.9
+        type: choice
+        options:
+          - 3.7
+          - 3.8
+          - 3.9
+      REGION:
+        description: ""
+        required: true
+        default: us-east-1
+        type: choice
+        options:
+          - us-east-1
+          - sa-east-1
+
+jobs:
+  config:
+    name: Config
+    uses: ./.github/workflows/pre.yml
+    with:
+      DEFAULT_ENVIRONMENT: staging
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  create_layer:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ACTION == 'create_layer' }}
+    needs: config
+    name: Lambda layer
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      ADDITIONAL_VARIABLES: "PACKAGE=${{ inputs.PACKAGE }},PYTHON_VERSION=${{ inputs.PYTHON_VERSION }}"
+      AWS_REGION: ${{ inputs.REGION }}
+      BUILD: layer
+      DOCKER_BUILD_ARGS: "PACKAGE=${{ inputs.PACKAGE }},PYTHON_VERSION=${{ inputs.PYTHON_VERSION }}"
+      DOCKER_TARGET: create_layer
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+      PUBLISH: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  build_base_image:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ACTION == 'build_base_image' }}
+    needs: config
+    name: Base image
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      DOCKER_TARGET: build_layer_base
+      PUBLISH: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
