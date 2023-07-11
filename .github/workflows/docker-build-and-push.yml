@@ -113,4 +113,6 @@ jobs:
           ./scripts/publish.sh ${{ inputs.BUILD }}
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
-        run: docker rmi $DEFAULT_DOCKER_TAG
+        run: |
+          IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
+          docker rmi -f $IMAGE_ID
