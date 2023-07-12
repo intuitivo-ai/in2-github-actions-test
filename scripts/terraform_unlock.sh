@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set +e
-terraform refresh -input=false > release.lock
+terraform refresh -input=false >release.lock
 set -e
 
 echo "---- ----"

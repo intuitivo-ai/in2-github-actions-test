@@ -4,11 +4,9 @@ DIR=$(dirname $0)
 source $DIR/variables.sh
 source $DIR/functions.sh
 
-
 REPOS_DIR=.external
 ORG=$1
 REPOS=${2//,/ }
-
 
 mkdir -pv ${REPOS_DIR}
 for repo in $(echo ${REPOS}); do
