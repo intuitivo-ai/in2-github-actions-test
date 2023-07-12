@@ -43,6 +43,8 @@ on:
         required: false
       AWS_SECRET_ACCESS_KEY:
         required: false
+      DOCKER_BUILD_ARGS:
+        required: false
       REGISTRY:
         required: false
       TOKEN:
@@ -54,6 +56,7 @@ env:
   AWS_REGION: ${{ inputs.AWS_REGION }}
   DEFAULT_DOCKER_TAG: ${{ github.repository }}
   DOCKER_BUILD_ARGS: ${{ inputs.DOCKER_BUILD_ARGS }}
+  DOCKER_SECRET_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   LOCAL_FILENAME: "in2_firmware.fw"
