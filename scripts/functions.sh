@@ -5,9 +5,13 @@ source $DIR/variables.sh
 
 function get_docker_build_params() {
   _DOCKER_BUILD_ARGS=""
+  _DOCKER_SECRET_BUILD_ARGS=""
   _DOCKER_BUILD_TARGET=""
 
   for x in $(echo $DOCKER_BUILD_ARGS | sed 's/,/ /g'); do
+    _DOCKER_BUILD_ARGS="${_DOCKER_BUILD_ARGS} --build-arg $x"
+  done
+  for x in $(echo $DOCKER_SECRET_BUILD_ARGS | sed 's/,/ /g'); do
     _DOCKER_BUILD_ARGS="${_DOCKER_BUILD_ARGS} --build-arg $x"
   done
 
