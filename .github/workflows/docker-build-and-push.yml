@@ -10,6 +10,10 @@ on:
         required: false
         type: string
         default: us-east-1
+      CLEAR_CACHE:
+        required: false
+        type: boolean
+        default: false
       CHECKOUT_IN2_REPOSITORIES:
         required: false
         type: boolean
@@ -39,18 +43,24 @@ on:
         required: false
       AWS_SECRET_ACCESS_KEY:
         required: false
+      DOCKER_BUILD_ARGS:
+        required: false
       REGISTRY:
         required: false
       TOKEN:
         required: false
 
 env:
+  ACCOUNT_IDS: "068339706808"
   ADDITIONAL_VARIABLES: ${{ inputs.ADDITIONAL_VARIABLES }}
   AWS_REGION: ${{ inputs.AWS_REGION }}
-  DEFAULT_DOCKER_TAG: 'in2etvo'
+  DEFAULT_DOCKER_TAG: ${{ github.repository }}
   DOCKER_BUILD_ARGS: ${{ inputs.DOCKER_BUILD_ARGS }}
+  DOCKER_SECRET_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  LOCAL_FILENAME: "in2_firmware.fw"
+  LOCAL_PATH: "/firmware-nerves/_build/rpi4_dev/nerves/images"
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
   VERSION: "1.5.${{ github.run_number }}"
@@ -69,15 +79,20 @@ jobs:
 
           ./scripts/checkout_repositories.sh ${ORG} ${{ inputs.CHECKOUT_IN2_REPOSITORY_NAMES }}
       - name: Configure AWS credentials
-        if: ${{ (inputs.BUILD == 'docker' || inputs.BUILD == 'layer' ) && inputs.PUBLISH }}
+        if: ${{ (inputs.BUILD == 'docker' || inputs.BUILD == 'layer' || inputs.BUILD == 'docker_s3' ) && inputs.PUBLISH }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Login to Amazon ECR
-        if: ${{ inputs.BUILD == 'docker' && inputs.PUBLISH }}
+        if: ${{ ( inputs.BUILD == 'docker' || inputs.BUILD == 'docker_s3' ) && inputs.PUBLISH }}
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to AWS registry
+        if: ${{ inputs.BUILD == 'docker' }}
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "763104351884" # AWS registry
       - name: Setup Node
         if: ${{ inputs.BUILD == 'npm' }}
         uses: actions/setup-node@v3
@@ -102,3 +117,8 @@ jobs:
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/publish.sh ${{ inputs.BUILD }}
+      - name: Clear images
+        if: ${{ inputs.CLEAR_CACHE }}
+        run: |
+          IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
+          docker rmi -f $IMAGE_ID

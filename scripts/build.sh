@@ -7,7 +7,7 @@ source $DIR/functions.sh
 x=$1
 
 case $x in
-"docker")
+"docker" | "docker_s3")
   docker_build
   ;;
 "layer")

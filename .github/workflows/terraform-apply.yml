@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: './'
+      UPDATE_AWS_CLI:
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -28,7 +32,7 @@ jobs:
     runs-on: [ self-hosted, linux ]
     environment: ${{ inputs.ENVIRONMENT }}
     concurrency:
-      group: terraform-apply-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
+      group: terraform-apply-${{ inputs.ENVIRONMENT }}
     name: Apply
     defaults:
       run:
@@ -47,29 +51,36 @@ jobs:
       - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
         run: cd .. ; ./scripts/create_zip_files.sh ; cd -
+      - name: Update aws-cli
+        if: ${{ inputs.UPDATE_AWS_CLI }}
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+          /usr/local/bin/aws --version
       - name: Init
         run: |
-          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}.backend
+          terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
       - name: Refresh state
         run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
+          export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
       - name: Plan
         run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -lock-timeout=5m
+          export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
+          terraform plan -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -lock-timeout=5m
       - name: Apply
         id: apply
         run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}"
-          terraform apply -var-file=${{ inputs.ENVIRONMENT }}.tfvars -input=false -auto-approve -lock-timeout=5m
+          export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
+          terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -lock-timeout=5m
       - name: Unlock
         if: ${{ cancelled() }}
         run: ../scripts/terraform_unlock.sh
       - name: Create Tag
         run: git tag -f "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push -f origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
       - name: Create Release
-        if: ${{ (github.event_name == 'push' && github.ref_name == 'main') && inputs.ENVIRONMENT == 'staging' }}
+        if: ${{ github.ref_name == 'main' && github.ref_type == 'branch' && inputs.ENVIRONMENT == 'production' && inputs.AWS_REGION == 'us-east-1' }}
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

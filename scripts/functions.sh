@@ -5,9 +5,13 @@ source $DIR/variables.sh
 
 function get_docker_build_params() {
   _DOCKER_BUILD_ARGS=""
+  _DOCKER_SECRET_BUILD_ARGS=""
   _DOCKER_BUILD_TARGET=""
 
   for x in $(echo $DOCKER_BUILD_ARGS | sed 's/,/ /g'); do
+    _DOCKER_BUILD_ARGS="${_DOCKER_BUILD_ARGS} --build-arg $x"
+  done
+  for x in $(echo $DOCKER_SECRET_BUILD_ARGS | sed 's/,/ /g'); do
     _DOCKER_BUILD_ARGS="${_DOCKER_BUILD_ARGS} --build-arg $x"
   done
 
@@ -24,6 +28,14 @@ function docker_build() {
     ${_DOCKER_BUILD_PARAMS} \
     -t $DEFAULT_DOCKER_TAG \
     .
+}
+
+function git_checkout() {
+  _ORG=$1
+  _REPO=$2
+  _PATH=$3
+  echo "Cloning repository ${_REPO}"
+  git clone git@github.com:${_ORG}/${_REPO}.git ${_PATH}
 }
 
 function start_db() {
@@ -57,12 +69,19 @@ function rollback_migrations() {
 
 function s3_cp() {
   aws s3 cp "$1" "$2" --region "${AWS_REGION}"
-
 }
 
 function sts_assume_role() {
+  echo "role-arn=$1"
+  echo "role-session-name=$2"
   aws sts assume-role --role-arn "$1" --role-session-name "$2" --region "${AWS_REGION}" >sts.json
   export AWS_ACCESS_KEY_ID=$(jq .Credentials.AccessKeyId sts.json | sed 's/"//g')
   export AWS_SECRET_ACCESS_KEY=$(jq .Credentials.SecretAccessKey sts.json | sed 's/"//g')
   export AWS_SESSION_TOKEN=$(jq .Credentials.SessionToken sts.json | sed 's/"//g')
+}
+
+function sts_exit_role() {
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
 }
