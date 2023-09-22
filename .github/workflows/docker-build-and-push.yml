@@ -51,7 +51,7 @@ on:
         required: false
 
 env:
-  ACCOUNT_IDS: "068339706808"
+  ACCOUNT_IDS: ""
   ADDITIONAL_VARIABLES: ${{ inputs.ADDITIONAL_VARIABLES }}
   AWS_REGION: ${{ inputs.AWS_REGION }}
   DEFAULT_DOCKER_TAG: ${{ github.repository }}
@@ -59,11 +59,11 @@ env:
   DOCKER_SECRET_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-  LOCAL_FILENAME: "in2_firmware.fw"
-  LOCAL_PATH: "/firmware-nerves/_build/rpi4_dev/nerves/images"
+  LOCAL_FILENAME: ""
+  LOCAL_PATH: ""
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
-  VERSION: "1.5.${{ github.run_number }}"
+  VERSION: "1.${{ github.run_number }}.${{ github.run_attempt }}"
 
 jobs:
   build-and-push:
@@ -112,6 +112,7 @@ jobs:
       - name: Build
         if: ${{ steps.check_image.outputs.exist == 'false' }}
         run: |
+          chmod +x ./scripts/*
           ./scripts/build.sh ${{ inputs.BUILD }}
       - name: Publish
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
