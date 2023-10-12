@@ -80,7 +80,7 @@ jobs:
           export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -lock-timeout=5m
       - name: Unlock
-        if: ${{ steps.state_lock.outcome != 'success' || cancelled() }}
+        if: ${{ cancelled() || steps.state_lock.outcome != 'success' }}
         run: |
           chmod +x ../scripts/*
           ../scripts/terraform_unlock.sh
