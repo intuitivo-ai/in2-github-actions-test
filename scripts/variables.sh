@@ -3,7 +3,7 @@
 export $(echo ${ADDITIONAL_VARIABLES} | sed 's/,/ /g')
 
 DATABASE_TYPE="postgres"
-NAME="name"
+NAME="in2-conde-inference"
 
 DB_ENV_VARS=""
 DB_ENV_VARS="${DB_ENV_VARS} -e POSTGRES_DB=local_database"
