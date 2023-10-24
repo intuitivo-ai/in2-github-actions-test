@@ -118,6 +118,10 @@ jobs:
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
           ./scripts/publish.sh ${{ inputs.BUILD }}
+      - name: Vulnerability Report
+        if: ${{ inputs.PUBLISH }}
+        run: |
+          ./scripts/vulnerability_report.sh
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE && steps.check_image.outputs.exist == 'false' }}
         run: |
