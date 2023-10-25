@@ -121,7 +121,7 @@ jobs:
       - name: Vulnerability Report
         if: ${{ inputs.PUBLISH }}
         run: |
-          ./scripts/vulnerability_report.sh
+          ./scripts/vulnerabilities_report.sh
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE && steps.check_image.outputs.exist == 'false' }}
         run: |

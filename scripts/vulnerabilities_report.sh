@@ -1,4 +1,8 @@
 #!/bin/env bash
+set -e
+DIR=$(dirname $0)
+source $DIR/variables.sh
+source $DIR/functions.sh
 
 ORG="$GITHUB_REPOSITORY_OWNER"
 REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
