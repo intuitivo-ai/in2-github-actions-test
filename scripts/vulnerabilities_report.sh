@@ -16,16 +16,11 @@ do
     fi
 done
 
-if [ $EXIT_CODE -eq 0 ]; then
-    SCAN_FINDINGS=$(aws ecr describe-image-scan-findings $IMAGE_INFO | jq '.imageScanFindings.findingSeverityCounts')
+SCAN_FINDINGS=$(aws ecr describe-image-scan-findings $IMAGE_INFO | jq '.imageScanFindings.findingSeverityCounts')
 
-    echo "Vulnerabilities Report"
+echo "Vulnerabilities Report"
 
-    for severity in CRITICAL HIGH MEDIUM; do
-        count=$(echo "$SCAN_FINDINGS" | jq ".$severity // 0")
-        echo "$severity: $count"
-    done
-
-else
-    echo "No se pudo completar el análisis de vulnerabilidades en el tiempo esperado"
-fi
+for severity in CRITICAL HIGH MEDIUM; do
+    count=$(echo "$SCAN_FINDINGS" | jq ".$severity // 0")
+    echo "$severity: $count"
+done
