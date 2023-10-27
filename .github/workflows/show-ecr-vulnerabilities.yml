@@ -26,12 +26,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Login to AWS registry
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registries: "763104351884" # AWS registry
       - name: Vulnerability Report
         run: |
           ./scripts/vulnerabilities_report.sh

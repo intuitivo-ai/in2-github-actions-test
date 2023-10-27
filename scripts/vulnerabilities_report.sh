@@ -21,7 +21,7 @@ if [ $EXIT_CODE -eq 0 ]; then
 
     echo "Vulnerabilities Report"
 
-    for severity in CRITICAL HIGH MEDIUM LOW INFORMATIONAL UNDEFINED; do
+    for severity in CRITICAL HIGH MEDIUM; do
         count=$(echo "$SCAN_FINDINGS" | jq ".$severity // 0")
         echo "$severity: $count"
     done
