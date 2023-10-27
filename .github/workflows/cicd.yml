@@ -55,6 +55,9 @@ jobs:
       DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
       TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  scan_image:
+    needs: build
+    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
   test:
     needs: build
     name: Tests
