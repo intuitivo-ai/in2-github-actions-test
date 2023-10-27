@@ -13,7 +13,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: false
 
-
 jobs:
   scan-image:
     runs-on: [ self-hosted, linux ]
