@@ -1,0 +1,31 @@
+name: Container Image Vulnerabilities
+
+on:
+  workflow_call:
+    inputs:
+      AWS_REGION:
+        required: false
+        type: string
+        default: us-east-1
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+
+jobs:
+  scan-image:
+    runs-on: [ self-hosted, linux ]
+    name: Scan Container Image Vulnerabilities
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+      - name: Vulnerability Report
+        run: |
+          ./scripts/vulnerabilities_report.sh
