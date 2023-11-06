@@ -1,0 +1,15 @@
+{
+    "global_config": {
+        "skip_all_vulns": false,
+        "skip_critical_vulns": false,
+        "skip_high_vulns": false,
+        "skip_medium_vulns": false,
+        "vulns_to_skip": []
+    },
+    "repos": [
+        {
+            "repo_name": "in2-github-actions-test",
+            "skip_all_vulns": false
+        }
+    ]
+}

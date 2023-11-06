@@ -12,11 +12,28 @@ on:
         required: false
       AWS_SECRET_ACCESS_KEY:
         required: false
+    outputs:
+      vulnerability_critical:
+        description: "Amount of critical vulnerabilities"
+        value: ${{ jobs.scan-image.outputs.vulnerability_critical }}
+      vulnerability_high:
+        description: "Amount of high vulnerabilities"
+        value: ${{ jobs.scan-image.outputs.vulnerability_high }}
+      vulnerability_medium:
+        description: "Amount of medium vulnerabilities"
+        value: ${{ jobs.scan-image.outputs.vulnerability_medium }}
 
 jobs:
   scan-image:
-    runs-on: [ self-hosted, linux ]
     name: Scan Container Image Vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    outputs:
+      vulnerability_critical: ${{ steps.vuln_report.outputs.vulnerability_CRITICAL }}
+      vulnerability_high: ${{ steps.vuln_report.outputs.vulnerability_HIGH }}
+      vulnerability_medium: ${{ steps.vuln_report.outputs.vulnerability_MEDIUM }}
+      list_vulns_critical: ${{ steps.vuln_report.outputs.list_vulns_CRITICAL }}
+      list_vulns_high: ${{ steps.vuln_report.outputs.list_vulns_HIGH }}
+      list_vulns_medium: ${{ steps.vuln_report.outputs.list_vulns_MEDIUM }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,6 +43,75 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Vulnerability Report
+      - id: vuln_report
+        name: Vulnerability Report
         run: |
           ./scripts/vulnerabilities_report.sh
+  get_security_info:
+    name: Get vulnerability settings from SSM
+    runs-on: [ self-hosted, linux ]
+    outputs:
+      skip_all_vulns: ${{ steps.get_vulns.outputs.skip_all_vulns}}
+      skip_critical_vulns: ${{ steps.get_vulns.outputs.skip_critical_vulns}}
+      skip_high_vulns: ${{ steps.get_vulns.outputs.skip_high_vulns}}
+      skip_medium_vulns: ${{ steps.get_vulns.outputs.skip_medium_vulns}}
+      vulns_to_skip: ${{ steps.get_vulns.outputs.vulns_to_skip}}
+      detected_critical_vulns: ${{ steps.detect_vulns.outputs.detected_critical_vulns }}
+      detected_high_vulns: ${{ steps.detect_vulns.outputs.detected_high_vulns }}
+      detected_medium_vulns: ${{ steps.detect_vulns.outputs.detected_medium_vulns }}
+    needs: scan-image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+      - id: get_vulns
+        name: Gets vulnerability config from SSM
+        run: |
+          ./scripts/get_vulns_config.sh
+      - id: detect_vulns
+        env:
+          LIST_VULNS_CRITICAL: ${{ needs.scan-image.outputs.list_vulns_critical }}
+          LIST_VULNS_HIGH: ${{ needs.scan-image.outputs.list_vulns_high }}
+          LIST_VULNS_MEDIUM: ${{ needs.scan-image.outputs.list_vulns_medium }}
+          SKIP_ALL_VULNS: ${{ steps.get_vulns.outputs.skip_all_vulns}}
+          SKIP_CRITICAL_VULNS: ${{ steps.get_vulns.outputs.skip_critical_vulns}}
+          SKIP_HIGH_VULNS: ${{ steps.get_vulns.outputs.skip_high_vulns}}
+          SKIP_MEDIUM_VULNS: ${{ steps.get_vulns.outputs.skip_medium_vulns}}
+          VULNS_TO_SKIP: ${{ steps.get_vulns.outputs.vulns_to_skip}}
+        run: |
+          ./scripts/detect_vulns.sh
+  critical_vulns:
+    name: Check for Critical Vulnerabilities
+    environment: critical_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: get_security_info
+    if: ${{ needs.get_security_info.outputs.detected_critical_vulns == 'false' }}
+    steps:
+      - name: Critical Vulns OK
+        run: |
+          echo "No critical vulnerabilities found"
+  high_vulns:
+    name: Check for High Vulnerabilities
+    environment: high_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: get_security_info
+    if: ${{ needs.get_security_info.outputs.detected_high_vulns == 'false' }}
+    steps:
+      - name: High Vulns OK
+        run: |
+          echo "No high vulnerabilities found"
+  medium_vulns:
+    name: Check for Medium Vulnerabilities
+    environment: medium_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: get_security_info
+    if: ${{ needs.get_security_info.outputs.detected_medium_vulns == 'false' }}
+    steps:
+      - name: Medium Vulns OK
+        run: |
+          echo "No medium vulnerabilities found"
