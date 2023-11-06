@@ -91,5 +91,5 @@ function update_github_output() {
   if [ "$DEBUG" == "true" ]; then
     echo "$OUTPUT"
   fi
-  echo "$1=$2" >>"$GITHUB_OUTPUT"
+  echo "$OUTPUT" >>"$GITHUB_OUTPUT"
 }
