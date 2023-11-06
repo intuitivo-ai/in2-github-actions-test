@@ -85,3 +85,11 @@ function sts_exit_role() {
   unset AWS_SECRET_ACCESS_KEY
   unset AWS_SESSION_TOKEN
 }
+
+function update_github_output() {
+  OUTPUT="$1=$2"
+  if [ "$DEBUG" == "true" ]; then
+    echo "$OUTPUT"
+  fi
+  echo "$1=$2" >>"$GITHUB_OUTPUT"
+}
