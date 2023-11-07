@@ -1,5 +1,7 @@
 #!/bin/env bash
 set -e
+DIR=$(dirname $0)
+source $DIR/functions.sh
 
 ORG="$GITHUB_REPOSITORY_OWNER"
 REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
@@ -24,7 +26,7 @@ echo "Vulnerabilities Report"
 for severity in CRITICAL HIGH MEDIUM; do
     count=$(echo "$SCAN_FINDINGS" | jq ".$severity // 0")
     echo "$severity: $count"
-    echo "vulnerability_$severity=$count" >> "$GITHUB_OUTPUT"
+    update_github_output "vulnerability_$severity" $count
 
     readarray -t cve_array < <(echo "$FULL_SCAN_FINDINGS" | jq -r --arg SEVERITY "$severity" '.imageScanFindings.findings[] | select(.severity==$SEVERITY) | .name')
     echo "List of $severity vulnerabilities:"
@@ -34,5 +36,5 @@ for severity in CRITICAL HIGH MEDIUM; do
     echo
 
     cve_list=$(IFS=$' '; echo "${cve_array[*]}")
-    echo "list_vulns_$severity=$cve_list" >> "$GITHUB_OUTPUT"
+    update_github_output "list_vulns_$severity" "$cve_list"
 done

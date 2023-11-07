@@ -1,5 +1,7 @@
 #!/bin/env bash
 set -e
+DIR=$(dirname $0)
+source $DIR/functions.sh
 
 # Read the vulnerability lists from environment variables and convert them into arrays
 read -r -a critical_vulnerabilities <<< "${LIST_VULNS_CRITICAL}"
@@ -61,9 +63,9 @@ if [[ $SKIP_ALL_VULNS == "true" || $SKIP_MEDIUM_VULNS == "true" || ${#medium_vul
 fi
 
 
-echo "detected_critical_vulns=$flag_critical" >> "$GITHUB_OUTPUT"
-echo "detected_high_vulns=$flag_high" >> "$GITHUB_OUTPUT"
-echo "detected_medium_vulns=$flag_medium" >> "$GITHUB_OUTPUT"
+update_github_output "detected_critical_vulns" "$flag_critical"
+update_github_output "detected_high_vulns"     "$flag_high"
+update_github_output "detected_medium_vulns"   "$flag_medium"
 
 # Output for testing
 echo "Flag for critical vulnerabilities: $flag_critical"
