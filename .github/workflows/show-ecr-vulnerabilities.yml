@@ -24,8 +24,9 @@ on:
         value: ${{ jobs.scan-image.outputs.vulnerability_medium }}
 
 jobs:
+
   scan-image:
-    name: Scan Container Image Vulnerabilities
+    name: Scan
     runs-on: [ self-hosted, linux ]
     outputs:
       vulnerability_critical: ${{ steps.vuln_report.outputs.vulnerability_CRITICAL }}
@@ -37,6 +38,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -70,7 +72,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - id: get_vulns
-        name: Gets vulnerability config from SSM
+        name: Get organization vulnerability settings
         run: |
           ./scripts/get_vulns_config.sh
       - id: detect_vulns
@@ -86,7 +88,7 @@ jobs:
         run: |
           ./scripts/detect_vulns.sh
   critical_vulns:
-    name: Check for Critical Vulnerabilities
+    name: Critical Vulnerabilities
     environment: critical_vulnerabilities
     runs-on: [ self-hosted, linux ]
     needs: get_security_info
@@ -96,7 +98,7 @@ jobs:
         run: |
           echo "No critical vulnerabilities found"
   high_vulns:
-    name: Check for High Vulnerabilities
+    name: High Vulnerabilities
     environment: high_vulnerabilities
     runs-on: [ self-hosted, linux ]
     needs: get_security_info
@@ -106,7 +108,7 @@ jobs:
         run: |
           echo "No high vulnerabilities found"
   medium_vulns:
-    name: Check for Medium Vulnerabilities
+    name: Medium Vulnerabilities
     environment: medium_vulnerabilities
     runs-on: [ self-hosted, linux ]
     needs: get_security_info
