@@ -6,6 +6,8 @@ on:
     types:
       - completed
     branches:
+      - main
+      - INFRA-**
 
 jobs:
 
