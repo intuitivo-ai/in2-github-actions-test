@@ -1,30 +1,15 @@
 name: Container Image Vulnerabilities
 
 on:
-  workflow_call:
-    inputs:
-      AWS_REGION:
-        required: false
-        type: string
-        default: us-east-1
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: false
-      AWS_SECRET_ACCESS_KEY:
-        required: false
-    outputs:
-      vulnerability_critical:
-        description: "Amount of critical vulnerabilities"
-        value: ${{ jobs.scan-image.outputs.vulnerability_critical }}
-      vulnerability_high:
-        description: "Amount of high vulnerabilities"
-        value: ${{ jobs.scan-image.outputs.vulnerability_high }}
-      vulnerability_medium:
-        description: "Amount of medium vulnerabilities"
-        value: ${{ jobs.scan-image.outputs.vulnerability_medium }}
+  workflow_run:
+    workflows: ["Continuous Delivery"]
+    types:
+      - completed
+    branches:
+      - main
+      - INFRA-**
 
 jobs:
-
   scan-image:
     name: Scan
     runs-on: [ self-hosted, linux ]
@@ -38,13 +23,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+        # with:
+        #  ref: ${{ github.event.workflow_run.head_branch }}
+      - run: git branch
+      - run: env
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
       - id: vuln_report
         name: Vulnerability Report
         run: |
