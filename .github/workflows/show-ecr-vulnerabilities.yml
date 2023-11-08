@@ -5,9 +5,6 @@ on:
     workflows: ["Continuous Delivery"]
     types:
       - completed
-    branches:
-      - main
-      - INFRA-**
 
 jobs:
   scan-image:
@@ -23,8 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        # with:
-        #  ref: ${{ github.event.workflow_run.head_branch }}
+        with:
+         ref: ${{ github.event.workflow_run.head_branch }}
       - run: git branch
       - run: env
       - name: Configure AWS credentials
