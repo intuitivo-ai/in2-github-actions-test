@@ -10,7 +10,6 @@ on:
       - INFRA-**
 
 jobs:
-
   scan-image:
     name: Scan
     runs-on: [ self-hosted, linux ]
