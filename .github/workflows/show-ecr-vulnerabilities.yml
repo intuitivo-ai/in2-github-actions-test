@@ -50,6 +50,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - run: git branch
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
