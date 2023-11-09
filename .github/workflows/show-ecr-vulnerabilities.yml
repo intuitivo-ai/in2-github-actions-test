@@ -102,4 +102,3 @@ jobs:
       - name: Medium Vulns OK
         run: |
           echo "No medium vulnerabilities found"
-
