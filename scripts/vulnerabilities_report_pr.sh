@@ -7,7 +7,7 @@ EXIT_CODE=1
 RETRIES=0
 
 if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
-    BASE_REF=$(jq -r .after $GITHUB_EVENT_PATH)
+    BASE_REF=$(jq -r '.pull_request.head.sha' $GITHUB_EVENT_PATH)
 fi
 
 if [ "$GITHUB_EVENT_NAME" == "push" ]; then
