@@ -23,7 +23,10 @@ jobs:
         with:
          ref: ${{ github.event.workflow_run.head_branch }}
       - run: git branch
-      - run: env
+      - env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - run: echo ${{ github.event.workflow_run }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
