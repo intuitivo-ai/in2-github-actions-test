@@ -17,11 +17,12 @@ jobs:
       list_vulns_critical: ${{ steps.vuln_report.outputs.list_vulns_CRITICAL }}
       list_vulns_high: ${{ steps.vuln_report.outputs.list_vulns_HIGH }}
       list_vulns_medium: ${{ steps.vuln_report.outputs.list_vulns_MEDIUM }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-         ref: ${{ github.event.workflow_run.head_branch }}
+         ref: ${{ github.event.workflow_run.head_commit.id }}
       - run: git branch
       - env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
@@ -54,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.event.workflow_run.head_commit.id }}
       - run: git branch
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -108,3 +109,4 @@ jobs:
       - name: Medium Vulns OK
         run: |
           echo "No medium vulnerabilities found"
+
