@@ -30,12 +30,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - id: vuln_report
-        name: Vulnerability Report
+      - name: Vulnerability Report
+        id: vuln_report
         run: |
           ./scripts/vulnerabilities_report.sh
-      - id: pr_number
-        name: Get PR number
+      - name: Get PR number
+        id: pr_number
         run : |
           pr_number=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
@@ -74,11 +74,12 @@ jobs:
               repo: context.repo.repo,
               body: '${{steps.vuln_report.outputs.ecr_report}}'
             })
-      - id: get_vulns
-        name: Get organization vulnerability settings
+      - name: Get organization vulnerability settings
+        id: get_vulns
         run: |
           ./scripts/get_vulns_config.sh
-      - id: detect_vulns
+      - name: Detect vulnerabilities
+        id: detect_vulns
         env:
           LIST_VULNS_CRITICAL: ${{ steps.vuln_report.outputs.list_vulns_critical }}
           LIST_VULNS_HIGH: ${{ steps.vuln_report.outputs.list_vulns_high }}
