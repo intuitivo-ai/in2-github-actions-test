@@ -69,6 +69,8 @@ jobs:
   build-and-push:
     runs-on: [ self-hosted, linux ]
     name: Build and Push
+    concurrency:
+      group: ${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
