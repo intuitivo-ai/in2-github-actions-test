@@ -9,7 +9,7 @@
     "repos": [
         {
             "repo_name": "in2-github-actions-test",
-            "skip_all_vulns": true
+            "skip_all_vulns": false
         }
     ]
 }
