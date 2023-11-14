@@ -35,28 +35,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name:  Check backend file
+        id: check-file
+        run: |
+          if [ -e "${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend" ]; then
+            echo "El archivo de configuración del backend se encontró."
+            echo "backendFile=true" >> $GITHUB_OUTPUT
+          fi
       - name: Setup Terraform
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS credentials
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Create lambda zip files
-        if: ${{ inputs.LAMBDA }}
+        if: ${{ inputs.LAMBDA && steps.check-file.outputs.backendFile == 'true' }}
         run: |
           cd ..
           chmod +x ./scripts/*
           ./scripts/create_zip_files.sh
           cd -
       - name: Init
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
       - name: Validate
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform validate -json
       - name: Plan
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
           terraform plan -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -lock=false
