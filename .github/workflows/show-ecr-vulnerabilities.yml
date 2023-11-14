@@ -76,6 +76,8 @@ jobs:
             })
       - name: Get organization vulnerability settings
         id: get_vulns
+        env:
+          PARAMETER_NAME: github-VULNERABILITY_CONFIG
         run: |
           ./scripts/get_vulns_config.sh
       - name: Detect vulnerabilities
