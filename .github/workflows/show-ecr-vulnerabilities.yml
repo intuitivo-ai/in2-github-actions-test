@@ -33,6 +33,7 @@ jobs:
       - name: Vulnerability Report
         id: vuln_report
         run: |
+          chmod +x ./scripts/*
           ./scripts/vulnerabilities_report.sh
       - name: Get PR number
         id: pr_number
@@ -79,6 +80,7 @@ jobs:
         env:
           PARAMETER_NAME: github-VULNERABILITY_CONFIG
         run: |
+          chmod +x ./scripts/*
           ./scripts/get_vulns_config.sh
       - name: Detect vulnerabilities
         id: detect_vulns
@@ -92,6 +94,7 @@ jobs:
           SKIP_MEDIUM_VULNS: ${{ steps.get_vulns.outputs.skip_medium_vulns}}
           VULNS_TO_SKIP: ${{ steps.get_vulns.outputs.vulns_to_skip}}
         run: |
+          chmod +x ./scripts/*
           ./scripts/detect_vulns.sh
   critical_vulns:
     name: Critical Vulnerabilities
