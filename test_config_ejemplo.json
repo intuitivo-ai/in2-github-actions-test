@@ -1,0 +1,35 @@
+{
+    "global_config": {
+        "skip_all_vulns": false,
+        "skip_critical_vulns": false,
+        "skip_high_vulns": false,
+        "skip_medium_vulns": false,
+        "vulns_to_skip": []
+    },
+    "repos": [
+        {
+            "repo_name": "in2-github-actions-test",
+            "vulns_to_skip": [
+                "CVE-2023-45853",
+                "CVE-2023-27103",
+                "CVE-2023-2953",
+                "CVE-2023-31484",
+                "CVE-2023-32570",
+                "CVE-2023-4039",
+                "CVE-2023-27102",
+                "CVE-2023-29659",
+                "CVE-2023-39615",
+                "CVE-2023-45322",
+                "CVE-2023-26966",
+                "CVE-2023-26965",
+                "CVE-2023-40745",
+                "CVE-2023-3316",
+                "CVE-2023-25433",
+                "CVE-2023-2908",
+                "CVE-2023-41175",
+                "CVE-2023-3618",
+                "CVE-2023-3576"
+            ]
+        }
+    ]
+}
