@@ -16,13 +16,14 @@ flag_medium=true
 # Helper function to remove an element from an array
 remove_element() {
   local target="$1"
-  local -n arr=$2
+  local -a arr=("${!2}")
   for i in "${!arr[@]}"; do
     if [[ ${arr[i]} == "$target" ]]; then
       unset 'arr[i]'
-      return
+      break
     fi
   done
+  eval "$2=(\"\${arr[@]}\")"
 }
 
 # Iterates the found vulnerabilities to check if something should be skipped.
