@@ -1,0 +1,123 @@
+name: Container Image Vulnerabilities
+
+on:
+  workflow_call:
+    inputs:
+      AWS_REGION:
+        required: false
+        type: string
+        default: us-east-1
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+
+jobs:
+  vulnerabilities:
+    name: Scan
+    runs-on: [ self-hosted, linux ]
+    outputs:
+      detected_critical_vulns: ${{ steps.detect_vulns.outputs.detected_critical_vulns }}
+      detected_high_vulns: ${{ steps.detect_vulns.outputs.detected_high_vulns }}
+      detected_medium_vulns: ${{ steps.detect_vulns.outputs.detected_medium_vulns }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+      - name: Vulnerability Report
+        id: vuln_report
+        run: |
+          ./scripts/vulnerabilities_report.sh
+      - name: Get PR number
+        id: pr_number
+        run : |
+          pr_number=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref_name }}" | jq '.[0].number // 0')
+          echo pr_number=$pr_number >> $GITHUB_OUTPUT
+      - name: Delete old PR Comments
+        if: ${{ steps.pr_number.outputs.pr_number != 0 }} 
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr_number.outputs.pr_number }},
+            });
+            
+            const botComments = comments.filter(comment => comment.user.login === "github-actions[bot]");
+            
+            botComments.forEach(botComment => {
+              github.rest.issues.deleteComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+            });
+      - name: Comment on PR
+        if: ${{ steps.pr_number.outputs.pr_number != 0 }} 
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ steps.pr_number.outputs.pr_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '${{steps.vuln_report.outputs.ecr_report}}'
+            })
+      - name: Get organization vulnerability settings
+        id: get_vulns
+        run: |
+          ./scripts/get_vulns_config.sh
+      - name: Detect vulnerabilities
+        id: detect_vulns
+        env:
+          LIST_VULNS_CRITICAL: ${{ steps.vuln_report.outputs.list_vulns_critical }}
+          LIST_VULNS_HIGH: ${{ steps.vuln_report.outputs.list_vulns_high }}
+          LIST_VULNS_MEDIUM: ${{ steps.vuln_report.outputs.list_vulns_medium }}
+          SKIP_ALL_VULNS: ${{ steps.get_vulns.outputs.skip_all_vulns}}
+          SKIP_CRITICAL_VULNS: ${{ steps.get_vulns.outputs.skip_critical_vulns}}
+          SKIP_HIGH_VULNS: ${{ steps.get_vulns.outputs.skip_high_vulns}}
+          SKIP_MEDIUM_VULNS: ${{ steps.get_vulns.outputs.skip_medium_vulns}}
+          VULNS_TO_SKIP: ${{ steps.get_vulns.outputs.vulns_to_skip}}
+        run: |
+          ./scripts/detect_vulns.sh
+  critical_vulns:
+    name: Critical Vulnerabilities
+    environment: critical_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: vulnerabilities
+    if: ${{ needs.vulnerabilities.outputs.detected_critical_vulns == 'false' }}
+    steps:
+      - name: Critical Vulns OK
+        run: |
+          echo "No critical vulnerabilities found"
+  high_vulns:
+    name: High Vulnerabilities
+    environment: high_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: vulnerabilities
+    if: ${{ needs.vulnerabilities.outputs.detected_high_vulns == 'false' }}
+    steps:
+      - name: High Vulns OK
+        run: |
+          echo "No high vulnerabilities found"
+  medium_vulns:
+    name: Medium Vulnerabilities
+    environment: medium_vulnerabilities
+    runs-on: [ self-hosted, linux ]
+    needs: vulnerabilities
+    if: ${{ needs.vulnerabilities.outputs.detected_medium_vulns == 'false' }}
+    steps:
+      - name: Medium Vulns OK
+        run: |
+          echo "No medium vulnerabilities found"

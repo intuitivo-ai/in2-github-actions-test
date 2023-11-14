@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  workflow_call:
+
+jobs:
+  create_release:
+    runs-on: [ self-hosted, linux ]
+    name: Create Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2      
+      - name: Create Release Notes
+        id: release_notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/release_notes.sh
+      - name: Create Release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: release/${{ github.run_number }}
+          release_name: v${{ github.run_number }}.${{ github.run_attempt }}
+          body_path : ${{ steps.release_notes.outputs.release_notes }}
