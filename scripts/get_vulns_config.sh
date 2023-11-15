@@ -14,7 +14,21 @@ read_global_config() {
 
 read_repo_config() {
   local repo_name=$1
-  echo "$CONFIG_JSON" | jq -r --arg repo_name "$repo_name" '.repos[] | select(.repo_name==$repo_name)'
+  local repo_config
+
+  # First we check if the 'repos' key exists in the json
+  if echo "$CONFIG_JSON" | jq -e '.repos' >/dev/null 2>&1; then
+    repo_config=$(echo "$CONFIG_JSON" | jq -r --arg repo_name "$repo_name" '.repos[] | select(.repo_name==$repo_name)')
+    
+    # Then we check if the repo is in the array or if it is an empty array
+    if [[ -z "$repo_config" ]] || [[ "$repo_config" == "null" ]]; then
+      echo "{}"
+    else
+      echo "$repo_config"
+    fi
+  else
+    echo "{}"
+  fi
 }
 
 merge_configs() {
