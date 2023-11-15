@@ -1,4 +1,6 @@
 #!/bin/env bash
+# -*- coding: utf-8 -*-
+export LANG=en_US.UTF-8
 set -e
 DIR=$(dirname $0)
 source $DIR/functions.sh
