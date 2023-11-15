@@ -18,10 +18,10 @@ read_repo_config() {
 
   # We check if the 'repos' key exists in the json and if the repo is in the array or if it is an empty array
   repo_config=$(echo "$CONFIG_JSON" | jq -r --arg repo_name "$repo_name" '
-    if .repos | length > 0 then
-      (.repos[] | select(.repo_name == $repo_name))
-    else
-      {}
+    if .repos | length > 0 then 
+      (.repos[] | select(.repo_name == $repo_name)) 
+    else 
+      {} 
     end
   ')
 
