@@ -33,6 +33,7 @@ for severity in CRITICAL HIGH MEDIUM; do
     count=$(echo "$SCAN_FINDINGS" | jq ".$severity // 0")
     report="$report \n## $severity: $count\n"
     update_github_output "vulnerability_$severity" "$count"
+    export "count_$severity"=$count
 
     readarray -t cve_array < <(echo "$FULL_SCAN_FINDINGS" | jq -r --arg SEVERITY "$severity" '.imageScanFindings.findings[] | select(.severity==$SEVERITY) | .name')
 
@@ -48,4 +49,9 @@ for severity in CRITICAL HIGH MEDIUM; do
     update_github_output "list_vulns_$severity" "$cve_list"
 done
 echo -e "$report"
-update_github_output "ecr_report" "$report"
+
+if [ "$count_CRITICAL" -eq 0 ] && [ "$count_HIGH" -eq 0 ] && [ "$count_MEDIUM" -eq 0 ]; then
+    update_github_output "ecr_report" "# Your Code is Free from Ecr-Vulnerabilities \n![LINK HERE](https://media.tenor.com/IZbebTRMJY8AAAAd/donny-azoff.gif)"
+else
+    update_github_output "ecr_report" "$report"
+fi
