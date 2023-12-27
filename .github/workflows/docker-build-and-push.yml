@@ -123,7 +123,7 @@ jobs:
           chmod +x ./scripts/*
           ./scripts/publish.sh ${{ inputs.BUILD }}
       - name: Clear images
-        if: ${{ inputs.CLEAR_CACHE }}
+        if: ${{ inputs.CLEAR_CACHE && steps.check_image.outputs.exist == 'false' }}
         run: |
           IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
           docker rmi -f $IMAGE_ID
