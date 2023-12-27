@@ -55,7 +55,6 @@ jobs:
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
-          chmod +x ./scripts/*
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
           ./scripts/migrations_run.sh $REPOSITORY
