@@ -73,16 +73,17 @@ jobs:
       group: ${{ github.sha }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Checkout ${{ inputs.CHECKOUT_IN2_REPOSITORY_NAMES }} repositories
         if: ${{ inputs.CHECKOUT_IN2_REPOSITORIES }}
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
 
+          chmod +x ./scripts/*
           ./scripts/checkout_repositories.sh ${ORG} ${{ inputs.CHECKOUT_IN2_REPOSITORY_NAMES }}
       - name: Configure AWS credentials
         if: ${{ (inputs.BUILD == 'docker' || inputs.BUILD == 'layer' || inputs.BUILD == 'docker_s3' ) && inputs.PUBLISH }}
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -119,9 +120,10 @@ jobs:
       - name: Publish
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
+          chmod +x ./scripts/*
           ./scripts/publish.sh ${{ inputs.BUILD }}
       - name: Clear images
-        if: ${{ inputs.CLEAR_CACHE && steps.check_image.outputs.exist == 'false' }}
+        if: ${{ inputs.CLEAR_CACHE }}
         run: |
           IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
           docker rmi -f $IMAGE_ID
