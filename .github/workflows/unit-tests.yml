@@ -40,7 +40,7 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Pull image
+      - name: Run tests
         if: ${{ inputs.RUN != 'false' }}
         run: |
           COMMIT_ID="${GITHUB_SHA}"
@@ -50,12 +50,6 @@ jobs:
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
           docker run --rm --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
-      - name: Run tests
-        if: ${{ inputs.RUN != 'false' }}
-        run: |
-          chmod +x ./scripts/*
-          ORG="${GITHUB_REPOSITORY_OWNER}"
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
         run: |
