@@ -57,6 +57,7 @@ jobs:
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/migrations_run.sh $REPOSITORY
       - name: Rollback migrations
         env:
@@ -64,12 +65,14 @@ jobs:
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/migrations_rollback.sh $REPOSITORY
       - name: Stop database
         if: ${{ always() }}
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/stop_db.sh $REPOSITORY
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}
