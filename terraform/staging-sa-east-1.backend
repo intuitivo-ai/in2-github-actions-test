@@ -1,1 +1,2 @@
-key = "in2-terraform-in2-github-actions-test/test.tfstate"
+key = "staging-sa-east-1.tfstate"
+dynamodb_table = "in2-terraform-lock-system-development"
