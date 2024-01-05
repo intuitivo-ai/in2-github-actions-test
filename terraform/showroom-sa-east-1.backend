@@ -1,2 +1,2 @@
 key = "showroom-sa-east-1.tfstate"
-dynamodb_table = "in2-terraform-lock-system-development"
+dynamodb_table = "in2-terraform-lock-cross-showroom"
