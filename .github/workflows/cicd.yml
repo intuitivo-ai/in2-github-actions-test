@@ -1,7 +1,7 @@
 name: Continuous Delivery
-'on':
+on:
   push:
-    branches:
+    branches: null
   workflow_dispatch:
     inputs:
       ACTION:
