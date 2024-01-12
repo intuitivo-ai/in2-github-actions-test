@@ -1,33 +1,33 @@
 name: Continuous Delivery
-"on":
+'on':
   push:
     branches: null
   workflow_dispatch:
     inputs:
       ACTION:
-        description: ""
+        description: ''
         required: true
         default: plan
         type: choice
         options:
-          - plan
-          - deploy
+        - plan
+        - deploy
       ENVIRONMENT:
-        description: ""
+        description: ''
         required: false
         default: staging
         type: choice
         options:
-          - development
-          - staging
+        - development
+        - staging
       TESTS:
         description: Run tests
         required: false
         default: true
         type: choice
         options:
-          - "true"
-          - "false"
+        - 'true'
+        - 'false'
 jobs:
   config:
     name: Config
@@ -35,13 +35,10 @@ jobs:
     with:
       DEFAULT_ENVIRONMENT: staging
       ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   build:
     name: Build
     needs:
-      - config
+    - config
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
       AWS_REGION: us-east-1
@@ -57,7 +54,7 @@ jobs:
   test:
     name: Tests
     needs:
-      - build
+    - build
     uses: ./.github/workflows/unit-tests.yml
     with:
       AWS_REGION: us-east-1
@@ -70,7 +67,7 @@ jobs:
     if: ${{ github.event_name == 'push' && 'true' == 'false' }}
     name: Tests
     needs:
-      - build
+    - build
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
@@ -84,7 +81,7 @@ jobs:
     if: ${{ inputs.ACTION != 'deploy' }}
     name: Tests
     needs:
-      - build
+    - build
     uses: ./.github/workflows/show-ecr-vulnerabilities.yml
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -95,12 +92,12 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - development
+        - development
         region:
-          - us-east-1
-          - sa-east-1
+        - us-east-1
+        - sa-east-1
     needs:
-      - config
+    - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -117,16 +114,16 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - development
+        - development
         region:
-          - us-east-1
-          - sa-east-1
+        - us-east-1
+        - sa-east-1
     needs:
-      - config
-      - build
-      - test
-      - migrations
-      - development_plan
+    - config
+    - build
+    - test
+    - migrations
+    - development_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -143,12 +140,12 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - staging
+        - staging
         region:
-          - us-east-1
-          - sa-east-1
+        - us-east-1
+        - sa-east-1
     needs:
-      - config
+    - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -165,16 +162,16 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - staging
+        - staging
         region:
-          - us-east-1
-          - sa-east-1
+        - us-east-1
+        - sa-east-1
     needs:
-      - config
-      - build
-      - test
-      - migrations
-      - staging_plan
+    - config
+    - build
+    - test
+    - migrations
+    - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -192,14 +189,14 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - production
-          - showroom
-          - sandbox
+        - production
+        - showroom
+        - sandbox
         region:
-          - us-east-1
-          - sa-east-1
+        - us-east-1
+        - sa-east-1
     needs:
-      - config
+    - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: ${{ matrix.region }}
