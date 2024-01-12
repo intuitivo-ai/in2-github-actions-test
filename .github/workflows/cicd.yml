@@ -63,6 +63,7 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
     if: ${{ github.event_name == 'push' && 'true' == 'false' }}
     name: Tests
