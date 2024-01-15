@@ -124,7 +124,6 @@ jobs:
     - config
     - build
     - test
-    - migrations
     - development_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
@@ -173,7 +172,6 @@ jobs:
     - config
     - build
     - test
-    - migrations
     - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
