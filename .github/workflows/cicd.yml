@@ -1,0 +1,209 @@
+name: Continuous Delivery
+'on':
+  push:
+    branches: null
+  workflow_dispatch:
+    inputs:
+      ACTION:
+        description: ''
+        required: true
+        default: plan
+        type: choice
+        options:
+        - plan
+        - deploy
+      ENVIRONMENT:
+        description: ''
+        required: false
+        default: staging
+        type: choice
+        options:
+        - development
+        - staging
+      TESTS:
+        description: Run tests
+        required: false
+        default: true
+        type: choice
+        options:
+        - 'true'
+        - 'false'
+jobs:
+  config:
+    name: Config
+    uses: ./.github/workflows/pre.yml
+    with:
+      DEFAULT_ENVIRONMENT: staging
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  build:
+    name: Build
+    needs:
+    - config
+    uses: ./.github/workflows/docker-build-and-push.yml
+    with:
+      AWS_REGION: us-east-1
+      PUBLISH: true
+      CHECKOUT_IN2_REPOSITORIES: true
+      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
+      CLEAR_CACHE: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
+  test:
+    name: Tests
+    needs:
+    - build
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      AWS_REGION: us-east-1
+      RUN: ${{ inputs.TESTS }}
+      CLEAR_CACHE: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  migrations:
+    if: ${{ github.event_name == 'push' && 'true' == 'false' }}
+    name: Tests
+    needs:
+    - build
+    uses: ./.github/workflows/migrations.yml
+    with:
+      AWS_REGION: us-east-1
+      CLEAR_CACHE: true
+      RUN_MIGRATIONS: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  scan_image:
+    if: ${{ inputs.ACTION != 'deploy' }}
+    name: Scan
+    needs:
+    - build
+    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  development_plan:
+    if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'development' ) }}
+    name: Development
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - development
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      LAMBDA: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  development_deploy:
+    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    name: Development
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - development
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - development_plan
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      LAMBDA: true
+      UPDATE_AWS_CLI: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  staging_plan:
+    if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'staging' ) }}
+    name: Staging
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - staging
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      LAMBDA: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  staging_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
+    name: Staging
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - staging
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - staging_plan
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      LAMBDA: true
+      UPDATE_AWS_CLI: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  critical_plan:
+    if: ${{ (github.event_name == 'push') }}
+    name: Critical Environments
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - production
+        - showroom
+        - sandbox
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      LAMBDA: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
