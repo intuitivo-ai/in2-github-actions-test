@@ -1,1 +1,4 @@
-../templates/run_tests.sh
+#!/usr/bin/env bash
+set -e
+
+echo "Run tests"
