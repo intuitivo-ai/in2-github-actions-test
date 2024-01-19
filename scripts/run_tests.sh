@@ -2,4 +2,3 @@
 set -e
 
 echo "Run tests"
- hola hola
