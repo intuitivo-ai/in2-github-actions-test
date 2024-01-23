@@ -1,2 +1,2 @@
-key = "development-sa-east-1.tfstate"
 dynamodb_table = "in2-terraform-lock-system-development"
+key            = "development-sa-east-1.tfstate"
