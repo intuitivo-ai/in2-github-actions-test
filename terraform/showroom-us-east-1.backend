@@ -1,2 +1,2 @@
-key = "showroom-us-east-1.tfstate"
 dynamodb_table = "in2-terraform-lock-cross-showroom"
+key            = "showroom-us-east-1.tfstate"
