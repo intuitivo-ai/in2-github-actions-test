@@ -1,24 +1,14 @@
 provider "aws" {
   region = var.region
   assume_role { role_arn = var.assume_role }
-  default_tags {
-    tags = {
-    Squad = "Infra"
-    Environment = var.environment
-    Repository = "in2-github-actions-test"
-  } }
+  default_tags { tags = { Squad = "Infra", Environment = var.environment } }
 }
 
 provider "aws" {
   alias  = "US"
   region = "us-east-1"
   assume_role { role_arn = var.assume_role }
-  default_tags { 
-    tags = {
-    Squad = "Infra"
-    Environment = var.environment
-    Repository = "in2-github-actions-test"
-  } }
+  default_tags { tags = { Squad = "Infra", Environment = var.environment } }
 }
 
 terraform {
