@@ -115,6 +115,7 @@ jobs:
     name: Development
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         env:
         - development
@@ -163,6 +164,7 @@ jobs:
     name: Staging
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         env:
         - staging
