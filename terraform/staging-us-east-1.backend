@@ -1,2 +1,0 @@
-dynamodb_table = "in2-terraform-lock-system-staging"
-key            = "staging-us-east-1.tfstate"
