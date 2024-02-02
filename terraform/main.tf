@@ -11,19 +11,19 @@ provider "aws" {
   } }
 }
 
-{% comment %} provider "aws" {
-  alias  = "US"
-  region = "us-east-1"
-  assume_role { 
-    role_arn = var.assume_role
-  }
-  default_tags { 
-    tags = {
-    Squad = "Infra"
-    Environment = var.environment
-    Repository = "in2-github-actions-test"
-  } }
-} {% endcomment %}
+# provider "aws" {
+#  alias  = "US"
+#  region = "us-east-1"
+#  assume_role { 
+#    role_arn = var.assume_role
+#  }
+#  default_tags { 
+#    tags = {
+#    Squad = "Infra"
+#    Environment = var.environment
+#    Repository = "in2-github-actions-test"
+#  } }
+# }
 
 terraform {
   backend "s3" {
