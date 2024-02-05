@@ -54,6 +54,7 @@ jobs:
     name: Production
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         env: [ production ]
         region:
@@ -97,6 +98,7 @@ jobs:
     name: Showroom
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         env: [ showroom ]
         region:
