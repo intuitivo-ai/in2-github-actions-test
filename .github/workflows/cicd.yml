@@ -66,7 +66,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   migrations:
-    if: ${{ github.event_name == 'push' && 'true' == 'false' }}
     name: Tests
     needs:
     - build
@@ -126,6 +125,7 @@ jobs:
     - config
     - build
     - test
+    - true
     - development_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
@@ -175,6 +175,7 @@ jobs:
     - config
     - build
     - test
+    - true
     - staging_plan
     uses: ./.github/workflows/terraform-apply.yml
     with:
