@@ -1,0 +1,2 @@
+dynamodb_table = "in2-terraform-lock-cross-showroom"
+key            = "showroom-sa-east-1.tfstate"
