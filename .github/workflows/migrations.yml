@@ -33,9 +33,9 @@ jobs:
     name: Migrations
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -55,9 +55,9 @@ jobs:
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
-          chmod +x ./scripts/*
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/migrations_run.sh $REPOSITORY
       - name: Rollback migrations
         env:
@@ -65,12 +65,14 @@ jobs:
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/migrations_rollback.sh $REPOSITORY
       - name: Stop database
         if: ${{ always() }}
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          chmod +x ./scripts/*
           ./scripts/stop_db.sh $REPOSITORY
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE }}

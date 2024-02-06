@@ -33,7 +33,7 @@ merge_configs() {
   local repo_name=$1
   local global_config
   local repo_config
-
+  
   global_config=$(read_global_config)
   repo_config=$(read_repo_config "$repo_name")
 
