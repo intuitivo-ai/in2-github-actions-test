@@ -53,6 +53,15 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
       DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
       TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  scan_image:
+    if: ${{ inputs.ACTION != 'deploy' }}
+    name: Scan
+    needs:
+    - build
+    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   test:
     name: Tests
     needs:
@@ -79,15 +88,6 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
-  scan_image:
-    if: ${{ inputs.ACTION != 'deploy' }}
-    name: Scan
-    needs:
-    - build
-    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_plan:
     if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'development' ) }}
     name: Development
