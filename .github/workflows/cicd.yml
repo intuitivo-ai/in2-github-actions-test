@@ -52,6 +52,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
       DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     name: Tests
     needs:
