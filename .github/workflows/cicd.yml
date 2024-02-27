@@ -2,6 +2,8 @@ name: Continuous Delivery
 'on':
   push:
     branches-ignore:
+    - UPDATES
+    - infra-updates
   workflow_dispatch:
     inputs:
       ACTION:
@@ -52,15 +54,6 @@ jobs:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
       DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
       TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  scan_image:
-    if: ${{ inputs.ACTION != 'deploy' }}
-    name: Scan
-    needs:
-    - build
-    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   test:
     name: Tests
     needs:
@@ -87,6 +80,15 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  scan_image:
+    if: ${{ inputs.ACTION != 'deploy' }}
+    name: Scan
+    needs:
+    - build
+    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_plan:
     if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'development' ) }}
     name: Development
@@ -188,7 +190,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   critical_plan:
-    if: ${{ (github.event_name == 'push') }}
+    if: ${{ ( github.event_name == 'push' ) }}
     name: Critical Environments
     strategy:
       fail-fast: false
@@ -196,10 +198,9 @@ jobs:
         env:
         - production
         - showroom
-        - sandbox
         region:
-        - us-east-1
         - sa-east-1
+        - us-east-1
     needs:
     - config
     uses: ./.github/workflows/terraform-plan.yml
