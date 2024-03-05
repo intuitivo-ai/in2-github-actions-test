@@ -3,7 +3,7 @@ name: Continuous Delivery
   push:
     branches-ignore:
     - UPDATES
-    - infra-updates
+    - infra-updates*
   workflow_dispatch:
     inputs:
       ACTION:
