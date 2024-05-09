@@ -1,0 +1,50 @@
+name: Pull Request
+on:
+  pull_request:
+    branches-ignore:
+      - 'infra-updates*'
+
+jobs:
+  clean_old_comments :
+    name: Delete old Comments
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get PR number
+        id: pr_number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/get_pr_number.sh
+      - name: Delete old PR Comments
+        if: ${{ steps.pr_number.outputs.pr_number != 0 }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('./scripts/delete_pr_comments.sh')
+            console.log(script({github, context}))
+  build:
+    name: Pull Request
+    uses: ./.github/workflows/docker-build-and-push.yml
+    with:
+      AWS_REGION: us-east-1
+      PUBLISH: true
+      GH_SHA: ${{ github.event.pull_request.head.sha }}
+      CHECKOUT_IN2_REPOSITORIES: true
+      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
+      CLEAR_CACHE: true
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  scan_image:
+    name: Scan
+    needs:
+    - build
+    uses: ./.github/workflows/show-ecr-vulnerabilities.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

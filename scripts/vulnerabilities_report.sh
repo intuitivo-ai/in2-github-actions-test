@@ -16,16 +16,27 @@ if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
     IMAGE_INFO="--repository-name $REPOSITORY --image-id imageTag=$BASE_REF"
 fi
 
-until [ $EXIT_CODE -eq 0 ] || [ $RETRIES -eq 2 ]
-do
-    aws ecr wait image-scan-complete $IMAGE_INFO
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -ne 0 ]; then
-        ((RETRIES++))
-    fi
-done
+# if scanning = basic
+SCAN_STATUS=$(aws ecr describe-images --query 'imageDetails[0].imageScanStatus.status' $IMAGE_INFO --output text)
 
-FULL_SCAN_FINDINGS=$(aws ecr describe-image-scan-findings $IMAGE_INFO)
+if [ "$SCAN_STATUS" = "COMPLETE" ]; then
+    FULL_SCAN_FINDINGS=$(aws ecr describe-image-scan-findings $IMAGE_INFO)
+elif [ "$SCAN_STATUS" = "IN_PROGRESS" ]; then
+    until [ $EXIT_CODE -eq 0 ] || [ $RETRIES -eq 2 ]
+    do
+        aws ecr wait image-scan-complete $IMAGE_INFO
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -ne 0 ]; then
+            ((RETRIES++))
+        fi
+    done
+
+    FULL_SCAN_FINDINGS=$(aws ecr describe-image-scan-findings $IMAGE_INFO)
+else
+    echo "Unexpected scan status: $SCAN_STATUS" # if the result is null, then the scan type is probably other than basic
+    exit 1
+fi
+
 SCAN_FINDINGS=$(echo "$FULL_SCAN_FINDINGS" | jq '.imageScanFindings.findingSeverityCounts')
 
 report="# Vulnerabilities Report\n"

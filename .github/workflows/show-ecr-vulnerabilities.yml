@@ -37,32 +37,11 @@ jobs:
           ./scripts/vulnerabilities_report.sh
       - name: Get PR number
         id: pr_number
-        run : |
-          pr_number=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref_name }}" | jq '.[0].number // 0')
-          echo pr_number=$pr_number >> $GITHUB_OUTPUT
-      - name: Delete old PR Comments
-        if: ${{ steps.pr_number.outputs.pr_number != 0 }}
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ steps.pr_number.outputs.pr_number }},
-            });
-            
-            const botComments = comments.filter(comment => comment.user.login === "github-actions[bot]");
-            
-            botComments.forEach(botComment => {
-              github.rest.issues.deleteComment({
-                comment_id: botComment.id,
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              });
-            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/get_pr_number.sh
       - name: Comment on PR
         if: ${{ steps.pr_number.outputs.pr_number != 0 }}
         uses: actions/github-script@v6

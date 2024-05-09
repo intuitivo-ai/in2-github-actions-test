@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: false
+      REQUIREMENTS:
+        required: false
+        type: boolean
+        default: false
       TF_PATH:
         required: false
         type: string
@@ -30,6 +34,7 @@ on:
         required: false
 
 env:
+  GITHUB_ACTOR: ${{ github.actor }}
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 jobs:
@@ -69,6 +74,13 @@ jobs:
           unzip awscliv2.zip
           sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
           /usr/local/bin/aws --version
+      - name: Install workflow requirements
+        if: ${{ inputs.REQUIREMENTS }}
+        run: |
+          cd ..
+          chmod +x ./scripts/*
+          ./scripts/requirements.sh
+          cd -
       - name: Init
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
@@ -96,4 +108,4 @@ jobs:
       - name: Notification
         if: always()
         run: |
-          aws lambda invoke --function-name main-slash-bot --invocation-type Event --payload '{"source":"gh-actions","env":"${{ inputs.ENVIRONMENT }}","repository":"${{ github.event.repository.name }}","username":"${{ github.actor }}","status":"${{ steps.apply.outcome }}"}' response.json
+          aws lambda invoke --function-name main-slash-bot --cli-binary-format raw-in-base64-out --invocation-type Event --payload '{"source":"gh-actions","env":"${{ inputs.ENVIRONMENT }}","repository":"${{ github.event.repository.name }}","username":"${{ github.actor }}","status":"${{ steps.apply.outcome }}"}' response.json

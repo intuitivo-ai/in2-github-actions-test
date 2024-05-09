@@ -3,7 +3,12 @@
 export $(echo ${ADDITIONAL_VARIABLES} | sed 's/,/ /g')
 
 DATABASE_TYPE="postgres"
+#LOCAL=true
 NAME="in2-github-actions-test"
+API_USER=${NAME//-/_}
+POSTGRES_DB=local_database
+POSTGRES_PASSWORD=local_password
+POSTGRES_USER=local_user
 
 DB_ENV_VARS=""
 DB_ENV_VARS="${DB_ENV_VARS} -e POSTGRES_DB=local_database"

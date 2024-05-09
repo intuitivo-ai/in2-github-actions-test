@@ -38,6 +38,10 @@ on:
         required: false
         type: boolean
         default: false
+      GH_SHA:
+        required: false
+        type: string
+        default: ${{ github.sha }}
     secrets:
       AWS_ACCESS_KEY_ID:
         required: false
@@ -64,13 +68,14 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
   VERSION: "1.${{ github.run_number }}.${{ github.run_attempt }}"
+  GH_SHA: ${{ inputs.GH_SHA }}
 
 jobs:
   build-and-push:
     runs-on: [ self-hosted, linux ]
     name: Build and Push
     concurrency:
-      group: ${{ github.sha }}
+      group: ${{ inputs.GH_SHA }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -109,7 +114,7 @@ jobs:
           ORG="$GITHUB_REPOSITORY_OWNER"
           REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
           
-          export IMAGE=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GITHUB_SHA)
+          export IMAGE=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GH_SHA)
           echo "exist=$(if [ -z "$IMAGE" ]; then echo 'false'; fi)"  >> $GITHUB_OUTPUT
           echo "IMAGE_TAG $image_tag=$(jq '.imageDetails[0].imageTags' <<< "$IMAGE")"
       - name: Build

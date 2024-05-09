@@ -2,6 +2,11 @@
 set -e
 DIR=$(dirname $0)
 source $DIR/variables.sh
+if [[ -n "$LOCAL" ]]; then
+  DOCKER_URL=${NAME}:latest
+else
+  DOCKER_URL=${REGISTRY}/${REPOSITORY}:${GITHUB_SHA}
+fi
 
 function get_docker_build_params() {
   _DOCKER_BUILD_ARGS=""
@@ -38,6 +43,21 @@ function git_checkout() {
   git clone git@github.com:${_ORG}/${_REPO}.git ${_PATH}
 }
 
+function run_sql_commands() {
+  SQL=$1
+  docker exec ${DATABASE_TYPE}_${NAME} psql -U ${POSTGRES_USER} ${POSTGRES_DB} -c "${SQL}"
+}
+function create_db_roles() {
+  run_sql_commands "CREATE ROLE writer;"
+  run_sql_commands "GRANT USAGE ON SCHEMA public TO writer;"
+  run_sql_commands "GRANT CREATE on SCHEMA public to writer;"
+  run_sql_commands "GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO writer;"
+  run_sql_commands "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO writer;"
+  run_sql_commands "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO writer;"
+
+  run_sql_commands "CREATE USER ${API_USER} WITH ENCRYPTED PASSWORD '${POSTGRES_PASSWORD}';"
+  run_sql_commands "GRANT writer TO ${API_USER};"
+}
 function start_db() {
   NAME=$1
   docker run --rm \
@@ -46,6 +66,7 @@ function start_db() {
     ${DB_ENV_VARS} \
     -d "${DATABASE_TYPE}"
   sleep 10
+  create_db_roles
 }
 function stop_db() {
   NAME=$1
@@ -57,7 +78,7 @@ function run_script() {
 
   docker run --entrypoint "" \
     ${APP_ENV_VARS} \
-    ${REGISTRY}/${REPOSITORY}:${GITHUB_SHA} scripts/migration_commands.sh $SCRIPT
+    ${DOCKER_URL} scripts/migration_commands.sh $SCRIPT
 }
 
 function run_migrations() {
@@ -92,4 +113,8 @@ function update_github_output() {
     echo "$OUTPUT"
   fi
   echo "$OUTPUT" >>"$GITHUB_OUTPUT"
+}
+
+function install_pip_requirements() {
+  pip3 install -r requirements.txt
 }

@@ -13,6 +13,10 @@ on:
       RUN:
         required: false
         type: string
+      TYPE:
+        required: false
+        type: string
+        default: default
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -55,9 +59,15 @@ jobs:
           chmod +x ./scripts/*
           ORG="${GITHUB_REPOSITORY_OWNER}"
           REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-          docker run --rm --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
+          docker run --rm --entrypoint "" -v $PWD/coverage/:/coverage/ ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh ${{ inputs.TYPE }}
       - name: Clear images
-        if: ${{ inputs.CLEAR_CACHE }}
+        if: ${{ inputs.CLEAR_CACHE && steps.run_tests.outcome == 'success' }}
         run: |
           IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
           docker rmi -f $IMAGE_ID
+      - name: Coverage Report
+        if: ${{ steps.pr_number.outputs.pr_number != 0 && inputs.TYPE == 'coverage' }}
+        id: coverage
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/coverage_report.sh
