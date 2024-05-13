@@ -28,7 +28,7 @@ env:
 
 jobs:
   run-migration-tests:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     if: ${{ inputs.RUN_MIGRATIONS }}
     name: Migrations
     steps:
