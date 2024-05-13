@@ -89,17 +89,6 @@ jobs:
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
           terraform apply -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -auto-approve -refresh-only -lock-timeout=5m
-      - name: Detect import template
-        run: |
-          original_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.import"
-          new_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tf"
-          
-          if [ -f "$original_filename" ]; then
-            mv "$original_filename" "$new_filename"
-            echo "Import file $new_filename created."
-          else
-            echo "No import file detected for ${{ inputs.ENVIRONMENT }} in region ${{ inputs.AWS_REGION }}."
-          fi
       - name: Plan
         run: |
           export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
