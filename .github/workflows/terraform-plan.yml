@@ -34,7 +34,7 @@ env:
 
 jobs:
   terraform-plan:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     concurrency:
@@ -81,6 +81,17 @@ jobs:
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
+      - name: Detect import template
+        run: |
+          original_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.import"
+          new_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tf"
+          
+          if [ -f "$original_filename" ]; then
+            mv "$original_filename" "$new_filename"
+            echo "Import file $new_filename created."
+          else
+            echo "No import file detected for ${{ inputs.ENVIRONMENT }} in region ${{ inputs.AWS_REGION }}."
+          fi
       - name: Validate
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
