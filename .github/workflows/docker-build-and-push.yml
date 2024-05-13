@@ -72,7 +72,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     name: Build and Push
     concurrency:
       group: ${{ inputs.GH_SHA }}
@@ -113,7 +113,7 @@ jobs:
         run: |
           ORG="$GITHUB_REPOSITORY_OWNER"
           REPOSITORY=$(echo "$GITHUB_REPOSITORY" | sed "s|$ORG/||g")
-          
+
           export IMAGE=$(aws ecr describe-images --repository-name $REPOSITORY --image-ids imageTag=$GH_SHA)
           echo "exist=$(if [ -z "$IMAGE" ]; then echo 'false'; fi)"  >> $GITHUB_OUTPUT
           echo "IMAGE_TAG $image_tag=$(jq '.imageDetails[0].imageTags' <<< "$IMAGE")"
