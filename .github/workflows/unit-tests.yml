@@ -31,7 +31,7 @@ env:
 
 jobs:
   run-unit-tests:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     name: Unit-Tests
     steps:
       - name: Checkout

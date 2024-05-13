@@ -16,7 +16,7 @@ on:
 jobs:
   vulnerabilities:
     name: Scan
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     outputs:
       detected_critical_vulns: ${{ steps.detect_vulns.outputs.detected_critical_vulns }}
       detected_high_vulns: ${{ steps.detect_vulns.outputs.detected_high_vulns }}
@@ -78,7 +78,7 @@ jobs:
   critical_vulns:
     name: Critical Vulnerabilities
     environment: critical_vulnerabilities
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_critical_vulns == 'false' }}
     steps:
@@ -88,7 +88,7 @@ jobs:
   high_vulns:
     name: High Vulnerabilities
     environment: high_vulnerabilities
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_high_vulns == 'false' }}
     steps:
@@ -98,7 +98,7 @@ jobs:
   medium_vulns:
     name: Medium Vulnerabilities
     environment: medium_vulnerabilities
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_medium_vulns == 'false' }}
     steps:

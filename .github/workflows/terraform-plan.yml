@@ -34,7 +34,7 @@ env:
 
 jobs:
   terraform-plan:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     concurrency:
