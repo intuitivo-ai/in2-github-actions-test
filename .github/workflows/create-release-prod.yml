@@ -5,7 +5,7 @@ on:
 
 jobs:
   create_release:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     name: Create Release
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
         id: release_notes
         if: ${{ steps.check_apply.outputs.apply == 'true' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x ./scripts/*
           ./scripts/release_notes.sh
