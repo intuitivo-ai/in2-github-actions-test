@@ -3,9 +3,6 @@ on:
   pull_request:
     branches-ignore:
       - 'infra-updates*'
-concurrency:
-  group: ${{ github.base_ref }}
-  cancel-in-progress: true
 jobs:
   clean_old_comments :
     name: Delete old Comments
