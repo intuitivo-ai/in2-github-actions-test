@@ -31,6 +31,10 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  TF_VAR_commit_id: ${{ github.sha }}
+  TF_VAR_gh_run_attempt: ${{ github.run_attempt }}
+  TF_VAR_gh_run_number: ${{ github.run_number }}
+  VAR_FILE: ${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
 
 jobs:
   terraform-plan:
@@ -85,7 +89,7 @@ jobs:
         run: |
           original_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.import"
           new_filename="import-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tf"
-          
+
           if [ -f "$original_filename" ]; then
             mv "$original_filename" "$new_filename"
             echo "Import file $new_filename created."
@@ -99,5 +103,4 @@ jobs:
       - name: Plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
-          export TF_VAR_commit_id="${GITHUB_SHA}" TF_VAR_gh_run_number="${{ github.run_number }}" TF_VAR_gh_run_attempt="${{ github.run_attempt }}"
-          terraform plan -var-file=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars -input=false -lock=false
+          terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false

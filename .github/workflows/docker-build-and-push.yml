@@ -55,7 +55,6 @@ on:
         required: false
 
 env:
-  ACCOUNT_IDS: ""
   ADDITIONAL_VARIABLES: ${{ inputs.ADDITIONAL_VARIABLES }}
   AWS_REGION: ${{ inputs.AWS_REGION }}
   DEFAULT_DOCKER_TAG: ${{ github.repository }}
@@ -63,12 +62,10 @@ env:
   DOCKER_SECRET_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-  LOCAL_FILENAME: ""
-  LOCAL_PATH: ""
+  GH_SHA: ${{ inputs.GH_SHA }}
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
   VERSION: "1.${{ github.run_number }}.${{ github.run_attempt }}"
-  GH_SHA: ${{ inputs.GH_SHA }}
 
 jobs:
   build-and-push:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set +e
-terraform refresh -input=false >release.lock 2>&1
+terraform refresh -var-file=$VAR_FILE.tfvars -input=false -target data.aws_caller_identity.aws >release.lock 2>&1
 set -e
 
 echo "---- ----"
