@@ -28,6 +28,8 @@ on:
         required: true
       PERSONAL_ACCESS_TOKEN:
         required: false
+      GOOGLE_CREDENTIALS:
+        required: false
 
 env:
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

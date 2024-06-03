@@ -40,6 +40,8 @@ on:
         required: true
       PERSONAL_ACCESS_TOKEN:
         required: false
+      GOOGLE_CREDENTIALS:
+        required: false
 
 env:
   GITHUB_ACTOR: ${{ github.actor }}
