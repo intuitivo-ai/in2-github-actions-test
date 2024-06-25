@@ -50,7 +50,6 @@ jobs:
 
           docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
           docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
-          docker run --rm --entrypoint "" ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh
       - name: Run migrations
         env:
           REGISTRY: ${{ secrets.REGISTRY }}

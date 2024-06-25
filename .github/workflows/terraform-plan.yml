@@ -26,6 +26,8 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      INFRACOST_API_KEY:
+        required: false
       PERSONAL_ACCESS_TOKEN:
         required: false
       GOOGLE_CREDENTIALS:
@@ -43,6 +45,7 @@ jobs:
     runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     concurrency:
       group: terraform-plan-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     name: Plan
@@ -105,4 +108,23 @@ jobs:
       - name: Plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
-          terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false
+          terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false -out=$VAR_FILE.plan
+      - name: Save plan as JSON
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
+        run: |
+          terraform show -json $VAR_FILE.plan > ${VAR_FILE}_plan.json
+      - name: Upload terraform json plan
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: $VAR_FILE
+          path: ${VAR_FILE}_plan.json
+      - name: Setup Infracost
+        if: ${{ env.INFRACOST_API_KEY != '' }}
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+      - name: Infracost report
+        if: ${{ env.INFRACOST_API_KEY != '' }}
+        run: |
+          infracost breakdown --path=. --project-name $VAR_FILE --terraform-var-file $VAR_FILE.tfvars --format=table
