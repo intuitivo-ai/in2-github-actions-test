@@ -109,16 +109,28 @@ jobs:
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false -out=$VAR_FILE.plan
-      - name: Save plan as JSON
+      - name: Show JSON plan
+        id: tf-json-plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
-          terraform show -json $VAR_FILE.plan > ${VAR_FILE}_plan.json
+          terraform show -json $VAR_FILE.plan
+      - name: Save plan as JSON file
+        id: tf-json-plan-file
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
+        env:
+          JSON_PLAN: ${{ steps.tf-json-plan.outputs.stdout }}
+        run: |
+          printf "%s" $JSON_PLAN > plan_${{ env.VAR_FILE }}.json
+          echo "plan_file=plan_${{ env.VAR_FILE }}.json" >> $GITHUB_OUTPUT
       - name: Upload terraform json plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: actions/upload-artifact@v4
+        env:
+          PLAN_FILE: ${{ steps.tf-json-plan-file.outputs.plan_file }}
         with:
-          name: $VAR_FILE
-          path: ${VAR_FILE}_plan.json
+          name: ${{ env.PLAN_FILE }}
+          overwrite: true
+          path: ${{ inputs.TF_PATH }}/${{ env.PLAN_FILE }}
       - name: Setup Infracost
         if: ${{ env.INFRACOST_API_KEY != '' }}
         uses: infracost/actions/setup@v3
