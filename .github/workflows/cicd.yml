@@ -30,14 +30,6 @@ name: Continuous Delivery
         options:
         - 'true'
         - 'false'
-      INFRACOST:
-        description: Infracost Report
-        required: false
-        default: true
-        type: choice
-        options:
-        - 'true'
-        - 'false'
 jobs:
   config:
     name: Config
@@ -110,24 +102,6 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  development_infracost:
-    name: Development
-    strategy:
-      fail-fast: false
-      matrix:
-        env:
-        - development
-        region:
-        - us-east-1
-        - sa-east-1
-    needs:
-    - development_plan
-    uses: ./.github/workflows/infracost-report.yml
-    with:
-      AWS_REGION: ${{ matrix.region }}
-      ENVIRONMENT: ${{ matrix.env }}
-      TF_PATH: terraform
-    secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   development_deploy:
     if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
@@ -179,24 +153,6 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  staging_infracost:
-    name: Staging
-    strategy:
-      fail-fast: false
-      matrix:
-        env:
-        - staging
-        region:
-        - us-east-1
-        - sa-east-1
-    needs:
-    - staging_plan
-    uses: ./.github/workflows/infracost-report.yml
-    with:
-      AWS_REGION: ${{ matrix.region }}
-      ENVIRONMENT: ${{ matrix.env }}
-      TF_PATH: terraform
-    secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   staging_deploy:
     if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
@@ -249,3 +205,4 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
