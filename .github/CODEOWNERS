@@ -9,7 +9,7 @@
 /scripts/functions.sh    @intuitivo-ai/mlops
 /scripts/get_pr_number.sh    @intuitivo-ai/mlops
 /scripts/get_vulns_config.sh    @intuitivo-ai/mlops
-/scripts/infracost_report.sh    @intuitivo-ai/mlops
+/scripts/infracost_comment.sh    @intuitivo-ai/mlops
 /scripts/migrations_rollback.sh    @intuitivo-ai/mlops
 /scripts/migrations_run.sh    @intuitivo-ai/mlops
 /scripts/publish.sh    @intuitivo-ai/mlops
