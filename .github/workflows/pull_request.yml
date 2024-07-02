@@ -54,7 +54,6 @@ jobs:
   infracost-report:
     if: ${{ !github.event.pull_request.draft }}
     name: Infracost Report
-    runs-on: [ self-hosted, linux ]
     uses: ./.github/workflows/infracost-report.yml
     with:
       RUN_ON_PR: true
