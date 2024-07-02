@@ -42,7 +42,7 @@ env:
 
 jobs:
   terraform-plan:
-    runs-on: [ self-hosted, linux, intuitivo ]
+    runs-on: [ "self-hosted", "linux", "intuitivo" ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
@@ -65,6 +65,8 @@ jobs:
       - name: Setup Terraform
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper : false
       - name: Configure AWS credentials
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: aws-actions/configure-aws-credentials@v3
@@ -109,24 +111,17 @@ jobs:
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false -out=$VAR_FILE.plan
-      - name: Show JSON plan
+      - name: Save plan as JSON
         id: tf-json-plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
-          terraform show -json $VAR_FILE.plan
-      - name: Save plan as JSON file
-        id: tf-json-plan-file
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
-        env:
-          JSON_PLAN: ${{ steps.tf-json-plan.outputs.stdout }}
-        run: |
-          printf "%s" $JSON_PLAN > plan_${{ env.VAR_FILE }}.json
-          echo "plan_file=plan_${{ env.VAR_FILE }}.json" >> $GITHUB_OUTPUT
+          terraform show -json $VAR_FILE.plan > plan_$VAR_FILE.json
+          echo "plan_file=plan_$VAR_FILE.json" >> $GITHUB_OUTPUT
       - name: Upload terraform json plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: actions/upload-artifact@v4
         env:
-          PLAN_FILE: ${{ steps.tf-json-plan-file.outputs.plan_file }}
+          PLAN_FILE: ${{ steps.tf-json-plan.outputs.plan_file }}
         with:
           name: ${{ env.PLAN_FILE }}
           overwrite: true
