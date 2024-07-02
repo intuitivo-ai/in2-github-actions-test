@@ -42,7 +42,7 @@ env:
 
 jobs:
   terraform-plan:
-    runs-on: [ "self-hosted", "linux", "intuitivo" ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
