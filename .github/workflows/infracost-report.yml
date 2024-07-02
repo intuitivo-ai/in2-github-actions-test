@@ -56,17 +56,30 @@ jobs:
           ../scripts/infracost_report.sh
 
       - name: Infracost PR report
-        if: ${{ inputs.RUN_ON_PR }}
+        if: $${{ inputs.RUN_ON_PR }}
+        id: infracost-pr-report
         run: |
           chmod +x ../scripts/*
           ../scripts/infracost_comment.sh
 
-      - name: Infracost Comment
-        if: ${{ inputs.RUN_ON_PR }}
+      - name: Get PR number
+        if: $${{ inputs.RUN_ON_PR }}
+        id: pr_number
+        env:
+          GITHUB_TOKEN: $${{ secrets.GITHUB_TOKEN }}
         run: |
-          infracost comment github --path=report.json \
-                                   --repo=$GITHUB_REPOSITORY \
-                                   --github-token=${{ github.token }} \
-                                   --pull-request=${{ github.event.pull_request.number }} \
-                                   --behavior=update \
-                                   --show-all-projects
+          chmod +x ./scripts/*
+          ../scripts/get_pr_number.sh
+
+      - name: Comment on PR
+        if: $${{ steps.pr_number.outputs.pr_number != 0 && inputs.RUN_ON_PR }}
+        uses: actions/github-script@v6
+        with:
+          github-token: $${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: $${{ steps.pr_number.outputs.pr_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '$${{steps.infracost-pr-report.outputs.gh_comment}}'
+            })
