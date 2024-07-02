@@ -57,5 +57,6 @@ jobs:
     uses: ./.github/workflows/infracost-report.yml
     with:
       RUN_ON_PR: true
+      TF_PATH: terraform
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
