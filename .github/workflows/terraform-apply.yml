@@ -53,7 +53,7 @@ env:
 
 jobs:
   terraform-apply:
-    runs-on: [ "self-hosted", "linux", "intuitivo" ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     environment: ${{ inputs.ENVIRONMENT }}
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
