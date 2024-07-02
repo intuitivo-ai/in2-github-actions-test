@@ -12,10 +12,7 @@ on:
       RUN_ON_PR:
         required: false
         default: false
-        type: choice
-        options:
-        - 'true'
-        - 'false'
+        type: boolean
       TF_PATH:
         required: false
         type: string
