@@ -75,6 +75,25 @@ jobs:
       TF_PATH: terraform
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  production_pre_deploy:
+    if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'production' }}
+    name: Production
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env: [ production ]
+        region:
+          - us-east-1
+          - sa-east-1
+    needs:
+      - config
+      - production_plan
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: pre
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   production_deploy:
     if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'production' }}
     name: Production
@@ -89,6 +108,7 @@ jobs:
     needs:
       - config
       - production_plan
+      - production_pre_deploy
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -98,6 +118,24 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  production_post_deploy:
+    if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'production' && always() }}
+    name: Production
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env: [ production ]
+        region:
+          - us-east-1
+          - sa-east-1
+    needs:
+      - config
+      - production_apply
+    with:
+      ACTION: post
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   showroom_plan:
     if: ${{ needs.config.outputs.environment == 'showroom' }}
     name: Showroom
@@ -138,6 +176,25 @@ jobs:
       TF_PATH: terraform
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  showroom_pre_deploy:
+    if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'showroom' }}
+    name: Showroom
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env: [ showroom ]
+        region:
+          - us-east-1
+          - sa-east-1
+    needs:
+      - config
+      - showroom_plan
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: pre
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   showroom_deploy:
     if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'showroom' }}
     name: Showroom
@@ -152,6 +209,7 @@ jobs:
     needs:
       - config
       - showroom_plan
+      - showroom_pre_deploy
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -161,6 +219,24 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  showroom_post_deploy:
+    if: ${{ inputs.ACTION == 'deploy' && github.ref_name == 'main' && github.ref_type == 'branch' && needs.config.outputs.environment == 'showroom' && always() }}
+    name: Showroom
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env: [ showroom ]
+        region:
+          - us-east-1
+          - sa-east-1
+    needs:
+      - config
+      - showroom_apply
+    with:
+      ACTION: post
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   release:
     name: Release
     needs:
