@@ -1,0 +1,48 @@
+name: Pre and Post deploy actions
+
+on:
+  workflow_call:
+    inputs:
+      ACTION:
+        required: true
+        type: string
+      AWS_REGION:
+        required: true
+        type: string
+      ENVIRONMENT:
+        required: true
+        type: string
+
+env:
+  REGION: ${{ inputs.AWS_REGION }}
+  ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+
+jobs:
+  pre-deploy:
+    if: ${{ inputs.ACTION == 'pre' }}
+    name: Pre deploy
+    runs-on: [ self-hosted, linux, intuitivo ]
+    concurrency:
+      cancel-in-progress: true
+      group: pre-deploy-${{ inputs.ENVIRONMENT }}-${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run pre_deploy script
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/pre_deploy.sh
+  post-deploy:
+    if: ${{ inputs.ACTION == 'post' }}
+    name: Post deploy
+    runs-on: [ self-hosted, linux, intuitivo ]
+    concurrency:
+      cancel-in-progress: true
+      group: post-deploy-${{ inputs.ENVIRONMENT }}-${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run post_deploy script
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/post_deploy.sh
