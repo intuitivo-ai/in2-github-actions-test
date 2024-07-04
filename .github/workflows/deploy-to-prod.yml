@@ -131,7 +131,7 @@ jobs:
           - sa-east-1
     needs:
       - config
-      - production_apply
+      - production_deploy
     with:
       ACTION: post
       AWS_REGION: ${{ matrix.region }}
@@ -232,7 +232,7 @@ jobs:
           - sa-east-1
     needs:
       - config
-      - showroom_apply
+      - showroom_deploy
     with:
       ACTION: post
       AWS_REGION: ${{ matrix.region }}
