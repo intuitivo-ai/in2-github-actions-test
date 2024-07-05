@@ -23,8 +23,7 @@ jobs:
     name: Pre deploy
     runs-on: [ self-hosted, linux, intuitivo ]
     concurrency:
-      cancel-in-progress: true
-      group: pre-deploy-${{ inputs.ENVIRONMENT }}-${{ github.ref_name }}
+      group: pre-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,8 +36,7 @@ jobs:
     name: Post deploy
     runs-on: [ self-hosted, linux, intuitivo ]
     concurrency:
-      cancel-in-progress: true
-      group: post-deploy-${{ inputs.ENVIRONMENT }}-${{ github.ref_name }}
+      group: post-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
