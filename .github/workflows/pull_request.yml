@@ -57,12 +57,21 @@ jobs:
     env:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     name: Infracost Report
+    needs:
+      - clean_old_comments
     defaults:
       run:
         working-directory: terraform/
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Get PR number
+        id: pr_number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/get_pr_number.sh
       - name: Setup Infracost
         if: ${{ env.INFRACOST_API_KEY != '' }}
         uses: infracost/actions/setup@v3
@@ -70,15 +79,26 @@ jobs:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
       - name: Infracost report
         if: ${{ env.INFRACOST_API_KEY != '' }}
+        id: generate_report
         run: |
           chmod +x ../scripts/*
           ../scripts/infracost_comment.sh
-      - name: Infracost Comment
+      - name: Format report
         if: ${{ env.INFRACOST_API_KEY != '' }}
         run: |
-          infracost comment github --path=report.json \
-                                   --repo=$GITHUB_REPOSITORY \
-                                   --github-token=${{ github.token }} \
-                                   --pull-request=${{ github.event.pull_request.number }} \
-                                   --behavior=update \
-                                   --show-all-projects
+          REPORT_FILE=${{ steps.generate_report.outputs.report }}
+          python ../scripts/infracost_report_format.py $REPORT_FILE
+          echo "output=output.md" >> $GITHUB_OUTPUT
+      - name: Infracost Comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('terraform/output.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: ${{ steps.pr_number.outputs.pr_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: content
+            })
