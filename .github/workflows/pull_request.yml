@@ -70,8 +70,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x ./scripts/*
-          ./scripts/get_pr_number.sh
+          chmod +x ../scripts/*
+          ../scripts/get_pr_number.sh
       - name: Setup Infracost
         if: ${{ env.INFRACOST_API_KEY != '' }}
         uses: infracost/actions/setup@v3
