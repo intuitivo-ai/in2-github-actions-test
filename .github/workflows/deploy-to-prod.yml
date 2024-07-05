@@ -132,6 +132,7 @@ jobs:
     needs:
       - config
       - production_deploy
+    uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: post
       AWS_REGION: ${{ matrix.region }}
@@ -233,6 +234,7 @@ jobs:
     needs:
       - config
       - showroom_deploy
+    uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: post
       AWS_REGION: ${{ matrix.region }}
