@@ -18,29 +18,21 @@ env:
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
 
 jobs:
-  pre-deploy:
-    if: ${{ inputs.ACTION == 'pre' }}
-    name: Pre deploy
+  pre-post-deploy:
+    name: Actions
     runs-on: [ self-hosted, linux, intuitivo ]
     concurrency:
-      group: pre-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
+      group: ${{ inputs.ACTION }}-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run pre_deploy script
+        if: ${{ inputs.ACTION == 'pre' }}
         run: |
           chmod +x ./scripts/*
           ./scripts/pre_deploy.sh
-  post-deploy:
-    if: ${{ inputs.ACTION == 'post' }}
-    name: Post deploy
-    runs-on: [ self-hosted, linux, intuitivo ]
-    concurrency:
-      group: post-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Run post_deploy script
+        if: ${{ inputs.ACTION == 'post' }}
         run: |
           chmod +x ./scripts/*
           ./scripts/post_deploy.sh
