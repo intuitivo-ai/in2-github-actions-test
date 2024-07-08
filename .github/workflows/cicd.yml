@@ -130,6 +130,29 @@ jobs:
       TF_PATH: terraform
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  development_pre_deploy:
+    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    name: Development
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - development
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - development_plan
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: pre
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   development_deploy:
     if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
     name: Development
@@ -148,6 +171,7 @@ jobs:
     - test
     - migrations
     - development_plan
+    - development_pre_deploy
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -158,6 +182,29 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  development_post_deploy:
+    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && always() ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && always() ) }}
+    name: Development
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - development
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - development_deploy
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: post
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   staging_plan:
     if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'staging' ) }}
     name: Staging
@@ -200,6 +247,29 @@ jobs:
       TF_PATH: terraform
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  staging_pre_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
+    name: Staging
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - staging
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - staging_plan
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: pre
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   staging_deploy:
     if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
     name: Staging
@@ -218,6 +288,7 @@ jobs:
     - test
     - migrations
     - staging_plan
+    - staging_pre_deploy
     uses: ./.github/workflows/terraform-apply.yml
     with:
       AWS_REGION: ${{ matrix.region }}
@@ -228,6 +299,29 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  staging_post_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && always() ) }}
+    name: Staging
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - staging
+        region:
+        - us-east-1
+        - sa-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - staging_deploy
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: post
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
   critical_plan:
     if: ${{ ( github.event_name == 'push' ) }}
     name: Critical Environments
