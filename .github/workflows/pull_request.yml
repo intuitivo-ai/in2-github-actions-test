@@ -52,7 +52,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   infracost-report:
-    if: ${{ ! github.event.pull_request.draft }}
+    if: ${{ ! github.event.pull_request.draft && github.head_ref != 'infra-updates' }}
     name: Infracost Report
     needs:
     - build
