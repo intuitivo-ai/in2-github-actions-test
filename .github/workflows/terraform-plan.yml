@@ -114,9 +114,11 @@ jobs:
       - name: Save plan as JSON
         id: tf-json-plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          terraform show -json $VAR_FILE.plan > plan_$VAR_FILE.json
-          echo "plan_file=plan_$VAR_FILE.json" >> $GITHUB_OUTPUT
+          terraform show -json $VAR_FILE.plan > "$BRANCH_NAME"_plan_"$VAR_FILE".json
+          echo plan_file="$BRANCH_NAME"_plan_"$VAR_FILE".json >> $GITHUB_OUTPUT
       - name: Upload terraform json plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: actions/upload-artifact@v4
