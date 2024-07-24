@@ -12,6 +12,9 @@ on:
       GH_SHA:
         required: false
         type: string
+      RUN:
+        required: false
+        type: string
       RUN_ON_PR:
         required: false
         default: false
@@ -33,6 +36,7 @@ env:
 
 jobs:
   infracost-report:
+    if: ${{ inputs.RUN == 'true' }}
     runs-on: [ self-hosted, linux, intuitivo ]
     name: Infracost Report
     defaults:
@@ -42,11 +46,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Get PR number
+        if: ${{ inputs.RUN_ON_PR }}
+        id: pr_number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ../scripts/*
+          ../scripts/get_pr_number.sh
+
       - name: Download tf plan
         if: ${{ ! inputs.RUN_ON_PR }}
         uses: actions/download-artifact@v4
         with:
-          name: ${{ github.ref_name }}_plan_${{ env.VAR_FILE }}.json
+          name: ${{ env.VAR_FILE }}.json
           path: ${{ inputs.TF_PATH }}
 
       - name: Setup Infracost
@@ -78,18 +91,31 @@ jobs:
           path: ${{ inputs.TF_PATH }}
           run-id: ${{ steps.get_run_id.outputs.run_id }}
 
-      - name: Infracost PR report
+      - name: PR Infracost report
+        id: generate_report
         if: ${{ inputs.RUN_ON_PR }}
         run: |
           chmod +x ../scripts/*
           ../scripts/infracost_comment.sh
 
-      - name: Infracost Comment
+      - name: Format report
         if: ${{ inputs.RUN_ON_PR }}
         run: |
-          infracost comment github --path=report.json \
-                                   --repo=$GITHUB_REPOSITORY \
-                                   --github-token=${{ github.token }} \
-                                   --pull-request=${{ github.event.pull_request.number }} \
-                                   --behavior=update \
-                                   --show-all-projects
+          REPORT_FILE=${{ steps.generate_report.outputs.report }}
+          python ../scripts/infracost_report_format.py $REPORT_FILE
+          echo "output=output.md" >> $GITHUB_OUTPUT
+
+      - name: Infracost Comment
+        if: ${{ inputs.RUN_ON_PR }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('terraform/output.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: ${{ steps.pr_number.outputs.pr_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: content
+            })

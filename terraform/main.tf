@@ -29,8 +29,8 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "in2-terraform-cross"
-    region = "us-east-2"
+    bucket = "in2-terraform-in2-github-actions-test"
+    region = "us-east-1"
   }
 }
 
