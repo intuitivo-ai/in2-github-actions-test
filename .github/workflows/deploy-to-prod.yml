@@ -51,7 +51,7 @@ jobs:
     with:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
-      LAMBDA: true   
+      LAMBDA: true
       TF_PATH: terraform
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -124,6 +124,10 @@ jobs:
         id: apply
         run: |
           terraform apply -var-file=$VAR_FILE.tfvars -input=false -auto-approve -lock-timeout=5m
+      - name: Show outputs
+        if: always()
+        run: |
+          terraform output
       - name: Unlock
         if: ${{ cancelled() || ( inputs.REFRESH == true && steps.state_lock.outcome != 'success' ) }}
         run: |

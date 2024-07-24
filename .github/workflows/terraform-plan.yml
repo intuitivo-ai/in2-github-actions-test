@@ -111,6 +111,10 @@ jobs:
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false -out=$VAR_FILE.plan
+      - name: Show outputs
+        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
+        run: |
+          terraform output
       - name: Save plan as JSON
         id: tf-json-plan
         if: ${{ steps.check-file.outputs.backendFile == 'true' }}
