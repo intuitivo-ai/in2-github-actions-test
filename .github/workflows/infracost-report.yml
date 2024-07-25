@@ -71,7 +71,7 @@ jobs:
         if: ${{ ! inputs.RUN_ON_PR }}
         run: |
           chmod +x ../scripts/*
-          ../scripts/infracost_report.sh ${{ github.ref_name }}_plan_${{ env.VAR_FILE }}.json
+          ../scripts/infracost_report.sh ${{ env.VAR_FILE }}.json
 
       - name: Get CICD workflow run id
         id: get_run_id
