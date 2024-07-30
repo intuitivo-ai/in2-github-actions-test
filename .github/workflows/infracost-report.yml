@@ -44,7 +44,7 @@ jobs:
         working-directory: ${{ inputs.TF_PATH }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get PR number
         if: ${{ inputs.RUN_ON_PR }}
@@ -107,7 +107,7 @@ jobs:
 
       - name: Infracost Comment
         if: ${{ inputs.RUN_ON_PR }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
