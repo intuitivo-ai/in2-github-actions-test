@@ -32,10 +32,13 @@ on:
         required: false
       GOOGLE_CREDENTIALS:
         required: false
+      GH_ADMIN_TOKEN:
+        required: false
 
 env:
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
   TF_VAR_commit_id: ${{ github.sha }}
+  TF_VAR_gh_admin_token: ${{ secrets.GH_ADMIN_TOKEN }}
   TF_VAR_gh_run_attempt: ${{ github.run_attempt }}
   TF_VAR_gh_run_number: ${{ github.run_number }}
   VAR_FILE: ${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
