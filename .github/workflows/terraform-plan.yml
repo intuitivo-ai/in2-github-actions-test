@@ -36,9 +36,7 @@ on:
         required: false
 
 env:
-  GITHUB_ACTOR: ${{ github.actor }}
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  TF_VAR_branch: ${{ github.ref_name }}
   TF_VAR_commit_id: ${{ github.sha }}
   TF_VAR_gh_admin_token: ${{ secrets.GH_ADMIN_TOKEN }}
   TF_VAR_gh_run_attempt: ${{ github.run_attempt }}
