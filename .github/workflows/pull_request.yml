@@ -4,7 +4,7 @@ on:
     branches-ignore:
       - 'infra-updates*'
 concurrency:
-  group: ${{ github.base_ref }}
+  group: ${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -31,11 +31,13 @@ jobs:
             console.log(script({github, context}))
   build:
     name: Pull Request
+    needs:
+    - clean_old_comments
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
+      GH_SHA: ${{ github.event.pull_request.head.sha }}
       AWS_REGION: us-east-1
       PUBLISH: true
-      GH_SHA: ${{ github.event.pull_request.head.sha }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
