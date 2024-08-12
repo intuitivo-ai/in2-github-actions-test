@@ -36,6 +36,7 @@ env:
 
 jobs:
   infracost-report:
+    if: ${{ inputs.RUN == 'true' }}
     runs-on: [ self-hosted, linux, intuitivo ]
     name: Infracost Report
     defaults:
@@ -55,8 +56,10 @@ jobs:
           ../scripts/get_pr_number.sh
 
       - name: Download tf plan
+        if: ${{ ! inputs.RUN_ON_PR }}
         uses: actions/download-artifact@v4
         with:
+          name: ${{ env.VAR_FILE }}.json
           path: ${{ inputs.TF_PATH }}
 
       - name: Setup Infracost
@@ -69,6 +72,24 @@ jobs:
         run: |
           chmod +x ../scripts/*
           ../scripts/infracost_report.sh ${{ env.VAR_FILE }}.json
+
+      - name: Get CICD workflow run id
+        id: get_run_id
+        if: ${{ inputs.RUN_ON_PR }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          chmod +x ../scripts/*
+          python3 ../scripts/get_run_id.py ${{ github.head_ref }} ${{ inputs.GH_SHA }}
+
+      - name: Download tf plan
+        if: ${{ inputs.RUN_ON_PR }}
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          path: ${{ inputs.TF_PATH }}
+          run-id: ${{ steps.get_run_id.outputs.run_id }}
 
       - name: PR Infracost report
         id: generate_report
