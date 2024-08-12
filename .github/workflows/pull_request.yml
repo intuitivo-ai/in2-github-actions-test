@@ -4,7 +4,6 @@ on:
     types: [opened, ready_for_review, synchronize]
     branches-ignore:
     - 'infra-updates*'
-
 concurrency:
   group: ${{ github.head_ref }}
   cancel-in-progress: true
