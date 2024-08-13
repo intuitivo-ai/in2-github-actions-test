@@ -80,7 +80,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   development_plan:
-    if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'development' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION && needs.config.outputs.environment == 'development' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -195,7 +195,7 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
   staging_plan:
-    if: ${{ ( github.event_name == 'push' ) || ( needs.config.outputs.environment == 'staging' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION && needs.config.outputs.environment == 'staging' ) }}
     name: Staging
     strategy:
       fail-fast: false
