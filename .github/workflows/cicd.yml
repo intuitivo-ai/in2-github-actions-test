@@ -52,15 +52,10 @@ jobs:
     with:
       AWS_REGION: us-east-1
       PUBLISH: true
-      CHECKOUT_IN2_REPOSITORIES: true
-      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
-      CLEAR_CACHE: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
-      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     name: Tests
     needs:
@@ -69,7 +64,6 @@ jobs:
     with:
       AWS_REGION: us-east-1
       RUN: ${{ inputs.TESTS }}
-      CLEAR_CACHE: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -81,8 +75,6 @@ jobs:
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
-      CLEAR_CACHE: true
-      RUN_MIGRATIONS: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -105,7 +97,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -177,8 +168,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
-      UPDATE_AWS_CLI: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -223,7 +212,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -295,8 +283,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
-      UPDATE_AWS_CLI: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -342,7 +328,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
