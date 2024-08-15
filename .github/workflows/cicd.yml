@@ -20,6 +20,7 @@ name: Continuous Delivery
         type: choice
         options:
         - development
+        - devops-sandbox
         - staging
       TESTS:
         description: Run tests
@@ -183,7 +184,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_post_deploy:
-    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && always() ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && always() ) }}
+    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && needs.development_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && needs.development_deploy.result != 'skipped' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -200,6 +201,116 @@ jobs:
     - test
     - migrations
     - development_deploy
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: post
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+  devops-sandbox_plan:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION && needs.config.outputs.environment == 'devops-sandbox' ) }}
+    name: Devops-sandbox
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - devops-sandbox
+        region:
+        - us-east-1
+    needs:
+    - config
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  devops-sandbox_infracost:
+    if: ${{ inputs.INFRACOST == 'true' }}
+    name: Devops-sandbox
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+        - devops-sandbox
+        region:
+        - us-east-1
+    needs:
+    - devops-sandbox_plan
+    uses: ./.github/workflows/infracost-report.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+      RUN: ${{ inputs.INFRACOST }}
+    secrets:
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  devops-sandbox_pre_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' ) }}
+    name: Devops-sandbox
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - devops-sandbox
+        region:
+        - us-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - devops-sandbox_plan
+    uses: ./.github/workflows/pre-post-deploy.yml
+    with:
+      ACTION: pre
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+  devops-sandbox_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' ) }}
+    name: Devops-sandbox
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - devops-sandbox
+        region:
+        - us-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - devops-sandbox_plan
+    - devops-sandbox_pre_deploy
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      AWS_REGION: ${{ matrix.region }}
+      ENVIRONMENT: ${{ matrix.env }}
+      TF_PATH: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  devops-sandbox_post_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.devops-sandbox_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && needs.devops-sandbox_deploy.result != 'skipped' ) }}
+    name: Devops-sandbox
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        env:
+        - devops-sandbox
+        region:
+        - us-east-1
+    needs:
+    - config
+    - build
+    - test
+    - migrations
+    - devops-sandbox_deploy
     uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: post
@@ -301,7 +412,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging_post_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && always() ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.staging_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && needs.staging_deploy.result != 'skipped' ) }}
     name: Staging
     strategy:
       fail-fast: false

@@ -65,6 +65,7 @@ jobs:
       matrix:
         env:
         - development
+        - devops-sandbox
         - production
         - showroom
         - staging
