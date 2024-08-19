@@ -184,7 +184,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_post_deploy:
-    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && needs.development_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && needs.development_deploy.result != 'skipped' ) }}
+    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && always() && needs.development_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && always() && needs.development_deploy.result != 'skipped' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -295,7 +295,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   devops-sandbox_post_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.devops-sandbox_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && needs.devops-sandbox_deploy.result != 'skipped' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() && needs.devops-sandbox_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && always() && needs.devops-sandbox_deploy.result != 'skipped' ) }}
     name: Devops-sandbox
     strategy:
       fail-fast: false
@@ -412,7 +412,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging_post_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.staging_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && needs.staging_deploy.result != 'skipped' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() && needs.staging_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && always() && needs.staging_deploy.result != 'skipped' ) }}
     name: Staging
     strategy:
       fail-fast: false
