@@ -15,7 +15,7 @@ on:
 
 jobs:
   request_approval_job:
-    runs-on: [ self-hosted, linux, intuitivo, build ]
+    runs-on: [ self-hosted, linux, intuitivo ]
     name: Request Approval Deploy
     steps:
       - name: Checkout
