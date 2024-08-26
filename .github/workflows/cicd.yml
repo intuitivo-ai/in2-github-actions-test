@@ -88,6 +88,16 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  request_approval_deploy:
+    name: Request Approval Deploy
+    needs:
+    - config
+    uses: ./.github/workflows/request-approval-deploy.yml
+    with:
+      AWS_REGION: us-east-1
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_plan:
     if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION && needs.config.outputs.environment == 'development' ) }}
     name: Development
@@ -149,6 +159,7 @@ jobs:
     - test
     - migrations
     - development_plan
+    - request_approval_deploy
     uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: pre
@@ -263,6 +274,7 @@ jobs:
     - test
     - migrations
     - devops-sandbox_plan
+    - request_approval_deploy
     uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: pre
@@ -377,6 +389,7 @@ jobs:
     - test
     - migrations
     - staging_plan
+    - request_approval_deploy
     uses: ./.github/workflows/pre-post-deploy.yml
     with:
       ACTION: pre

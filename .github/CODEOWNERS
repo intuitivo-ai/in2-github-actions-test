@@ -15,6 +15,7 @@
 /scripts/migrations_run.sh    @intuitivo-ai/mlops
 /scripts/publish.sh    @intuitivo-ai/mlops
 /scripts/release_notes.sh    @intuitivo-ai/mlops
+/scripts/request_approval_deploy.sh    @intuitivo-ai/mlops
 /scripts/requirements.sh    @intuitivo-ai/mlops
 /scripts/stop_db.sh    @intuitivo-ai/mlops
 /scripts/terraform_unlock.sh    @intuitivo-ai/mlops
