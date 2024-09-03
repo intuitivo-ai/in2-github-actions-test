@@ -51,8 +51,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-    outputs:
-      ACCOUNT_ID: ${{ steps.account_id.outputs.account_id }}
     concurrency:
       group: terraform-plan-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     name: Plan
@@ -146,31 +144,4 @@ jobs:
       - name: Infracost report
         if: ${{ env.INFRACOST_API_KEY != '' }}
         run: |
-          infracost breakdown --path=. --project-name $VAR_FILE --terraform-var-file $VAR_FILE.tfvars --format=table          
-
-      - name: Get ACCOUNT_ID from .tfvars
-        id: account_id
-        run: |
-          assume_role=$(grep 'assume_role' ${$VAR_FILE}.tfvars | awk -F'"' '{print $2}')
-          account_id=$(echo $assume_role | awk -F':' '{print $5}')
-          echo "account_id=$account_id" >> $GITHUB_OUTPUT
-          echo $account_id  
-
-  call-w1:
-    name: w1-call
-    needs:
-    - terraform-plan
-    uses: intuitivo-ai/accessnator/.github/workflows/iam-roles.yml
-    with:
-      AWS_REGION: ${{ inputs.AWS_REGION }}
-      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-      ACCOUNT_ID: ${{ needs.terraform-plan.outputs.account_id }}
-  read-output-from-w2:
-    needs:
-    - call-w1
-    runs-on: [self-hosted, linux, intuitivo]
-    name: w1 read w2 output
-    steps:
-      - name: READ
-        run: |
-          echo "JSON Output: ${{ needs.call-w1.outputs.JSON }}"
+          infracost breakdown --path=. --project-name $VAR_FILE --terraform-var-file $VAR_FILE.tfvars --format=table
