@@ -62,7 +62,7 @@ jobs:
       - name: Pull image
         if: ${{ inputs.RUN != 'false' }}
         run: |
-          if [ ${{ inputs.DOCKER_IMAGE }} == "" ]; then
+          if [ ${{ inputs.DOCKER_IMAGE }} = "" ]; then
             COMMIT_ID="${GITHUB_SHA}"
             ORG="${GITHUB_REPOSITORY_OWNER}"
             REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
@@ -76,7 +76,7 @@ jobs:
         if: ${{ inputs.RUN != 'false' && inputs.TYPE != 'terraform' }}
         run: |
           chmod +x ./scripts/*
-          if [ ${{ inputs.DOCKER_IMAGE }} == "" ]; then
+          if [ ${{ inputs.DOCKER_IMAGE }} = "" ]; then
             ORG="${GITHUB_REPOSITORY_OWNER}"
             REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
             docker run --rm --entrypoint "" -v $PWD/coverage/:/coverage/ ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh ${{ inputs.TYPE }}
@@ -91,7 +91,7 @@ jobs:
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE && inputs.TYPE == 'default' && steps.run_tests.outcome == 'success' }}
         run: |
-          if [ ${{ inputs.DOCKER_IMAGE }} == "" ]; then
+          if [ ${{ inputs.DOCKER_IMAGE }} = "" ]; then
             IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
           else
             IMAGE_ID=$(docker images -q ${{ inputs.DOCKER_IMAGE }})
