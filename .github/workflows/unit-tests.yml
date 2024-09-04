@@ -10,13 +10,6 @@ on:
         required: false
         type: boolean
         default: false
-      DOCKER_IMAGE:
-        required: false
-        type: string
-      ECR_LOGIN:
-        required: false
-        type: boolean
-        default: true
       RUN:
         required: false
         type: string
@@ -30,7 +23,7 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
       REGISTRY:
-        required: false
+        required: true
 
 env:
   DEFAULT_DOCKER_TAG: ${{ github.repository }}
@@ -49,53 +42,28 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Setup Terraform
-        if: ${{ inputs.RUN != 'false' && inputs.TYPE == 'terraform' }}
-        uses: hashicorp/setup-terraform@v3
-      - name: Terraform Init
-        if: ${{ inputs.RUN != 'false' && inputs.TYPE == 'terraform' }}
-        run: |
-          terraform init
       - name: Login to Amazon ECR
-        if: ${{ inputs.DOCKER_IMAGE == '' }}
         uses: aws-actions/amazon-ecr-login@v2
       - name: Pull image
         if: ${{ inputs.RUN != 'false' }}
         run: |
-          if [ -z ${{ inputs.DOCKER_IMAGE }} ]; then
-            COMMIT_ID="${GITHUB_SHA}"
-            ORG="${GITHUB_REPOSITORY_OWNER}"
-            REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          COMMIT_ID="${GITHUB_SHA}"
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 
-            docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
-            docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
-          else
-            docker pull ${{ inputs.DOCKER_IMAGE }}
-          fi
+          docker pull ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA}
+          docker tag  ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} $DEFAULT_DOCKER_TAG
       - name: Run tests
-        if: ${{ inputs.RUN != 'false' && inputs.TYPE != 'terraform' }}
+        if: ${{ inputs.RUN != 'false' }}
         run: |
           chmod +x ./scripts/*
-          if [ -z ${{ inputs.DOCKER_IMAGE }} ]; then
-            ORG="${GITHUB_REPOSITORY_OWNER}"
-            REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
-            docker run --rm --entrypoint "" -v $PWD/coverage/:/coverage/ ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh ${{ inputs.TYPE }}
-          else
-            docker run -w /tmp/${GITHUB_REPOSITORY} --rm --entrypoint "" -v $PWD:/tmp/${GITHUB_REPOSITORY} ${{ inputs.DOCKER_IMAGE }} scripts/run_tests.sh ${{ inputs.TYPE }}
-          fi
-      - name: Run local tests
-        if: ${{ inputs.RUN != 'false' && inputs.TYPE != 'default' }}
-        run: |
-          chmod +x ./scripts/*
-          scripts/run_tests.sh ${{ inputs.TYPE }}
+          ORG="${GITHUB_REPOSITORY_OWNER}"
+          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
+          docker run --rm --entrypoint "" -v $PWD/coverage/:/coverage/ ${{ secrets.REGISTRY }}/${REPOSITORY}:${GITHUB_SHA} scripts/run_tests.sh ${{ inputs.TYPE }}
       - name: Clear images
-        if: ${{ inputs.CLEAR_CACHE && inputs.TYPE == 'default' && steps.run_tests.outcome == 'success' }}
+        if: ${{ inputs.CLEAR_CACHE && steps.run_tests.outcome == 'success' }}
         run: |
-          if [ -z ${{ inputs.DOCKER_IMAGE }} ]; then
-            IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
-          else
-            IMAGE_ID=$(docker images -q ${{ inputs.DOCKER_IMAGE }})
-          fi
+          IMAGE_ID=$(docker images -q $DEFAULT_DOCKER_TAG)
           docker rmi -f $IMAGE_ID
       - name: Coverage Report
         if: ${{ steps.pr_number.outputs.pr_number != 0 && inputs.TYPE == 'coverage' }}
