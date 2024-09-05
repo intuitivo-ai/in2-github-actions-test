@@ -136,12 +136,3 @@ jobs:
           overwrite: true
           path: ${{ inputs.TF_PATH }}/${{ env.PLAN_FILE }}
           retention-days: 1
-      - name: Setup Infracost
-        if: ${{ env.INFRACOST_API_KEY != '' }}
-        uses: infracost/actions/setup@v3
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
-      - name: Infracost report
-        if: ${{ env.INFRACOST_API_KEY != '' }}
-        run: |
-          infracost breakdown --path=. --project-name $VAR_FILE --terraform-var-file $VAR_FILE.tfvars --format=table
