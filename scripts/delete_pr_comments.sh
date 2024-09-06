@@ -1,4 +1,4 @@
-module.exports = async ({ github, context }) => {
+module.exports = async ({ github, context  }) => {
   const { data: comments } = await github.rest.issues.listComments({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -7,11 +7,11 @@ module.exports = async ({ github, context }) => {
 
   const botComments = comments.filter(comment => comment.user.login === "github-actions[bot]");
 
-  for (const botComment of botComments) {
-    await github.rest.issues.deleteComment({
+  botComments.forEach(botComment => {
+    github.rest.issues.deleteComment({
+      comment_id: botComment.id,
       owner: context.repo.owner,
-      repo: context.repo.repo,
-      comment_id: botComment.id
+      repo: context.repo.repo
     });
-  }
-};
+  });
+}

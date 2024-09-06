@@ -12,27 +12,57 @@ on:
       ENVIRONMENT:
         required: true
         type: string
-
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+      PERSONAL_ACCESS_TOKEN:
+        required: false
 env:
   REGION: ${{ inputs.AWS_REGION }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  TF_PATH: "./terraform"
 
 jobs:
-  pre-post-deploy:
-    name: Actions
+  pre-deploy:
+    if: ${{ inputs.ACTION == 'pre' }}
+    name: Pre Deploy Actions
+    runs-on: [ self-hosted, linux, intuitivo ]
+    concurrency:
+      group: ${{ inputs.ACTION }}-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
+    steps:
+      - name: Run pre_deploy script
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/pre_deploy.sh
+
+
+  post-deploy:
+    if: ${{ inputs.ACTION == 'post' }}
+    name: Post Deploy Actions
     runs-on: [ self-hosted, linux, intuitivo ]
     concurrency:
       group: ${{ inputs.ACTION }}-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run pre_deploy script
-        if: ${{ inputs.ACTION == 'pre' }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - name: Install workflow requirements
         run: |
           chmod +x ./scripts/*
-          ./scripts/pre_deploy.sh
+          ./scripts/requirements.sh
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
       - name: Run post_deploy script
-        if: ${{ inputs.ACTION == 'post' }}
         run: |
           chmod +x ./scripts/*
           ./scripts/post_deploy.sh
