@@ -33,6 +33,8 @@ jobs:
     concurrency:
       group: ${{ inputs.ACTION }}-deploy-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run pre_deploy script
         run: |
           chmod +x ./scripts/*
