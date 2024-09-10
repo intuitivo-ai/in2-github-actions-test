@@ -19,6 +19,7 @@
 /scripts/requirements.sh    @intuitivo-ai/mlops
 /scripts/stop_db.sh    @intuitivo-ai/mlops
 /scripts/terraform_unlock.sh    @intuitivo-ai/mlops
+/scripts/test_commands.sh    @intuitivo-ai/mlops
 /scripts/vulnerabilities_report.sh    @intuitivo-ai/mlops
 /scripts/get_run_id.py    @intuitivo-ai/mlops
 /scripts/infracost_report_format.py    @intuitivo-ai/mlops
