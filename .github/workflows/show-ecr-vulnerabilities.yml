@@ -77,7 +77,7 @@ jobs:
           ./scripts/detect_vulns.sh
   critical_vulns:
     name: Critical Vulnerabilities
-    environment: critical_vulnerabilities
+    #environment: critical_vulnerabilities
     runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_critical_vulns == 'false' }}
@@ -87,7 +87,7 @@ jobs:
           echo "No critical vulnerabilities found"
   high_vulns:
     name: High Vulnerabilities
-    environment: high_vulnerabilities
+    #environment: high_vulnerabilities
     runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_high_vulns == 'false' }}
@@ -97,7 +97,7 @@ jobs:
           echo "No high vulnerabilities found"
   medium_vulns:
     name: Medium Vulnerabilities
-    environment: medium_vulnerabilities
+    #environment: medium_vulnerabilities
     runs-on: [ self-hosted, linux, intuitivo ]
     needs: vulnerabilities
     if: ${{ needs.vulnerabilities.outputs.detected_medium_vulns == 'false' }}
