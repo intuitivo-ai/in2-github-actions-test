@@ -39,11 +39,16 @@ jobs:
     with:
       GH_SHA: ${{ github.event.pull_request.head.sha }}
       AWS_REGION: us-east-1
+      CHECKOUT_IN2_REPOSITORIES: true
+      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
+      CLEAR_CACHE: true
       PUBLISH: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   scan_image:
     name: Scan
     needs:
