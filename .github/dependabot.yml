@@ -6,7 +6,8 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "sentry-sdk"
+      - dependency-name: "jmespath"
+      - dependency-name: "protobuf"
+      - dependency-name: "pydash"
+      - dependency-name: "numpy"
       - dependency-name: "pluggy"
-      - dependency-name: "pytest-cov"
-
-
