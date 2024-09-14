@@ -5,8 +5,8 @@ updates:
     schedule:
       interval: "daily"
     ignore:
-      - dependency-name: "gitdb"
-      - dependency-name: "jmespath"
-      - dependency-name: "six"
+      - dependency-name: "sentry-sdk"
+      - dependency-name: "boto3"
+      - dependency-name: "pytest-cov"
 
 
