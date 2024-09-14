@@ -6,7 +6,7 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "sentry-sdk"
-      - dependency-name: "boto3"
+      - dependency-name: "pluggy"
       - dependency-name: "pytest-cov"
 
 
