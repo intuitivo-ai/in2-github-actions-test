@@ -116,7 +116,5 @@ function update_github_output() {
 }
 
 function install_pip_requirements() {
-  if [ -f requirements.txt ]; then
-    pip3 install -r requirements.txt
-  fi
+  pip3 install -r requirements.txt
 }
