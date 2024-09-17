@@ -1,0 +1,57 @@
+name: Set up ephemeral IAM role with policies
+
+on:
+  workflow_call:
+    inputs:
+      AWS_REGION:
+        required: false
+        type: string
+        default: us-east-1
+      ENVIRONMENT:
+        required: true
+        type: string
+      TF_PATH:
+        required: true
+        type: string
+        default: terraform
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+env:
+  ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+  REGION: ${{ inputs.AWS_REGION }}
+  VAR_FILE: ${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
+
+jobs:
+  Setup-Ephemeral-Role:
+    runs-on: [ self-hosted, linux, intuitivo ]
+    name: Set up ephemeral Role
+    outputs:
+      aws_policies: ${{ steps.iam_policies.outputs.aws_policies }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+      - name: Get account ID
+        id: get_account
+        run: |
+          set -e
+          cd ${{ inputs.TF_PATH }} || exit 1
+          assume_role_value=$(grep -E '^ *assume_role *=' "$VAR_FILE.tfvars" | tr -d ' "')
+          assume_role_value=${assume_role_value#*=}
+          account_id=$(echo "$assume_role_value" | cut -d':' -f5)
+          echo "ACCOUNT_ID=$account_id" >> "$GITHUB_OUTPUT"
+          cd -
+      - name: Get policies to attach
+        id: iam_policies
+        run: |
+          chmod -R +x ./scripts
+          ./scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
