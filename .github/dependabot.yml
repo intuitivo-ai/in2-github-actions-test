@@ -11,3 +11,4 @@ updates:
       - dependency-name: "pydash"
       - dependency-name: "numpy"
       - dependency-name: "pluggy"
+      - dependency-name: "boto3"
