@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 set -e
 DIR=$(dirname $0)
-
-if [ -f "$DIR/variables.sh" ]; then
-    source $DIR/variables.sh
-else
-    source $GITHUB_WORKSPACE/scripts/variables.sh
-fi
-
+source $DIR/variables.sh
 if [[ -n "$LOCAL" ]]; then
   DOCKER_URL=${NAME}:latest
 else
@@ -124,12 +118,5 @@ function update_github_output() {
 function install_pip_requirements() {
   if [ -f requirements.txt ]; then
     pip3 install -r requirements.txt
-  fi
-}
-function install_pip_requirements() {
-  local path=${GITHUB_ACTION_PATH:-"."}
-
-  if [ -f "$path/requirements.txt" ]; then
-    pip3 install -r "$path/requirements.txt"
   fi
 }
