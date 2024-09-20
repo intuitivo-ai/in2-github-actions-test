@@ -46,6 +46,16 @@ env:
   VAR_FILE: ${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
 
 jobs:
+  iam_roles_policies:
+    name: IAM role with policies
+    uses: ./.github/workflows/iam-roles-policies.yml
+    with:
+      AWS_REGION: ${{ inputs.AWS_REGION }}
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+      TF_PATH: ${{ inputs.TF_PATH }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   terraform-plan:
     runs-on: [ self-hosted, linux, intuitivo ]
     env:
@@ -54,6 +64,8 @@ jobs:
     concurrency:
       group: terraform-plan-${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}-${{ github.ref_name }}
     name: Plan
+    needs:
+    - iam_roles_policies
     defaults:
       run:
         working-directory: ${{ inputs.TF_PATH }}

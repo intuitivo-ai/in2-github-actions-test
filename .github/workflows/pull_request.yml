@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/get_pr_number.sh
       - name: Delete old PR Comments
         if: ${{ steps.pr_number.outputs.pr_number != 0 }}
