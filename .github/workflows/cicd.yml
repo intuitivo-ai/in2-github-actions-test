@@ -53,15 +53,10 @@ jobs:
     with:
       AWS_REGION: us-east-1
       PUBLISH: true
-      CHECKOUT_IN2_REPOSITORIES: true
-      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
-      CLEAR_CACHE: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
-      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     name: Tests
     needs:
@@ -70,7 +65,6 @@ jobs:
     with:
       AWS_REGION: us-east-1
       RUN: ${{ inputs.TESTS }}
-      CLEAR_CACHE: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -82,19 +76,20 @@ jobs:
     uses: ./.github/workflows/migrations.yml
     with:
       AWS_REGION: us-east-1
-      CLEAR_CACHE: true
-      RUN_MIGRATIONS: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
   request_approval_deploy:
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' ) }}
     name: Request Approval Deploy
     needs:
     - config
     uses: ./.github/workflows/request-approval-deploy.yml
     with:
       AWS_REGION: us-east-1
+      ENVIRONMENT: needs.config.outputs.environment
+      WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -116,7 +111,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -142,7 +136,7 @@ jobs:
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   development_pre_deploy:
-    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -166,7 +160,7 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
   development_deploy:
-    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -189,13 +183,11 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
-      UPDATE_AWS_CLI: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   development_post_deploy:
-    if: ${{ ( github.event_name == 'push' && github.ref_name == 'dev' && always() && needs.development_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && always() && needs.development_deploy.result != 'skipped' ) }}
+    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -307,7 +299,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   devops-sandbox_post_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() && needs.devops-sandbox_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && always() && needs.devops-sandbox_deploy.result != 'skipped' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' ) }}
     name: Devops-sandbox
     strategy:
       fail-fast: false
@@ -346,7 +338,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -419,13 +410,11 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
-      UPDATE_AWS_CLI: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging_post_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && always() && needs.staging_deploy.result != 'skipped' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && always() && needs.staging_deploy.result != 'skipped' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
     name: Staging
     strategy:
       fail-fast: false
@@ -466,7 +455,6 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
       TF_PATH: terraform
-      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
