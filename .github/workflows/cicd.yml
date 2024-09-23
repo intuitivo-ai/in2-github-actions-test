@@ -145,7 +145,7 @@ jobs:
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   development_pre_deploy:
-    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -169,7 +169,7 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
   development_deploy:
-    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' ) }}
+    if: ${{ ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'development' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Development
     strategy:
       fail-fast: false
@@ -261,7 +261,7 @@ jobs:
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   devops-sandbox_pre_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.request_approval_deploy.outputs.approved == 'true' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Devops-sandbox
     strategy:
       fail-fast: false
@@ -284,7 +284,7 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
   devops-sandbox_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.request_approval_deploy.outputs.approved == 'true' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'devops-sandbox' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Devops-sandbox
     strategy:
       fail-fast: false
@@ -375,7 +375,7 @@ jobs:
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
   staging_pre_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.request_approval_deploy.outputs.approved == 'true' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Staging
     strategy:
       fail-fast: false
@@ -399,7 +399,7 @@ jobs:
       AWS_REGION: ${{ matrix.region }}
       ENVIRONMENT: ${{ matrix.env }}
   staging_deploy:
-    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' ) }}
+    if: ${{ ( github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main' && needs.request_approval_deploy.outputs.approved == 'true' ) || ( inputs.ACTION == 'deploy' && needs.config.outputs.environment == 'staging' && needs.request_approval_deploy.outputs.approved == 'true' ) }}
     name: Staging
     strategy:
       fail-fast: false

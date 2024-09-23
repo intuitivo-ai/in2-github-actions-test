@@ -13,6 +13,10 @@ on:
       WORKFLOW_URL:
         required: true
         type: string
+    outputs:
+      approved:
+        description: "Approval result"
+        value: ${{ jobs.request_approval_job.outputs.approved }}
     secrets:
       AWS_ACCESS_KEY_ID:
         required: false
@@ -23,6 +27,8 @@ jobs:
   request_approval_job:
     runs-on: [ self-hosted, linux, intuitivo ]
     name: Request Approval Deploy
+    outputs:
+      approved: ${{ steps.request_approval.outputs.approved }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,8 +44,13 @@ jobs:
           chmod -R +x ./scripts/
           ./scripts/request_approval_deploy.sh is_approval_required ${{ inputs.AWS_REGION }} ${{ inputs.ENVIRONMENT }}
       - name: Request approval
-        if: ${{ steps.check_approval.outputs.approval_required == 'true' }}
+        id: request_approval
         run: |
-          echo "Approval required because of the following reason: ${{ steps.check_approval.outputs.reason }}"
-          chmod -R +x ./scripts/
-          ./scripts/request_approval_deploy.sh request_deploy_approval ${{ inputs.WORKFLOW_URL }} ${{ github.repository }} ${{ inputs.ENVIRONMENT }}
+          if [ ${{ steps.check_approval.outputs.approval_required }} = 'true' ]; then
+            echo "Approval required because of the following reason: ${{ steps.check_approval.outputs.reason }}"
+            chmod -R +x ./scripts/
+            ./scripts/request_approval_deploy.sh request_deploy_approval ${{ inputs.WORKFLOW_URL }} ${{ github.repository }} ${{ inputs.ENVIRONMENT }}
+          else
+            echo "Approval not required"
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          fi

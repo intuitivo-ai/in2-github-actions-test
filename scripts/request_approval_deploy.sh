@@ -74,26 +74,31 @@ request_deploy_approval() {
       output=$(aws --region "$region" stepfunctions describe-execution --execution-arn "$execution_arn" --query 'output' --output text)
       if [ "$output" == '{"Status": "Approved"}' ]; then
         echo "Deployment approved"
+        update_github_output "approved" "true"
         sts_exit_role
         return 0
       elif [ "$output" == '{"Status": "Rejected"}' ]; then
         echo "Deployment denied"
+        update_github_output "approved" "false"
         sts_exit_role
         return 0
       else
         echo "Unexpected response from Step Functions. The deployment was denied anyways."
         echo "Step functions output was: $output"
+        update_github_output "approved" "false"
         sts_exit_role
         return 1
       fi
       ;;
     TIMED_OUT)
       echo "Timeout: Step Function execution did not complete within the expected time window. The deployment is denied."
+      update_github_output "approved" "false"
       sts_exit_role
       return 1
       ;;
     *)
       echo "[Error]: Step Function execution finished with status: $status" >&2
+      update_github_output "approved" "false"
       sts_exit_role
       return 1
       ;;
