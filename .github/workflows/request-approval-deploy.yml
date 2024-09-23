@@ -7,6 +7,12 @@ on:
         required: false
         type: string
         default: us-east-1
+      ENVIRONMENT:
+        required: true
+        type: string
+      WORKFLOW_URL:
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: false
@@ -26,7 +32,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
-      - name: Lambda approval
+      - name: Check if approval is required
+        id: check_approval
         run: |
           chmod -R +x ./scripts/
-          ./scripts/request_approval_deploy.sh
+          ./scripts/request_approval_deploy.sh is_approval_required ${{ inputs.AWS_REGION }} ${{ inputs.ENVIRONMENT }}
+      - name: Request approval
+        if: ${{ steps.check_approval.outputs.approval_required == 'true' }}
+        run: |
+          echo "Approval required because of the following reason: ${{ steps.check_approval.outputs.reason }}"
+          chmod -R +x ./scripts/
+          ./scripts/request_approval_deploy.sh request_deploy_approval ${{ inputs.WORKFLOW_URL }} ${{ github.repository }} ${{ inputs.ENVIRONMENT }}
