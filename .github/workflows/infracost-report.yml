@@ -9,9 +9,6 @@ on:
       ENVIRONMENT:
         required: false
         type: string
-      GH_SHA:
-        required: false
-        type: string
       RUN:
         required: false
         type: string

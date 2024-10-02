@@ -19,18 +19,27 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
-
+    outputs:
+      access_key_id:
+        value: ${{ jobs.SetupEphemeralRole.outputs.access_key_id }}
+      secret_access_key:
+        value: ${{ jobs.SetupEphemeralRole.outputs.secret_access_key }}
+      session_token:
+        value: ${{ jobs.SetupEphemeralRole.outputs.session_token }}
 env:
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   REGION: ${{ inputs.AWS_REGION }}
   VAR_FILE: ${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}
 
 jobs:
-  Setup-Ephemeral-Role:
+  SetupEphemeralRole:
     runs-on: [ self-hosted, linux, intuitivo ]
     name: Set up ephemeral Role
     outputs:
       aws_policies: ${{ steps.iam_policies.outputs.aws_policies }}
+      access_key_id: ${{ steps.ephemeral_access.outputs.access_key_id }}
+      secret_access_key: ${{ steps.ephemeral_access.outputs.secret_access_key }}
+      session_token: ${{ steps.ephemeral_access.outputs.session_token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,3 +64,10 @@ jobs:
         run: |
           chmod -R +x ./scripts
           ./scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
+      - name : Create ephemeral IAM Role
+        id: ephemeral_access
+        uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
+        with:
+          account_id: ${{ steps.get_account.outputs.ACCOUNT_ID }}
+          aws-region: ${{ inputs.AWS_REGION }}
+          policies_list: ${{ steps.iam_policies.outputs.aws_policies }}

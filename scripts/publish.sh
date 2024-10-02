@@ -13,7 +13,6 @@ pull_request)
   ;;
 esac
 BRANCH=${_BRANCH//\//_}
-COMMIT_ID="${GH_SHA}"
 ORG="${GITHUB_REPOSITORY_OWNER}"
 REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | sed "s|${ORG}/||g")
 
@@ -32,7 +31,7 @@ case $x in
   $0 docker
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/Cross-Account-Access-github"
   LAMBDA_DEPLOYMENT_BUCKET="in2-lambda-deployments-${ACCOUNT_ID}-${AWS_REGION}"
-  S3_PATH="${REPOSITORY}/${BRANCH}/${COMMIT_ID}"
+  S3_PATH="${REPOSITORY}/${BRANCH}/${GH_SHA}"
 
   sts_assume_role "${ASSUME_ROLE_ARN}" GH-runner
   docker run --rm -d --name docker_s3 "$DEFAULT_DOCKER_TAG" sleep 60

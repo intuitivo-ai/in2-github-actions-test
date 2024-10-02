@@ -15,8 +15,10 @@ get_tf_modules() {
     )
     excluded_modules=(
         "cw-dashboard"
+        "efs"
         "iam-policy"
         "iam-role"
+        "sns"
     )
 
     cd "$tf_path" || exit 1
@@ -31,7 +33,6 @@ get_tf_modules() {
     done | sort -u)
 
     declare -A additional_modules
-    additional_modules["ecs"]="efs"
     additional_modules["s3"]="aws-cloudfront"
     additional_modules["db-aurora"]="lambda-function"
 

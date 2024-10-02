@@ -38,10 +38,6 @@ on:
         required: false
         type: boolean
         default: false
-      GH_SHA:
-        required: false
-        type: string
-        default: ${{ github.sha }}
     secrets:
       AWS_ACCESS_KEY_ID:
         required: false
@@ -62,7 +58,7 @@ env:
   DOCKER_SECRET_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
   DOCKER_TARGET: ${{ inputs.DOCKER_TARGET }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-  GH_SHA: ${{ inputs.GH_SHA }}
+  GH_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: ${{ secrets.REGISTRY }}
   VERSION: "1.${{ github.run_number }}.${{ github.run_attempt }}"
@@ -72,7 +68,7 @@ jobs:
     runs-on: [ self-hosted, linux, intuitivo, build ]
     name: Build and Push
     concurrency:
-      group: ${{ inputs.GH_SHA }}
+      group: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -48,8 +48,8 @@ on:
 env:
   GITHUB_ACTOR: ${{ github.actor }}
   GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  TF_VAR_branch: ${{ github.ref_name }}
-  TF_VAR_commit_id: ${{ github.sha }}
+  TF_VAR_branch: ${{ github.head_ref || github.ref_name }}
+  TF_VAR_commit_id: ${{ github.event.pull_request.head.sha || github.sha }}
   TF_VAR_gh_admin_token: ${{ secrets.GH_ADMIN_TOKEN }}
   TF_VAR_gh_run_attempt: ${{ github.run_attempt }}
   TF_VAR_gh_run_number: ${{ github.run_number }}
@@ -74,8 +74,6 @@ jobs:
     concurrency:
       group: terraform-apply-${{ inputs.ENVIRONMENT }}
     name: Apply
-    needs:
-    - iam_roles_policies
     defaults:
       run:
         working-directory: ${{ inputs.TF_PATH }}

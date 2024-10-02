@@ -2,8 +2,6 @@ name: Pull Request
 on:
   pull_request:
     types: [opened, ready_for_review, synchronize]
-    branches-ignore:
-    - 'infra-updates*'
 
 concurrency:
   group: ${{ github.head_ref }}
@@ -37,18 +35,12 @@ jobs:
     - clean_old_comments
     uses: ./.github/workflows/docker-build-and-push.yml
     with:
-      GH_SHA: ${{ github.event.pull_request.head.sha }}
       AWS_REGION: us-east-1
-      CHECKOUT_IN2_REPOSITORIES: true
-      CHECKOUT_IN2_REPOSITORY_NAMES: in2-react-components
-      CLEAR_CACHE: true
       PUBLISH: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOCKER_BUILD_ARGS: FW_SECRET_KEY=${{ secrets.FW_SECRET_KEY }}
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      TOKEN: ${{ secrets.GITHUB_TOKEN }}
   scan_image:
     name: Scan
     needs:
@@ -76,10 +68,9 @@ jobs:
       - clean_old_comments
     uses: ./.github/workflows/terraform-plan.yml
     with:
-      AWS_REGION: ${{ matrix.region }}
-      ENVIRONMENT: ${{ matrix.env }}
+      AWS_REGION: ${{matrix.region}}
+      ENVIRONMENT: ${{matrix.env}}
       TF_PATH: terraform
-      REQUIREMENTS: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -89,7 +80,6 @@ jobs:
     - terraform_plan
     uses: ./.github/workflows/infracost-report.yml
     with:
-      GH_SHA: ${{ github.event.pull_request.head.sha }}
       RUN_ON_PR: true
       TF_PATH: terraform
     secrets:
