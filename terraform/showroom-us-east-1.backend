@@ -1,2 +1,2 @@
-dynamodb_table = "in2-terraform-lock-cross-showroom"
+dynamodb_table = "arn:aws:dynamodb:us-east-1:706851696280:table/in2-terraform-lock-cross-showroom"
 key            = "showroom-us-east-1.tfstate"

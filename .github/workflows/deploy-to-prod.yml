@@ -64,6 +64,7 @@ jobs:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
       TF_PATH: terraform
+      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -127,6 +128,7 @@ jobs:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
       TF_PATH: terraform
+      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -158,6 +160,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
     uses: ./.github/workflows/terraform-plan.yml
@@ -165,6 +168,7 @@ jobs:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
       TF_PATH: terraform
+      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -177,6 +181,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - showroom_plan
     uses: ./.github/workflows/infracost-report.yml
@@ -197,6 +202,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_plan
@@ -216,6 +222,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_plan
@@ -225,6 +232,7 @@ jobs:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
       TF_PATH: terraform
+      LAMBDA: true
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -238,6 +246,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_deploy

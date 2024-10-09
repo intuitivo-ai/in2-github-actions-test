@@ -1,9 +1,5 @@
 provider "aws" {
   region = "${var.region}"
-  assume_role {
-    role_arn     = var.assume_role
-    session_name = "GH-Actions"
-  }
   default_tags {
     tags = {
       Environment = var.environment
@@ -16,10 +12,6 @@ provider "aws" {
 provider "aws" {
   alias  = "US"
   region = "us-east-1"
-  assume_role {
-    role_arn     = var.assume_role
-    session_name = "GH-Actions"
-  }
   default_tags {
     tags = {
       Environment = var.environment

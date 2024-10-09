@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-latest_release=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-  "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | jq -r '.tag_name')
+sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+sudo yum install gh -y
 
-curl -o release_notes.json \
-    -L \
-    -X POST \
-    -H "Authorization: Bearer $GITHUB_TOKEN" \
-    -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/generate-notes \
-    -d '{"tag_name":"release/'"$GITHUB_RUN_NUMBER"'", "previous_tag_name":"'"$latest_release"'"}'
+latest_release_tag=$(gh release view --json tagName --jq '.tagName')
+if [ -z "$latest_release_tag" ]; then
+  echo "No se pudo obtener el último release."
+  exit 1
+fi
+echo "Último release: $latest_release_tag"
 
-jq -r '.body' release_notes.json > body_content.md
-
-echo "release_notes=$(pwd)/body_content.md" >> "$GITHUB_OUTPUT"
+gh release create \
+  release/$GITHUB_RUN_NUMBER \
+  -t v$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT \
+  --generate-notes \
+  --notes-start-tag $latest_release_tag

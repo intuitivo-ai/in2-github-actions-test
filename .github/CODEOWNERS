@@ -7,6 +7,7 @@
 /scripts/delete_pr_comments.sh    @intuitivo-ai/mlops
 /scripts/detect_vulns.sh    @intuitivo-ai/mlops
 /scripts/functions.sh    @intuitivo-ai/mlops
+/scripts/get_account_id.sh    @intuitivo-ai/mlops
 /scripts/get_iam_policies.sh    @intuitivo-ai/mlops
 /scripts/get_pr_number.sh    @intuitivo-ai/mlops
 /scripts/get_vulns_config.sh    @intuitivo-ai/mlops

@@ -35,6 +35,9 @@ jobs:
   SetupEphemeralRole:
     runs-on: [ self-hosted, linux, intuitivo ]
     name: Set up ephemeral Role
+    defaults:
+      run:
+        working-directory: ${{ inputs.TF_PATH }}
     outputs:
       aws_policies: ${{ steps.iam_policies.outputs.aws_policies }}
       access_key_id: ${{ steps.ephemeral_access.outputs.access_key_id }}
@@ -49,22 +52,30 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
+      - name: Check Config Files
+        id: check-file
+        run: |
+          backend_file="${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend"
+          tfvars_file="${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars"
+
+          if [ -e "$backend_file" ] && [ -e "$tfvars_file" ]; then
+            echo "Los archivos de configuración se encontraron."
+            echo "configFiles=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Get account ID
+        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
         id: get_account
         run: |
-          set -e
-          cd ${{ inputs.TF_PATH }} || exit 1
-          assume_role_value=$(grep -E '^ *assume_role *=' "$VAR_FILE.tfvars" | tr -d ' "')
-          assume_role_value=${assume_role_value#*=}
-          account_id=$(echo "$assume_role_value" | cut -d':' -f5)
-          echo "ACCOUNT_ID=$account_id" >> "$GITHUB_OUTPUT"
-          cd -
+          chmod -R +x ../scripts
+          ../scripts/get_account_id.sh
       - name: Get policies to attach
+        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
         id: iam_policies
         run: |
-          chmod -R +x ./scripts
-          ./scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
+          chmod -R +x ../scripts
+          ../scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
       - name : Create ephemeral IAM Role
+        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
         id: ephemeral_access
         uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
         with:

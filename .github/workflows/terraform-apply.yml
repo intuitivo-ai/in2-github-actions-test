@@ -74,6 +74,8 @@ jobs:
     concurrency:
       group: terraform-apply-${{ inputs.ENVIRONMENT }}
     name: Apply
+    needs:
+      - iam_roles_policies
     defaults:
       run:
         working-directory: ${{ inputs.TF_PATH }}
@@ -87,8 +89,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ needs.iam_roles_policies.outputs.access_key_id }}
+          aws-secret-access-key: ${{ needs.iam_roles_policies.outputs.secret_access_key }}
+          aws-session-token: ${{ needs.iam_roles_policies.outputs.session_token }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
@@ -152,4 +155,4 @@ jobs:
       - name: Notification
         if: always()
         run: |
-          aws lambda invoke --function-name main-slash-bot --cli-binary-format raw-in-base64-out --invocation-type Event --payload '{"source":"gh-actions","env":"${{ inputs.ENVIRONMENT }}","repository":"${{ github.event.repository.name }}","username":"${{ github.actor }}","status":"${{ steps.apply.outcome }}"}' response.json
+          aws lambda invoke --function-name ${{ inputs.ENVIRONMENT }}-slash-bot --cli-binary-format raw-in-base64-out --invocation-type Event --payload '{"source":"gh-actions","env":"${{ inputs.ENVIRONMENT }}","repository":"${{ github.event.repository.name }}","username":"${{ github.actor }}","status":"${{ steps.apply.outcome }}"}' response.json

@@ -12,6 +12,7 @@ get_tf_modules() {
     default_arns=(
         "arn:aws:iam::$account_id:policy/modules/$environment-github-allow-access-to-alarms-RW"
         "arn:aws:iam::$account_id:policy/modules/$environment-github-allow-access-to-iot-RW"
+        "arn:aws:iam::$account_id:policy/modules/$environment-github-allow-access-to-terraform-default-RW"
     )
     excluded_modules=(
         "cw-dashboard"
@@ -20,8 +21,6 @@ get_tf_modules() {
         "iam-role"
         "sns"
     )
-
-    cd "$tf_path" || exit 1
 
     while IFS= read -r repo; do
         module_name=$(echo "$repo" | sed 's/\.git$//' | sed 's/\?ref=.*$//')
