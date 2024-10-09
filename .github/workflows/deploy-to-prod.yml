@@ -257,6 +257,4 @@ jobs:
       ENVIRONMENT: ${{ matrix.env }}
   release:
     name: Release
-    needs:
-      - production_deploy
     uses: ./.github/workflows/create-release-prod.yml
