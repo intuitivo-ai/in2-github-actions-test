@@ -10,7 +10,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Check Apply Conclusions
+        id: check_apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/*
+          ./scripts/check_apply_jobs.sh
       - name: Create Release Notes
+        id: release_notes
+        if: ${{ steps.check_apply.outputs.apply == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
