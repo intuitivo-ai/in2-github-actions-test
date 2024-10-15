@@ -35,4 +35,4 @@ jobs:
       - name: List pr
         if: ${{ inputs.ACTION == 'list_pr' }}
         run: |
-          python ../pr/terranator_pr.py
+          python ./pr/terranator_pr.py
