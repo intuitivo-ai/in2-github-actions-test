@@ -1,8 +1,5 @@
 name: PR follow
 'on':
-  push:
-    branches-ignore:
-    - infra-updates*
   workflow_dispatch:
     inputs:
       ACTION:
