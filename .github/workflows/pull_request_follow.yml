@@ -1,0 +1,38 @@
+name: PR follow
+'on':
+  workflow_dispatch:
+    inputs:
+      ACTION:
+        description: ''
+        required: true
+        default: list_pr
+        type: choice
+        options:
+        - list_pr
+        - deploy
+      ENVIRONMENT:
+        description: ''
+        required: false
+        default: ai
+        type: choice
+        options:
+        - ai
+        - core
+        - wallet
+        - infra
+        - modules
+
+jobs:
+  list_pr:
+    runs-on: [ self-hosted, linux, intuitivo ]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SQUAD: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List pr
+        if: ${{ inputs.ACTION == 'list_pr' }}
+        run: |
+          python ../pr/terranator_pr.py
