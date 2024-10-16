@@ -1,5 +1,6 @@
 import os
 
+BRANCH_NAME= os.getenv('BRANCH_NAME')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_API_URL = "https://api.github.com"
 SQUAD = os.getenv('SQUAD')

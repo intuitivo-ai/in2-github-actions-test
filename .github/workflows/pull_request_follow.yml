@@ -9,7 +9,12 @@ name: PR follow
         type: choice
         options:
         - list_pr
-        - deploy
+        - update_branch
+      BRANCH_NAME:
+        description: ''
+        required: true
+        default: "delete_infra"
+        type: string
       ENVIRONMENT:
         description: ''
         required: false
@@ -21,18 +26,23 @@ name: PR follow
         - wallet
         - infra
         - modules
+env:
+  BRANCH_NAME: ${{ inputs.BRANCH_NAME }}
+  GITHUB_TOKEN: ${{ secrets.GGH_TOKEN }}
+  SQUAD: ${{ inputs.ENVIRONMENT }}
+
 
 jobs:
   list_pr:
     runs-on: [ self-hosted, linux, intuitivo ]
-    env:
-      GITHUB_TOKEN: ${{ secrets.GGH_TOKEN }}
-      SQUAD: ${{ inputs.ENVIRONMENT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: List pr
         if: ${{ inputs.ACTION == 'list_pr' }}
-        run: |
-          python ./pr/terranator_pr.py
+        run: python ./pr/terranator_pr.py
+
+      - name: New Disposable Branch
+        if: ${{ inputs.ACTION == 'update_branch' }}
+        run: python ./pr/open_delete_branch.py
