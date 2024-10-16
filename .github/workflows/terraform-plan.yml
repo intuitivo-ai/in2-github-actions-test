@@ -96,14 +96,14 @@ jobs:
         if: ${{ inputs.LAMBDA && steps.check-file.outputs.backendFile == 'true' }}
         run: |
           cd ..
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/create_zip_files.sh
           cd -
       - name: Install workflow requirements
         if: ${{ inputs.REQUIREMENTS }}
         run: |
           cd ..
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/requirements.sh
           cd -
       - name: Init

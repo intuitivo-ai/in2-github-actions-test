@@ -97,7 +97,7 @@ jobs:
         if: ${{ inputs.LAMBDA }}
         run: |
           cd ..
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/create_zip_files.sh
           cd -
       - name: Update aws-cli
@@ -111,7 +111,7 @@ jobs:
         if: ${{ inputs.REQUIREMENTS }}
         run: |
           cd ..
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/requirements.sh
           cd -
       - name: Init
@@ -148,7 +148,7 @@ jobs:
       - name: Unlock
         if: ${{ cancelled() || ( inputs.REFRESH == true && steps.state_lock.outcome != 'success' ) }}
         run: |
-          chmod +x ../scripts/*
+          chmod -R +x ../scripts
           ../scripts/terraform_unlock.sh
       - name: Create Tag
         run: git tag -f "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push -f origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
