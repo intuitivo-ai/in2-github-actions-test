@@ -1,33 +1,30 @@
 import requests
+from github import Github
 from config import GITHUB_TOKEN, GITHUB_API_URL, owner, SQUAD, squads
 
 
 branch = "infra-updates"
+github_client = Github(GITHUB_TOKEN)
 
-def get_pull_requests(repo, branch):
-    url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/pulls"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    params = {
-        "state": "open",  # Solo PRs abiertas
-        "head": f"{f'{owner}/{repo}'.split('/')[0]}:{branch}"  # Repositorio y branch para filtrar
-    }
 
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        pr_data = response.json()
-        if pr_data:
-            pr_info = [{"number": pr["number"], "repo": pr["head"]["repo"]["full_name"], "url": pr["html_url"]} for pr in pr_data]
-            pr_links = [pr['html_url'] for pr in pr_data]
+def get_pull_requests(repo_name, branch):
+    try:
+        repo = github_client.get_repo(f"{owner}/{repo_name}")
+
+        pulls = repo.get_pulls(state="open", head=f"{owner}:{branch}")
+
+        pr_info = [{"number": pr.number, "repo": repo_name, "url": pr.html_url} for pr in pulls]
+        pr_links = [pr.html_url for pr in pulls]
+
+        if pr_info:
             return pr_info, pr_links
         else:
             pr_info = f"No PRs found for branch '{branch}' in repo '{repo}'"
             return pr_info, []
-    else:
-        pr_info=(f"Error fetching PRs for {repo}: {response.status_code}")
+    except Exception as e:
+        pr_info = f"Error fetching PRs for {repo_name}: {e}"
         return pr_info, []
+
 
 # # Iterar sobre la lista de repositorios y obtener las PRs
 # def main(repos):
