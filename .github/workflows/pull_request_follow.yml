@@ -35,19 +35,20 @@ env:
 jobs:
   list_pr:
     runs-on: [ self-hosted, linux, intuitivo ]
+    defaults:
+      run:
+        working-directory: pr
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          cd pr
           pip install -r requirements.txt
       - name: List pr
         if: ${{ inputs.ACTION == 'list_pr' }}
         run: |
-          ls -a
-          python ./terranator_pr.py
+          python terranator_pr.py
 
       - name: New Disposable Branch
         if: ${{ inputs.ACTION == 'update_branch' }}
