@@ -1,4 +1,3 @@
-import os
 from github import Github
 from config import BRANCH_NAME, GITHUB_TOKEN, SQUAD, owner, squads
 

@@ -39,10 +39,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          cd pr
+          pip install -r requirements.txt
       - name: List pr
         if: ${{ inputs.ACTION == 'list_pr' }}
-        run: python ./pr/terranator_pr.py
+        run: python terranator_pr.py
 
       - name: New Disposable Branch
         if: ${{ inputs.ACTION == 'update_branch' }}
-        run: python ./pr/open_delete_branch.py
+        run: python open_delete_branch.py
