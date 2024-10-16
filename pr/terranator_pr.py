@@ -23,11 +23,11 @@ def get_pull_requests(repo, branch):
             pr_links = [pr['html_url'] for pr in pr_data]
             return pr_info, pr_links
         else:
-            print(f"No PRs found for branch '{branch}' in repo '{repo}'")
-            return []
+            pr_info = f"No PRs found for branch '{branch}' in repo '{repo}'"
+            return pr_info, []
     else:
-        print(f"Error fetching PRs for {repo}: {response.status_code}")
-        return []
+        pr_info=(f"Error fetching PRs for {repo}: {response.status_code}")
+        return pr_info, []
 
 # # Iterar sobre la lista de repositorios y obtener las PRs
 # def main(repos):
