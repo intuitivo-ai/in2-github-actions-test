@@ -57,6 +57,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   terraform-plan:
+    if: ${{ needs.iam_roles_policies.outputs.check_config_files == 'true' }}
     runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -72,20 +73,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name:  Check backend file
-        id: check-file
-        run: |
-          if [ -e "${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend" ]; then
-            echo "El archivo de configuración del backend se encontró."
-            echo "backendFile=true" >> $GITHUB_OUTPUT
-          fi
       - name: Setup Terraform
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper : false
       - name: Configure AWS credentials
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ needs.iam_roles_policies.outputs.access_key_id }}
@@ -93,7 +85,7 @@ jobs:
           aws-session-token: ${{ needs.iam_roles_policies.outputs.session_token }}
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Create lambda zip files
-        if: ${{ inputs.LAMBDA && steps.check-file.outputs.backendFile == 'true' }}
+        if: ${{ inputs.LAMBDA }}
         run: |
           cd ..
           chmod -R +x ./scripts
@@ -107,7 +99,6 @@ jobs:
           ./scripts/requirements.sh
           cd -
       - name: Init
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform init -reconfigure -backend-config=${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend
       - name: Detect import template
@@ -122,25 +113,20 @@ jobs:
             echo "No import file detected for ${{ inputs.ENVIRONMENT }} in region ${{ inputs.AWS_REGION }}."
           fi
       - name: Validate
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform validate -json
       - name: Plan
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform plan -var-file=$VAR_FILE.tfvars -input=false -lock=false -out=$VAR_FILE.plan
       - name: Show outputs
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform output
       - name: Save plan as JSON
         id: tf-json-plan
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         run: |
           terraform show -json $VAR_FILE.plan > $VAR_FILE.json
           echo "plan_file=$VAR_FILE.json" >> $GITHUB_OUTPUT
       - name: Upload terraform json plan
-        if: ${{ steps.check-file.outputs.backendFile == 'true' }}
         uses: actions/upload-artifact@v4
         env:
           PLAN_FILE: ${{ steps.tf-json-plan.outputs.plan_file }}
