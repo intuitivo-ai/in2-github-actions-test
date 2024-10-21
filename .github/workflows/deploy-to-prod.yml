@@ -63,7 +63,6 @@ jobs:
     with:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
-      LAMBDA: true
       TF_PATH: terraform
       LAMBDA: true
     secrets:
@@ -128,7 +127,6 @@ jobs:
     with:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
-      LAMBDA: true
       TF_PATH: terraform
       LAMBDA: true
     secrets:
@@ -162,13 +160,13 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
     uses: ./.github/workflows/terraform-plan.yml
     with:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
-      LAMBDA: true
       TF_PATH: terraform
       LAMBDA: true
     secrets:
@@ -183,6 +181,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - showroom_plan
     uses: ./.github/workflows/infracost-report.yml
@@ -203,6 +202,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_plan
@@ -222,6 +222,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_plan
@@ -230,7 +231,6 @@ jobs:
     with:
       AWS_REGION: ${{matrix.region}}
       ENVIRONMENT: ${{matrix.env}}
-      LAMBDA: true
       TF_PATH: terraform
       LAMBDA: true
     secrets:
@@ -246,6 +246,7 @@ jobs:
         env: [ showroom ]
         region:
           - us-east-1
+          - sa-east-1
     needs:
       - config
       - showroom_deploy
