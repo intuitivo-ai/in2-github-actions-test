@@ -57,7 +57,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   terraform-plan:
-    if: ${{ needs.iam_roles_policies.outputs.check_config_files == 'true' }}
+    if: ${{ needs.iam_roles_policies.outputs.check_config_files }}
     runs-on: [ self-hosted, linux, intuitivo ]
     env:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
