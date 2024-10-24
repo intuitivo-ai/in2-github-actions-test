@@ -1,6 +1,6 @@
 import requests
 from github import Github
-from config import GITHUB_TOKEN, GITHUB_API_URL, owner, SQUAD, squads
+from config import GITHUB_TOKEN, owner, SQUAD, squads
 
 
 branch = "infra-updates"
@@ -26,24 +26,6 @@ def get_pull_requests(repo_name, branch):
         return pr_info, []
 
 
-# # Iterar sobre la lista de repositorios y obtener las PRs
-# def main(repos):
-#     all_pr_links = []
-#     for repo in repos:
-#         # print(f"Fetching PRs for repository: {repo}")
-#         pr_links = get_pull_requests(repo, branch)
-#         all_pr_links.extend(pr_links)
-#
-#     if all_pr_links:
-#         print("\nPull Request Links:")
-#         for pr in all_pr_links:
-#             print(pr)
-#     else:
-#         print(f"No Pull Requests found for branch '{branch}' in the given repositories.")
-
-# if __name__ == "__main__":
-#     for i in [ai_repos, core_repos, wallet_repos]:
-#         main(i)
 repos = squads.get(SQUAD)
 def main(repos):
     all_prs = []
