@@ -15,7 +15,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/check_apply_jobs.sh
       - name: Create Release Notes
         id: release_notes
@@ -23,5 +23,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/release_notes.sh

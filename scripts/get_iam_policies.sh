@@ -32,8 +32,9 @@ get_tf_modules() {
     done | sort -u)
 
     declare -A additional_modules
-    additional_modules["s3"]="aws-cloudfront"
+    additional_modules["alb"]="aws-cloudfront"
     additional_modules["db-aurora"]="lambda-function"
+    additional_modules["s3"]="aws-cloudfront"
 
     for base_module in "${!additional_modules[@]}"; do
         if [[ " ${repos[*]} " == *" $base_module "* ]]; then

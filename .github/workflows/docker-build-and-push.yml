@@ -77,7 +77,7 @@ jobs:
         run: |
           ORG="${GITHUB_REPOSITORY_OWNER}"
 
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/checkout_repositories.sh ${ORG} ${{ inputs.CHECKOUT_IN2_REPOSITORY_NAMES }}
       - name: Configure AWS credentials
         if: ${{ (inputs.BUILD == 'docker' || inputs.BUILD == 'layer' || inputs.BUILD == 'docker_s3' ) && inputs.PUBLISH }}
@@ -113,12 +113,12 @@ jobs:
       - name: Build
         if: ${{ steps.check_image.outputs.exist == 'false' }}
         run: |
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/build.sh ${{ inputs.BUILD }}
       - name: Publish
         if: ${{ inputs.PUBLISH && steps.check_image.outputs.exist == 'false' }}
         run: |
-          chmod +x ./scripts/*
+          chmod -R +x ./scripts
           ./scripts/publish.sh ${{ inputs.BUILD }}
       - name: Clear images
         if: ${{ inputs.CLEAR_CACHE && steps.check_image.outputs.exist == 'false' }}

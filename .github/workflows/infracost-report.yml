@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x ../scripts/*
+          chmod -R +x ../scripts
           ../scripts/get_pr_number.sh
 
       - name: Download tf plan
@@ -64,14 +64,14 @@ jobs:
       - name: Infracost report
         if: ${{ ! inputs.RUN_ON_PR }}
         run: |
-          chmod +x ../scripts/*
+          chmod -R +x ../scripts
           ../scripts/infracost_report.sh ${{ env.VAR_FILE }}.json
 
       - name: PR Infracost report
         id: generate_report
         if: ${{ inputs.RUN_ON_PR }}
         run: |
-          chmod +x ../scripts/*
+          chmod -R +x ../scripts
           ../scripts/infracost_comment.sh
 
       - name: Format report

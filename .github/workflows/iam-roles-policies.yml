@@ -22,6 +22,8 @@ on:
     outputs:
       access_key_id:
         value: ${{ jobs.SetupEphemeralRole.outputs.access_key_id }}
+      check_config_files:
+        value: ${{ jobs.SetupEphemeralRole.outputs.check_config_files }}
       secret_access_key:
         value: ${{ jobs.SetupEphemeralRole.outputs.secret_access_key }}
       session_token:
@@ -41,6 +43,7 @@ jobs:
     outputs:
       aws_policies: ${{ steps.iam_policies.outputs.aws_policies }}
       access_key_id: ${{ steps.ephemeral_access.outputs.access_key_id }}
+      check_config_files: ${{ steps.check-file.outputs.check_config_files }}
       secret_access_key: ${{ steps.ephemeral_access.outputs.secret_access_key }}
       session_token: ${{ steps.ephemeral_access.outputs.session_token }}
     steps:
@@ -60,22 +63,22 @@ jobs:
 
           if [ -e "$backend_file" ] && [ -e "$tfvars_file" ]; then
             echo "Los archivos de configuración se encontraron."
-            echo "configFiles=true" >> "$GITHUB_OUTPUT"
+            echo "check_config_files=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Get account ID
-        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
+        if: ${{ steps.check-file.outputs.check_config_files }}
         id: get_account
         run: |
           chmod -R +x ../scripts
           ../scripts/get_account_id.sh
       - name: Get policies to attach
-        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
+        if: ${{ steps.check-file.outputs.check_config_files }}
         id: iam_policies
         run: |
           chmod -R +x ../scripts
           ../scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
       - name : Create ephemeral IAM Role
-        if: ${{ steps.check-file.outputs.configFiles == 'true' }}
+        if: ${{ steps.check-file.outputs.check_config_files }}
         id: ephemeral_access
         uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
         with:

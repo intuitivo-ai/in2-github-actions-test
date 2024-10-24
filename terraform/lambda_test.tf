@@ -46,7 +46,7 @@ module "alb" {
   providers = {
     aws.US = aws.US
   }
-  source      = "git@github.com:intuitivo-ai/in2-terraform-module-alb.git?ref=test_cdn"
+  source      = "git@github.com:intuitivo-ai/in2-terraform-module-alb?ref=test_cdn"
   name = "alb-test"
   environment = var.environment
   region      = var.region
