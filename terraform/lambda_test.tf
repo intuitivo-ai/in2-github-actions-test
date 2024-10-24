@@ -41,3 +41,15 @@ resource "aws_s3_object" "lambda-test" {
   source_hash = filebase64sha256("../lambda.zip")
 }
 */
+
+module "alb" {
+  providers = {
+    aws.US = aws.US
+  }
+  source      = "git@github.com:intuitivo-ai/in2-terraform-module-alb.git?ref=test_cdn"
+  name = "alb-test"
+  environment = var.environment
+  region      = var.region
+  service_port = "3000"
+  cdn = true
+}
