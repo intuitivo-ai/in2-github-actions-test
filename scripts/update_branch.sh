@@ -13,7 +13,7 @@ set -e
 #
 #echo "Actualizando branch '$HEAD_BRANCH' con los últimos cambios de '$BASE_BRANCH'..."
 
-gh repo set-default "$REPO"
+gh repo set-default "$GITHUB_REPOSITORY"
 #git fetch origin "$BASE_BRANCH"
 
 #git checkout "$HEAD_BRANCH"
