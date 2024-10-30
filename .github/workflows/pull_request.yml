@@ -99,12 +99,7 @@ jobs:
       - clean_old_comments
     runs-on: [ self-hosted, linux ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Update Branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          chmod -R +x ./scripts
-          ./scripts/update_branch.sh
+        uses: intuitivo-ai/in2-actions//update_branch@action_update_branch
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
