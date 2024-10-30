@@ -102,8 +102,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Update Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           chmod -R +x ./scripts
-          python scripts/update_branch.py
-        env:
-          PR_NUMBER: ${{ needs.clean_old_comments.outputs.pr_number }}
+          ../scripts/update_branch.sh
