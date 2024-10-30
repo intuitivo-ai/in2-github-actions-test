@@ -104,8 +104,8 @@ jobs:
       - name: Update Branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ env.PR_NUMBER }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+#          PR_NUMBER: ${{ env.PR_NUMBER }}
+#          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           chmod -R +x ./scripts
           ./scripts/update_branch.sh
