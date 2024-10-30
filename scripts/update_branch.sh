@@ -17,7 +17,7 @@ set -e
 #git fetch origin "$BASE_BRANCH"
 
 #git checkout "$HEAD_BRANCH"
-gh pr update-branch $PR_NUMBER -R $GITHUB_REPOSITORY
+gh pr update-branch $PR_NUMBER --repo $GITHUB_REPOSITORY
 
 #git merge "origin/$BASE_BRANCH" --no-edit
 
