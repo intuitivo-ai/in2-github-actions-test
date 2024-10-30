@@ -14,10 +14,13 @@ echo "HEAD_BRANCH: $HEAD_BRANCH"
 echo "Actualizando branch '$HEAD_BRANCH' con los últimos cambios de '$BASE_BRANCH'..."
 
 gh repo set-default "$REPO"
-git fetch origin "$BASE_BRANCH"
-git checkout "$HEAD_BRANCH"
-git merge "origin/$BASE_BRANCH" --no-edit
+#git fetch origin "$BASE_BRANCH"
 
-git push origin "$HEAD_BRANCH"
+#git checkout "$HEAD_BRANCH"
+gh pr update-branch $PR_NUMBER
+
+#git merge "origin/$BASE_BRANCH" --no-edit
+
+#git push origin "$HEAD_BRANCH"
 
 echo "Branch '$HEAD_BRANCH' actualizado exitosamente con los últimos cambios de '$BASE_BRANCH'."
