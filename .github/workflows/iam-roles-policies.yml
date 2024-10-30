@@ -57,26 +57,15 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Check Config Files
         id: check-file
-        run: |
-          backend_file="${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.backend"
-          tfvars_file="${{ inputs.ENVIRONMENT }}-${{ inputs.AWS_REGION }}.tfvars"
-
-          if [ -e "$backend_file" ] && [ -e "$tfvars_file" ]; then
-            echo "Los archivos de configuración se encontraron."
-            echo "check_config_files=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
+        with:
+          action: check-files
       - name: Get account ID
         if: ${{ steps.check-file.outputs.check_config_files }}
         id: get_account
         run: |
           chmod -R +x ../scripts
           ../scripts/get_account_id.sh
-      - name: Get policies to attach
-        if: ${{ steps.check-file.outputs.check_config_files }}
-        id: iam_policies
-        run: |
-          chmod -R +x ../scripts
-          ../scripts/get_iam_policies.sh ${{ inputs.TF_PATH }} $ENVIRONMENT ${{ steps.get_account.outputs.ACCOUNT_ID }}
       - name : Create ephemeral IAM Role
         if: ${{ steps.check-file.outputs.check_config_files }}
         id: ephemeral_access
