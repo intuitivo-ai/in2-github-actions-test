@@ -96,7 +96,7 @@ jobs:
   update-branch:
     name: Update Branch
     needs:
-      - delete-old-comments
+      - clean_old_comments
     runs-on: [ self-hosted, linux ]
     steps:
       - name: Checkout
