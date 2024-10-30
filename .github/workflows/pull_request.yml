@@ -108,4 +108,4 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           chmod -R +x ./scripts
-          ../scripts/update_branch.sh
+          ./scripts/update_branch.sh
