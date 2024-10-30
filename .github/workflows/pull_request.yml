@@ -11,6 +11,8 @@ jobs:
   clean_old_comments :
     name: Delete old Comments
     runs-on: [ self-hosted, linux ]
+    outputs:
+        pr_number: ${{ steps.pr_number.outputs.pr_number }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -91,3 +93,17 @@ jobs:
     secrets:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  update-branch:
+    name: Update Branch
+    needs:
+      - delete-old-comments
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Update Branch
+        run: |
+          chmod -R +x ./scripts
+          python scripts/update_branch.py
+        with:
+          PR_NUMBER: ${{ needs.clean_old_comments.outputs.pr_number }}
