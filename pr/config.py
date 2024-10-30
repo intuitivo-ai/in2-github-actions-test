@@ -38,7 +38,9 @@ wallet = [
 "wallet-app",
 "wallet-dashboard"
 ]
-infra = []
+infra = [
+"in2-github-actions-test"
+]
 modules = []
 
 squads = {

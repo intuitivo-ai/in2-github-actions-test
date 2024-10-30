@@ -73,4 +73,4 @@ jobs:
         with:
           account_id: ${{ steps.get_account.outputs.ACCOUNT_ID }}
           aws-region: ${{ inputs.AWS_REGION }}
-          policies_list: ${{ steps.iam_policies.outputs.aws_policies }}
+          tf_path: ${{ inputs.TF_PATH }}
