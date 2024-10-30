@@ -10,7 +10,6 @@ HEAD_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName -q .head
 
 echo "Actualizando branch '$HEAD_BRANCH' con los últimos cambios de '$BASE_BRANCH'..."
 
-gh repo set-default "$REPO"
 git fetch origin "$BASE_BRANCH"
 git checkout "$HEAD_BRANCH"
 git merge "origin/$BASE_BRANCH" --no-edit
