@@ -15,7 +15,7 @@ set -e
 
 gh repo set-default "$GITHUB_REPOSITORY"
 #git fetch origin "$BASE_BRANCH"
-
+gh pr checkout $PR_NUMBER
 #git checkout "$HEAD_BRANCH"
 gh pr update-branch $PR_NUMBER
 
