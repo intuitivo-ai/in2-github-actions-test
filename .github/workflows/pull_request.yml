@@ -105,5 +105,5 @@ jobs:
         run: |
           chmod -R +x ./scripts
           python scripts/update_branch.py
-        with:
+        env:
           PR_NUMBER: ${{ needs.clean_old_comments.outputs.pr_number }}
