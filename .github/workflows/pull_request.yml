@@ -104,9 +104,20 @@ jobs:
       - name: Update Branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          PR_NUMBER: ${{ env.PR_NUMBER }}
-#          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           chmod -R +x ./scripts
-#          ./scripts/update_branch.sh
-          python ./scripts/update_branch.py
+          chmod -R +x ./pr
+          ./scripts/update_branch.sh
+          python ./pr/open_delete_branch.py
+#  update-branch:
+#    if:  ${{ blabla == infra-updates }}
+#    name: Update Branch
+#    needs:
+#      - clean_old_comments
+#    runs-on: [ self-hosted, linux ]
+#    steps:
+#      - name: Checkout
+#        uses: action/algo
+#        with:
+#          gh_token : token
+
