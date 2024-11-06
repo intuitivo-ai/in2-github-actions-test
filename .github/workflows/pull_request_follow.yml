@@ -52,8 +52,8 @@ jobs:
 
       - name: New Disposable Branch
         if: ${{ inputs.ACTION == 'update_branch' }}
-#        uses: in2-actions//update_branch@action_update_branch
-        uses: intuitivo-ai/in2-github-actions-test//update_branch@follow_pr
+        uses: intuitivo-ai/in2-actions//update_branch@action_update_branch
+#        uses: intuitivo-ai/in2-github-actions-test//update_branch@follow_pr
         with:
           gh_token : ${{ secrets.GGH_TOKEN }}
 
