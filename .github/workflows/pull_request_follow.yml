@@ -52,5 +52,15 @@ jobs:
 
       - name: New Disposable Branch
         if: ${{ inputs.ACTION == 'update_branch' }}
-        run: python open_delete_branch.py
+        uses: in2-actions//update_branch@action_update_branch
+
+
+#      - name: New Disposable Branch
+#        if: ${{ inputs.ACTION == 'update_branch' }}
+#        run: |
+#          chmod -R +x ./scripts
+#          chmod -R +x ./pr
+#          ./scripts/update_branch.sh
+#          python open_delete_branch.py
+#        run: python open_delete_branch.py
 
