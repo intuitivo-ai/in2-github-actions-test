@@ -20,7 +20,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
     - name: Get PR number
       id: pr_number
-      uses: intuitivo-ai/in2-actions//get_pr_number@action_update_branch
+      uses: intuitivo-ai/in2-github-actions-test//get_pr_number@follow_pr
       with:
         gh_token: ${{ inputs.gh_token }}
     - name: Desposal branch
