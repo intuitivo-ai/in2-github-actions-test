@@ -21,4 +21,4 @@ def create_and_delete_branch(repository, branch_name, base_branch="infra-updates
         print(f"Error en el repo {repository}: {e}")
 
 
-create_and_delete_branch(REPOSITORY, branch_name="main")
+create_and_delete_branch(REPOSITORY, branch_name="desposal_branch")
