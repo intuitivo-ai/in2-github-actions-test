@@ -2,7 +2,7 @@
 set -e
 
 echo "Getting PR number..."
-echo "GITHUB_HEAD_REF: ${github.head_ref}"
+echo "GITHUB_HEAD_REF: $${github.head_ref}"
 pr_number=$(curl -s -H "Authorization: token $GITHUB_TOKEN " \
   -H "Accept: application/vnd.github.v3+json" \
   "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?head=$GITHUB_REPOSITORY_OWNER:$GITHUB_HEAD_REF" | jq '.[0].number // 0')
