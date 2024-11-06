@@ -48,6 +48,7 @@ jobs:
       - name: List pr
         if: ${{ inputs.ACTION == 'list_pr' }}
         run: |
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
           python terranator_pr.py
 
       - name: New Disposable Branch
@@ -56,13 +57,3 @@ jobs:
 #        uses: intuitivo-ai/in2-github-actions-test//update_branch@follow_pr
         with:
           gh_token : ${{ secrets.GGH_TOKEN }}
-
-
-#      - name: New Disposable Branch
-#        if: ${{ inputs.ACTION == 'update_branch' }}
-#        run: |
-#          chmod -R +x ./scripts
-#          chmod -R +x ./pr
-#          ./scripts/update_branch.sh
-#          python open_delete_branch.py
-

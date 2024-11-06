@@ -1,6 +1,6 @@
 import os
 from github import Github
-from config import GITHUB_TOKEN, GH_OWNER as owner
+from config import GITHUB_TOKEN
 
 REPOSITORY = os.getenv("GITHUB_REPOSITORY")
 
@@ -9,7 +9,7 @@ def create_and_delete_branch(repository, branch_name, base_branch="infra-updates
 
     try:
         repo = github_client.get_repo(f"{repository}")
-
+        print(f"Creando la rama '{branch_name}' desde '{base_branch}' en el repositorio {repository}.")
         base_branch_ref = repo.get_git_ref(f"heads/{base_branch}")
         repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_branch_ref.object.sha)
         print(f"Branch '{branch_name}' creada en el repo {repository}.")
