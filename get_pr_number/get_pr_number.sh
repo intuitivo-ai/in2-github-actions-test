@@ -9,4 +9,4 @@ pr_number=$(curl -s -H "Authorization: token ${GITHUB_TOKEN} " \
 echo {"pr_number":$pr_number}
 
 echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
-echo "branch_name:$branch_name" >> $GITHUB_OUTPUT
+echo "branch_name=$branch_name" >> $GITHUB_OUTPUT
