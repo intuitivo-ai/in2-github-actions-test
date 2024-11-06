@@ -9,6 +9,9 @@ outputs:
   pr_number:
     description: 'Pr number Output'
     value: ${{ steps.pr_number.outputs.pr_number }}
+  branch_name:
+    description: 'Branch name Output'
+    value: ${{ steps.pr_number.outputs.branch_name }}
 
 runs:
   using: "composite"
