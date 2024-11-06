@@ -22,7 +22,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
         PR_NUMBER: ${{ steps.pr_number.outputs.pr_number }}
-
+        BRANCH_NAME: ${{ steps.pr_number.outputs.branch_name }}
     - name: Desposal branch
       run: python $GITHUB_ACTION_PATH/open_delete_branch.py
       shell: bash
