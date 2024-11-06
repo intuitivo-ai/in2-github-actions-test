@@ -9,9 +9,6 @@ runs:
   using: "composite"
   steps:
     - run: | 
-        cat "$GITHUB_EVENT_PATH"
-        PR_NUMBER=$(jq -r .number "$GITHUB_EVENT_PATH")
-        echo "PR_NUMBER: $PR_NUMBER"
         echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
     - name : Checkout
@@ -21,8 +18,14 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
+    - name: Get PR number
+      id: pr_number
+      uses: intuitivo-ai/in2-actions//get_pr_number@action_update_branch
+      with:
+        gh_token: ${{ inputs.gh_token }}
     - name: Desposal branch
       run: update_branch.sh
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
+        PR_NUMBER: ${{ steps.pr_number.outputs.pr_number }}

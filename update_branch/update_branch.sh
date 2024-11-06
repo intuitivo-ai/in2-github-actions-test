@@ -2,8 +2,8 @@
 set -e
 
 REPO="${GITHUB_REPOSITORY}"
-PR_NUMBER=$(jq -r .number "$GITHUB_EVENT_PATH")
-echo $GITHUB_EVENT_PATH
+#PR_NUMBER=$(jq -r .number "$GITHUB_EVENT_PATH")
+echo $PR_NUMBER
 
 echo "context"
 echo $GITHUB_EVENT
