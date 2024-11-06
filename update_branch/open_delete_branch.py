@@ -1,6 +1,6 @@
 import os
 from github import Github
-from config import GITHUB_TOKEN, owner
+from config import GITHUB_TOKEN, GH_OWNER as owner
 
 REPOSITORY = os.getenv("GITHUB_REPOSITORY")
 

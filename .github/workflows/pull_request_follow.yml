@@ -52,8 +52,8 @@ jobs:
 
       - name: New Disposable Branch
         if: ${{ inputs.ACTION == 'update_branch' }}
-        uses: in2-actions//terraform_plan@main
 #        uses: in2-actions//update_branch@action_update_branch
+        uses: in2-github-actions-test//update_branch@follow_pr
 
 
 #      - name: New Disposable Branch
@@ -63,5 +63,4 @@ jobs:
 #          chmod -R +x ./pr
 #          ./scripts/update_branch.sh
 #          python open_delete_branch.py
-#        run: python open_delete_branch.py
 

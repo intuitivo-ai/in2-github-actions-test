@@ -1,0 +1,25 @@
+name: "Custom Github Action for update branch"
+description: "Update the head branch with the base branch of a pull request"
+inputs:
+  gh_token:
+    description: "The GitHub token for executing the action"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: | 
+        echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
+    - name : Checkout
+      uses: actions/checkout@v4
+    - name: Update head branch with base branch
+      run: update_branch.sh
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
+    - name: Desposal branch
+      run: update_branch.sh
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
