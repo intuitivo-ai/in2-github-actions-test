@@ -8,7 +8,7 @@ def create_and_delete_branch(repository, branch_name, base_branch="infra-updates
     github_client = Github(GITHUB_TOKEN)
 
     try:
-        repo = github_client.get_repo(f"{owner}/{repository}")
+        repo = github_client.get_repo(f"{repository}")
 
         base_branch_ref = repo.get_git_ref(f"heads/{base_branch}")
         repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_branch_ref.object.sha)
