@@ -9,7 +9,7 @@ runs:
   using: "composite"
   steps:
     - run: | 
-        echo $GITHUB_EVENT_PATH
+        cat "$GITHUB_EVENT_PATH"
         PR_NUMBER=$(jq -r .number "$GITHUB_EVENT_PATH")
         echo "PR_NUMBER: $PR_NUMBER"
         echo "${{ github.action_path }}" >> $GITHUB_PATH
