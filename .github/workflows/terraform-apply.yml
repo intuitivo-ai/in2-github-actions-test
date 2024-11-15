@@ -93,6 +93,9 @@ jobs:
           aws-secret-access-key: ${{ needs.iam_roles_policies.outputs.secret_access_key }}
           aws-session-token: ${{ needs.iam_roles_policies.outputs.session_token }}
           aws-region: ${{ inputs.AWS_REGION }}
+      - name: Show AWS user
+        run: |
+          aws sts get-caller-identity
       - name: Create lambda zip files
         if: ${{ inputs.LAMBDA }}
         run: |
