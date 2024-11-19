@@ -61,17 +61,11 @@ jobs:
         with:
           action: check-files
           tf_path: ${{ inputs.TF_PATH }}
-      - name: Get account ID
-        if: ${{ steps.check-file.outputs.check_config_files }}
-        id: get_account
-        run: |
-          chmod -R +x ../scripts
-          ../scripts/get_account_id.sh
       - name : Create ephemeral IAM Role
         if: ${{ steps.check-file.outputs.check_config_files }}
         id: ephemeral_access
         uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
         with:
-          account_id: ${{ steps.get_account.outputs.ACCOUNT_ID }}
           aws-region: ${{ inputs.AWS_REGION }}
           tf_path: ${{ inputs.TF_PATH }}
+          squad: infra
