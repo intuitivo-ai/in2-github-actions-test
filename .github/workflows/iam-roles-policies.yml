@@ -57,14 +57,14 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
       - name: Check Config Files
         id: check-file
-        uses: intuitivo-ai/accessnator//actions/create-iam-roles@stable
+        uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
         with:
           action: check-files
           tf_path: ${{ inputs.TF_PATH }}
       - name : Create ephemeral IAM Role
         if: ${{ steps.check-file.outputs.check_config_files }}
         id: ephemeral_access
-        uses: intuitivo-ai/accessnator//actions/create-iam-roles@stable
+        uses: intuitivo-ai/accessnator//actions/create-iam-roles@main
         with:
           aws-region: ${{ inputs.AWS_REGION }}
           tf_path: ${{ inputs.TF_PATH }}
