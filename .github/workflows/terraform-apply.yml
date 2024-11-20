@@ -13,6 +13,9 @@ on:
         required: false
         type: boolean
         default: false
+      MODULE_ENVIRONMENT:
+        required: false
+        type: string
       PLAN:
         required: false
         type: boolean
@@ -155,6 +158,11 @@ jobs:
           ../scripts/terraform_unlock.sh
       - name: Create Tag
         run: git tag -f "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}" && git push -f origin "${{ inputs.ENVIRONMENT }}/${{ github.run_number }}"
+      - name: Get lambda prefix
+        id: lambda_prefix
+        run: |
+          MODULE_ENVIRONMENT=$(echo "${{ inputs.ENVIRONMENT }}" | cut -d'-' -f2-)
+          echo "MODULE_ENVIRONMENT=$MODULE_ENVIRONMENT" >> $GITHUB_OUTPUT
       - name: Notification
         if: always()
         run: |
