@@ -13,9 +13,6 @@ on:
         required: false
         type: boolean
         default: false
-      MODULE_ENVIRONMENT:
-        required: false
-        type: string
       PLAN:
         required: false
         type: boolean
