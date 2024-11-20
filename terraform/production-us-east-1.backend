@@ -1,2 +1,2 @@
-dynamodb_table = "arn:aws:dynamodb:us-east-1:706851696280:table/in2-terraform-lock-system-production"
+dynamodb_table = "arn:aws:dynamodb:us-east-1:706851696280:table/in2-terraform-lock-infra-production"
 key            = "production-us-east-1.tfstate"
