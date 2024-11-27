@@ -2,6 +2,7 @@ import os
 from github import Github
 from config import *
 
+
 def create_and_delete_branch(repository, new_branch_name):
     github_client = Github(GITHUB_TOKEN)
     try:
@@ -17,4 +18,6 @@ def create_and_delete_branch(repository, new_branch_name):
     except Exception as e:
         print(f"Error en el repo {repository}: {e}")
 
-create_and_delete_branch(REPOSITORY, NEW_BRANCH_NAME)
+
+if __name__ == "__main__":
+    create_and_delete_branch(REPOSITORY, NEW_BRANCH_NAME)

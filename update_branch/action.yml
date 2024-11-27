@@ -4,6 +4,9 @@ inputs:
   gh_token:
     description: "The GitHub token for executing the action"
     required: true
+  new_branch_name:
+    description: "The new branch name"
+    required: false
 
 runs:
   using: "composite"
@@ -20,9 +23,10 @@ runs:
       run: update_branch.sh
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.gh_token }}
-        PR_NUMBER: ${{ steps.pr_number.outputs.pr_number }}
         BRANCH_NAME: ${{ steps.pr_number.outputs.branch_name }}
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
+        NEW_BRANCH_NAME: ${{ inputs.new_branch_name }}
+        PR_NUMBER: ${{ steps.pr_number.outputs.pr_number }}
     - name: Desposal branch
       run: python $GITHUB_ACTION_PATH/open_delete_branch.py
       shell: bash
